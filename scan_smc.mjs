@@ -11,6 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 const __reportDir = dirname(fileURLToPath(import.meta.url));
 import { analyzeExit as analyzeExitH, HOLDINGS as EXIT_HOLDINGS, RANK as EXIT_RANK, exitOne } from './scan_exits.mjs';
+import { buildOptionsIdeas } from './options_ideas.mjs';
 
 const HOLDINGS = new Set(Object.keys(EXIT_HOLDINGS)); // derived from holdings secret (single source of truth)
 const LEVERAGED = new Set(['SOXL','SOXS','NVDU','NVDD','TECL','TECS','WEBL','WEBS','TQQQ','SQQQ','SPXL','SPXS','TNA','TZA','ERX','ERY','GUSH','DRIP','AAPU','MSFU','AMZU','GGLL','METU','SPCH','SSPC']);
@@ -242,7 +243,7 @@ async function scanOne(symbol) {
   } catch (e) { return { symbol, error: e.message }; }
 }
 
-function buildReport(rows, errs, exitRows = []) {
+function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: [] }) {
   const ts = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
   const data = JSON.stringify(rows.map(r => ({ sym: r.symbol, score: r.score, action: r.action, grade: r.grade, dir: r.direction, price: r.price, bias: r.bias, zone: r.zone, hold: r.holding ? 1 : 0, lev: r.leveraged ? 1 : 0, basis: r.basis, ...r.levels })));
   const skipped = errs.length ? ' &middot; skipped: ' + errs.map(e => e.symbol).join(', ') : '';
@@ -317,6 +318,19 @@ function buildReport(rows, errs, exitRows = []) {
         + '<td style="font-size:11px;color:var(--muted);max-width:340px;line-height:1.45">' + esc(r.basis || '') + '</td></tr>').join('')
       + '</tbody></table>';
   }
+  // Recommended options (from the scan): calls on bullish setups, puts on bearish names.
+  let optHtml = '<h2 style="font-size:16px;font-weight:600;margin:18px 0 6px">Recommended options <span style="font-size:12px;font-weight:400;color:var(--muted)">(from the scan &mdash; high-risk, confirm live pricing, not advice)</span></h2>';
+  const _oi = optIdeas || { calls: [], puts: [] };
+  const fmtC = c => c ? ('$' + c.strike + ' &middot; exp ' + c.expiry + ' (' + c.dte + 'd)' + (c.iv ? ' &middot; IV ' + c.iv + '%' : '')) : '<span style="color:var(--muted)">no listed options yet</span>';
+  const optRows = [];
+  for (const c of _oi.calls) optRows.push('<tr><td style="color:#16a34a;font-weight:700;white-space:nowrap">BUY CALL</td><td><b>' + esc(c.sym) + '</b></td><td style="font-size:12px">' + c.score + '/8 ' + esc(c.grade || '-') + ' &middot; ' + esc(c.action) + '</td><td style="font-size:12px">' + fmtC(c.contract) + '</td><td class="r">' + (c.contract && c.contract.premium ? '$' + c.contract.premium : '&mdash;') + '</td><td class="r" style="color:var(--muted)">' + (c.contract ? c.contract.breakeven : '&mdash;') + '</td><td style="font-size:12px;color:var(--muted)">' + (c.target ? 'target ' + c.target : '') + (c.invalid ? ' &middot; invalid &lt;' + c.invalid : '') + '</td><td style="font-size:12px">' + esc(c.etf || '&mdash;') + '</td></tr>');
+  for (const p of _oi.puts) optRows.push('<tr><td style="color:#dc2626;font-weight:700;white-space:nowrap">BUY PUT</td><td><b>' + esc(p.sym) + '</b></td><td style="font-size:12px">' + p.score + '/8 ' + esc(p.grade || '-') + ' &middot; downtrend</td><td style="font-size:12px">' + fmtC(p.contract) + '</td><td class="r">' + (p.contract && p.contract.premium ? '$' + p.contract.premium : '&mdash;') + '</td><td class="r" style="color:var(--muted)">' + (p.contract ? p.contract.breakeven : '&mdash;') + '</td><td style="font-size:12px;color:var(--muted)">bearish structure</td><td style="font-size:12px">' + esc(p.etf || '&mdash;') + '</td></tr>');
+  if (optRows.length) {
+    optHtml += '<div class="sub">Calls = strongest bullish setups &middot; Puts = bearish (downtrend) names &middot; ~35-day, near-the-money. Options decay with time and can expire worthless; the "leveraged alt" is a same-direction ETF play.</div>'
+      + '<table><thead><tr><th>Idea</th><th>Symbol</th><th>Setup</th><th>Suggested contract</th><th class="r">~Premium</th><th class="r">Breakeven</th><th>Scan levels</th><th>Leveraged alt</th></tr></thead><tbody>' + optRows.join('') + '</tbody></table>';
+  } else {
+    optHtml += '<div class="sub">No high-conviction options ideas right now (no qualifying bullish/bearish setups in the latest scan).</div>';
+  }
   const __out = '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
     + '<meta http-equiv="refresh" content="300"><title>SMC scan</title><style>'
     + ':root{--bg:#fff;--fg:#1a1a1a;--muted:#6b7280;--line:#e5e7eb}'
@@ -338,6 +352,7 @@ function buildReport(rows, errs, exitRows = []) {
     + evHtml
     + hlHtml
     + exHtml
+    + optHtml
     + '<h2 style="font-size:16px;font-weight:600;margin:22px 0 6px">Buy scan</h2>'
     + '<div class="controls">'
     + '<select id="f-score"><option value="5">Actionable (score &ge; 5)</option><option value="7">Buy only (&ge; 7)</option><option value="3">Watch &amp; up (&ge; 3)</option><option value="0">All</option></select>'
@@ -395,7 +410,11 @@ async function main() {
   }
   exitRows.sort((a, b) => (EXIT_RANK[b.status] ?? 0) - (EXIT_RANK[a.status] ?? 0));
 
-  try { writeFileSync(join(__reportDir, 'report.html'), buildReport(ok, errs, exitRows)); console.error('report -> ' + join(__reportDir, 'report.html')); } catch (e) { console.error('report write failed:', e.message); }
+  // directional options ideas from the scan (calls on bullish, puts on bearish) - best effort
+  let optIdeas = { calls: [], puts: [] };
+  try { optIdeas = await buildOptionsIdeas(ok, Date.now()); } catch (e) { console.error('options ideas failed:', e.message); }
+
+  try { writeFileSync(join(__reportDir, 'report.html'), buildReport(ok, errs, exitRows, optIdeas)); console.error('report -> ' + join(__reportDir, 'report.html')); } catch (e) { console.error('report write failed:', e.message); }
 
   if (reportOnly) { console.error('report-only: report.html regenerated, alert state untouched'); return; }
 
