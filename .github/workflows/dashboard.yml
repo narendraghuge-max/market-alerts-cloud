@@ -1,0 +1,41 @@
+name: dashboard
+
+# Runs in the cloud on GitHub's servers - independent of any personal computer.
+on:
+  schedule:
+    - cron: '*/15 * * * *'   # every 15 minutes (UTC); GitHub cron is best-effort
+  workflow_dispatch:           # lets you run it manually from the Actions tab
+
+concurrency:
+  group: dashboard
+  cancel-in-progress: false
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Generate dashboard (report.html)
+        env:
+          HOLDINGS_JSON: ${{ secrets.HOLDINGS_JSON }}
+        run: node scan_smc.mjs
+
+      - name: Assemble static site
+        run: |
+          mkdir -p site
+          cp report.html site/index.html
+          cp vercel.json site/ 2>/dev/null || true
+          cp robots.txt site/ 2>/dev/null || true
+
+      - name: Deploy to Vercel (same project = same URL)
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        run: |
+          npm i -g vercel@latest
+          vercel deploy site --prod --yes --token "${{ secrets.VERCEL_TOKEN }}"
