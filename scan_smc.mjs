@@ -13,7 +13,7 @@ const __reportDir = dirname(fileURLToPath(import.meta.url));
 import { analyzeExit as analyzeExitH, HOLDINGS as EXIT_HOLDINGS, RANK as EXIT_RANK, exitOne } from './scan_exits.mjs';
 
 const HOLDINGS = new Set(Object.keys(EXIT_HOLDINGS)); // derived from holdings secret (single source of truth)
-const LEVERAGED = new Set(['SOXL','SOXS','NVDU','NVDD','TECL','TECS','WEBL','WEBS','TQQQ','SQQQ','SPXL','SPXS','TNA','TZA','ERX','ERY','GUSH','DRIP','AAPU','MSFU','AMZU','GGLL','METU']);
+const LEVERAGED = new Set(['SOXL','SOXS','NVDU','NVDD','TECL','TECS','WEBL','WEBS','TQQQ','SQQQ','SPXL','SPXS','TNA','TZA','ERX','ERY','GUSH','DRIP','AAPU','MSFU','AMZU','GGLL','METU','SPCH','SSPC']);
 
 const UNIVERSE = {
   Semiconductors: ['NVDA','AVGO','AMD','TSM','MU','AMAT','LRCX','SMCI','SMH','ARM','MRVL','ASML','SOXL','SOXS','NVDU','NVDD'],
@@ -22,6 +22,7 @@ const UNIVERSE = {
   Energy: ['XOM','CVX','OXY','SLB','COP','XLE','ERX','ERY','GUSH','DRIP'],
   'Index / regime': ['SPY','IWM','SPXL','SPXS','TNA','TZA'],
   Diversifiers: ['XLF','XLV','GLD','GDX'],
+  Space: ['SPCX','SPCH','SSPC'],
 };
 
 const argv = process.argv.slice(2);
