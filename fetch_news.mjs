@@ -59,5 +59,5 @@ const events = all
     detail: `Source: ${e.src}.` + (e.desc ? ` ${e.desc.slice(0, 280)}` : '') + ' (headline feed — not analyzed; decision-support only)',
   }));
 
-writeFileSync(join(__dir, 'events.json'), JSON.stringify(events, null, 2));
-console.error(`wrote ${events.length} headlines to events.json`);
+writeFileSync(join(__dir, 'headlines.json'), JSON.stringify(events, null, 2));
+console.error(`wrote ${events.length} headlines to headlines.json`);

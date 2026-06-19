@@ -276,6 +276,24 @@ function buildReport(rows, errs, exitRows = []) {
   } else {
     evHtml += '<div class="sub">No material market events in the last 36 hours.</div>';
   }
+  // Raw market headlines: always-on free feed (separate from the AI-analyzed events above).
+  let hlHtml = '';
+  try {
+    const hf = join(__reportDir, 'headlines.json');
+    if (existsSync(hf)) {
+      let hl = JSON.parse(readFileSync(hf, 'utf8'))
+        .map(e => ({ ...e, _t: e.epoch != null ? e.epoch : (Date.parse(String(e.ts).replace(',', '')) || 0) }))
+        .sort((a, b) => b._t - a._t).slice(0, 8);
+      if (hl.length) {
+        hlHtml = '<h2 style="font-size:16px;font-weight:600;margin:18px 0 6px">Latest headlines <span style="font-size:12px;font-weight:400;color:var(--muted)">(live feed — not analyzed)</span></h2>'
+          + '<table><thead><tr><th style="width:130px">Time (ET)</th><th>Headline</th><th>Source</th></tr></thead><tbody>'
+          + hl.map(e => '<tr><td style="color:var(--muted);font-size:12px">' + esc(e.ts) + '</td>'
+            + '<td>' + esc(e.headline) + '</td>'
+            + '<td style="font-size:12px;color:var(--muted)">' + esc(e.detail || '') + '</td></tr>').join('')
+          + '</tbody></table>';
+      }
+    }
+  } catch (e) {}
   const exCol = s => s === 'SELL' ? '#dc2626' : s === 'TRIM' ? '#d97706' : s === 'WATCH' ? '#6b7280' : s === 'NEW' ? '#6b7280' : '#16a34a';
   let exHtml = '';
   if (exitRows && exitRows.length) {
@@ -315,6 +333,7 @@ function buildReport(rows, errs, exitRows = []) {
     + '<h1>SMC scan</h1><div class="sub">Generated ' + ts + ' ET &middot; ' + rows.length + ' scanned' + skipped + ' &middot; auto-reloads every 5 min &middot; not financial advice</div>'
     + brHtml
     + evHtml
+    + hlHtml
     + exHtml
     + '<h2 style="font-size:16px;font-weight:600;margin:22px 0 6px">Buy scan</h2>'
     + '<div class="controls">'
