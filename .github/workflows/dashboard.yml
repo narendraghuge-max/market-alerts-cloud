@@ -20,6 +20,9 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Fetch market headlines (free, no AI)
+        run: node fetch_news.mjs
+
       - name: Generate dashboard (report.html)
         env:
           HOLDINGS_JSON: ${{ secrets.HOLDINGS_JSON }}
