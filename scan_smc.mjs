@@ -316,7 +316,7 @@ function buildReport(rows, errs, exitRows = []) {
         + '<td style="font-size:11px;color:var(--muted);max-width:340px;line-height:1.45">' + esc(r.basis || '') + '</td></tr>').join('')
       + '</tbody></table>';
   }
-  return '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+  const __out = '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
     + '<meta http-equiv="refresh" content="300"><title>SMC scan</title><style>'
     + ':root{--bg:#fff;--fg:#1a1a1a;--muted:#6b7280;--line:#e5e7eb}'
     + '@media(prefers-color-scheme:dark){:root{--bg:#0f1115;--fg:#e8e8e8;--muted:#9aa0aa;--line:#272b32}}'
@@ -329,6 +329,8 @@ function buildReport(rows, errs, exitRows = []) {
     + 'td{padding:8px 6px;border-bottom:1px solid var(--line)}.r{text-align:right;font-variant-numeric:tabular-nums}'
     + '.pill{border:1px solid currentColor;padding:2px 8px;border-radius:6px;font-weight:600;font-size:12px;white-space:nowrap}'
     + '.tag{font-size:11px;padding:1px 5px;border-radius:5px;margin-left:4px;border:1px solid}footer{margin-top:16px;color:var(--muted);font-size:12px}'
+    + '.tbl{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;margin-bottom:4px}'
+    + '@media(max-width:680px){body{padding:12px}h1{font-size:18px}.sub{font-size:12px}table{font-size:12px}th,td{padding:7px 6px}.controls{gap:6px}select{flex:1 1 auto}}'
     + '</style></head><body>'
     + '<h1>SMC scan</h1><div class="sub">Generated ' + ts + ' ET &middot; ' + rows.length + ' scanned' + skipped + ' &middot; auto-reloads every 5 min &middot; not financial advice</div>'
     + brHtml
@@ -370,6 +372,8 @@ function buildReport(rows, errs, exitRows = []) {
     + 'if(!rows.length)h="<tr><td colspan=11 style=\\"padding:16px;text-align:center;color:var(--muted)\\">No setups match these filters.</td></tr>";$("tb").innerHTML=h}'
     + '["f-score","f-sort","f-rr","f-hold","f-lev"].forEach(function(id){$(id).addEventListener("input",render)});render();'
     + '</scr' + 'ipt></body></html>';
+  // Wrap every table in a horizontal-scroll container so wide tables swipe cleanly on phones.
+  return __out.replace(/<table>/g, '<div class="tbl"><table>').replace(/<\/table>/g, '</table></div>');
 }
 
 async function main() {
