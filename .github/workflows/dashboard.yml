@@ -3,7 +3,7 @@ name: dashboard
 # Runs in the cloud on GitHub's servers - independent of any personal computer.
 on:
   schedule:
-    - cron: '*/15 * * * *'   # every 15 minutes (UTC); GitHub cron is best-effort
+    - cron: '*/15 8-23 * * 1-5'   # every 15 min, 08:00-23:59 UTC (≈4am-8pm ET), weekdays — pre-market through after-hours. ~64 deploys/day, safely under Vercel's free 100/day.
   workflow_dispatch:           # lets you run it manually from the Actions tab
 
 concurrency:
