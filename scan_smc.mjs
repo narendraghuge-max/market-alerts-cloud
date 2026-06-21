@@ -96,6 +96,10 @@ function nearestHighAbove(bars, price, s = 2) {
   const hs = pivots(bars, s).highs.map(x => x.p).filter(p => p > price).sort((a, b) => a - b);
   return hs[0] ?? null;
 }
+function nearestLowBelow(bars, price, s = 2) {
+  const ls = pivots(bars, s).lows.map(x => x.p).filter(p => p < price).sort((a, b) => b - a);
+  return ls[0] ?? null;
+}
 
 // Top-down MULTI-TIMEFRAME ICT engine (LONG setups only). Daily/4H/1H bias -> 1H POI
 // -> 15m precise entry. Targets tier 1H=day, 4H=swing, Daily=runner.
@@ -190,6 +194,17 @@ function analyze(symbol, daily, h4, h1, m15) {
   if (T1 <= price) T1 = price + 0.3 * range;
   if (T2 <= T1) T2 = T1 + Math.max(0.5 * (T1 - entry1), 0.4 * range);
   if (T3 <= T2) T3 = T2 + Math.max(0.5 * (T2 - T1), 0.4 * range);
+
+  // ---- Downside liquidity draws (for PUT ideas): mirror of the upside targets ----
+  let D1 = nearestLowBelow(h1, price, 2) ?? (price - 0.5 * range);
+  let D2 = nearestLowBelow(h4, Math.min(price, D1), 2) ?? (D1 - 0.8 * range);
+  let D3 = nearestLowBelow(daily, Math.min(D1, D2), 3) ?? (D2 - 1.0 * range);
+  if (D1 >= price) D1 = price - 0.3 * range;
+  if (D2 >= D1) D2 = D1 - Math.max(0.5 * (price - D1), 0.4 * range);
+  if (D3 >= D2) D3 = D2 - Math.max(0.5 * (D1 - D2), 0.4 * range);
+  const putStop = nearestHighAbove(h1, price, 2) ?? nearestHighAbove(h4, price, 2) ?? (price + 0.5 * range); // bear invalidation: structure high above
+  const atrDaily = atr(daily, 14);
+
   const riskU = Math.max(entry1 - stop, 1e-6);
   const rr1 = (T1 - entry1) / riskU;
 
@@ -226,6 +241,7 @@ function analyze(symbol, daily, h4, h1, m15) {
     levels: {
       entry1: +entry1.toFixed(2), entry2: +entry2.toFixed(2), stop: +stop.toFixed(2),
       tp1: +T1.toFixed(2), tp2: +T2.toFixed(2), tp3: +T3.toFixed(2), rr: +rr1.toFixed(2),
+      dt1: +D1.toFixed(2), dt2: +D2.toFixed(2), dt3: +D3.toFixed(2), putStop: +putStop.toFixed(2), atr: +atrDaily.toFixed(2),
     },
   };
 }

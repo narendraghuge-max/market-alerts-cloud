@@ -53,11 +53,16 @@ function pickTier(chain, type, nowMs, target, score, targetDTE) {
   const expiries = [...new Set(all.map(o => o.expiryMs))].sort((a, b) => a - b);
   const wantMs = nowMs + targetDTE * 864e5;
   const minMs = nowMs + 2 * 864e5;
-  const expiry = expiries.filter(e => e >= minMs).sort((a, b) => Math.abs(a - wantMs) - Math.abs(b - wantMs))[0] || expiries.find(e => e > nowMs);
-  if (!expiry) return null;
+  const cand = expiries.filter(e => e >= minMs).sort((a, b) => Math.abs(a - wantMs) - Math.abs(b - wantMs));
+  // nearest expiry to the target that actually has a tradeable near-the-money quote (skip dead/thin weeklies)
+  let expiry = null, chain2 = null;
+  for (const e of cand) {
+    const cs = all.filter(o => o.expiryMs === e);
+    if (cs.some(o => (o.ask > 0 || o.bid > 0) && Math.abs(o.strike - price) / price <= 0.12)) { expiry = e; chain2 = cs; break; }
+  }
+  if (!expiry) { expiry = cand[0] || expiries.find(e => e > nowMs); chain2 = expiry ? all.filter(o => o.expiryMs === expiry) : null; }
+  if (!expiry || !chain2 || !chain2.length) return null;
   const dte = Math.round((expiry - nowMs) / 864e5);
-  const chain2 = all.filter(o => o.expiryMs === expiry);
-  if (!chain2.length) return null;
   const atm = chain2.slice().sort((a, b) => Math.abs(a.strike - price) - Math.abs(b.strike - price))[0];
   const iv = (atm && atm.iv > 0) ? atm.iv : 0.5;
   const EM = price * iv * Math.sqrt(dte / 365);
@@ -76,8 +81,9 @@ function pickTier(chain, type, nowMs, target, score, targetDTE) {
   }
   let side = type === 'C' ? chain2.filter(o => o.strike >= price) : chain2.filter(o => o.strike <= price);
   if (!side.length) side = chain2;
-  const liquid = side.filter(o => (o.oi || 0) >= 25);
-  const pool = liquid.length ? liquid : side;
+  const liquid = side.filter(o => (o.oi || 0) >= 25 && (o.ask > 0 || o.bid > 0));
+  const quoted = side.filter(o => o.ask > 0 || o.bid > 0);
+  const pool = liquid.length ? liquid : (quoted.length ? quoted : side);
   pool.sort((a, b) => Math.abs(a.strike - desired) - Math.abs(b.strike - desired));
   const top = pool[0];
   if (!top) return null;
@@ -97,10 +103,19 @@ function pickTier(chain, type, nowMs, target, score, targetDTE) {
 }
 
 const TIERS = [
-  { key: 'day', label: 'Day', dte: 7 },
-  { key: 'swing', label: 'Swing', dte: 30 },
-  { key: 'runner', label: 'Runner', dte: 90 },
+  { key: 'day', label: 'Day', lo: 4, hi: 21 },
+  { key: 'swing', label: 'Swing', lo: 14, hi: 75 },
+  { key: 'runner', label: 'Runner', lo: 35, hi: 250 },
 ];
+// Expiry sized to price action: estimate calendar days to reach a target as
+// (distance / daily-ATR) trading days, buffered for meandering and converted to
+// calendar days, clamped into the tier's range. Falls back to the tier midpoint.
+function dteFromATR(distance, atr, lo, hi) {
+  if (!atr || atr <= 0 || !(distance > 0)) return Math.round((lo + hi) / 2);
+  const tradingDays = distance / atr;
+  const calDays = Math.round(tradingDays * 2.5 * 1.4); // x2.5 meander buffer, x1.4 trading->calendar
+  return Math.max(lo, Math.min(hi, calDays));
+}
 
 export async function buildOptionsIdeas(ok, nowMs, n = 4) {
   const bullish = ok.filter(r => !r.leveraged && r.direction !== 'short' && (r.action === 'BUY' || r.action === 'ACCUMULATE' || r.score >= 5)).slice(0, n);
@@ -109,19 +124,27 @@ export async function buildOptionsIdeas(ok, nowMs, n = 4) {
   for (const r of bullish) {
     const L = r.levels || {};
     const ch = await fetchChain(r.symbol);
+    const price = ch ? ch.price : r.price;
     const tiers = {};
     for (const t of TIERS) {
       const tgt = t.key === 'day' ? L.tp1 : t.key === 'swing' ? L.tp2 : L.tp3;
-      tiers[t.key] = ch ? pickTier(ch, 'C', nowMs, tgt, r.score, t.dte) : null;
+      const dte = dteFromATR(Math.abs((tgt || price) - price), L.atr, t.lo, t.hi);
+      tiers[t.key] = ch ? pickTier(ch, 'C', nowMs, tgt, r.score, dte) : null;
     }
-    calls.push({ sym: r.symbol, score: r.score, grade: r.grade, action: r.action, invalid: L.stop, targets: { tp1: L.tp1, tp2: L.tp2, tp3: L.tp3 }, etf: etfFor(r.symbol).bull, tiers });
+    calls.push({ sym: r.symbol, score: r.score, grade: r.grade, action: r.action, invalid: L.stop, targets: { day: L.tp1, swing: L.tp2, runner: L.tp3 }, etf: etfFor(r.symbol).bull, tiers });
     await new Promise(z => setTimeout(z, 100));
   }
   for (const r of bearish) {
+    const L = r.levels || {};
     const ch = await fetchChain(r.symbol);
+    const price = ch ? ch.price : r.price;
     const tiers = {};
-    for (const t of TIERS) tiers[t.key] = ch ? pickTier(ch, 'P', nowMs, null, r.score, t.dte) : null;
-    puts.push({ sym: r.symbol, score: r.score, grade: r.grade, etf: etfFor(r.symbol).bear, tiers });
+    for (const t of TIERS) {
+      const tgt = t.key === 'day' ? L.dt1 : t.key === 'swing' ? L.dt2 : L.dt3;
+      const dte = dteFromATR(Math.abs(price - (tgt || price)), L.atr, t.lo, t.hi);
+      tiers[t.key] = ch ? pickTier(ch, 'P', nowMs, tgt, r.score, dte) : null;
+    }
+    puts.push({ sym: r.symbol, score: r.score, grade: r.grade, invalid: L.putStop, targets: { day: L.dt1, swing: L.dt2, runner: L.dt3 }, etf: etfFor(r.symbol).bear, tiers });
     await new Promise(z => setTimeout(z, 100));
   }
   return { calls, puts };
@@ -134,14 +157,12 @@ export function renderOptionsHtml(optIdeas) {
   let html = '<h2 style="font-size:16px;font-weight:600;margin:18px 0 6px">Recommended options <span style="font-size:12px;font-weight:400;color:var(--muted)">(Day / Swing / Runner &mdash; high-risk, confirm live pricing, not advice)</span></h2>';
   const tierRows = (idea, isCall) => TIERS.map((t, i) => {
     const c = idea.tiers ? idea.tiers[t.key] : null;
-    const tgt = isCall ? (idea.targets || {})[t.key === 'day' ? 'tp1' : t.key === 'swing' ? 'tp2' : 'tp3'] : null;
+    const tgt = (idea.targets || {})[t.key];
     const col = isCall ? '#16a34a' : '#dc2626';
     const symCell = i === 0 ? '<b>' + esc(idea.sym) + '</b><div style="font-size:11px;color:var(--muted)">' + idea.score + '/8 ' + esc(idea.grade || '-') + '</div>' : '';
     const contract = c ? ('$' + c.strike + ' <span style="color:var(--muted)">(' + c.otmPct + '% OTM)</span> &middot; ' + c.expiry + ' &middot; ' + c.dte + 'd' + (c.iv ? ' &middot; IV' + c.iv + '%' : '')) : '<span style="color:var(--muted)">n/a</span>';
     const greeks = c ? ('&Delta;' + (c.delta != null ? c.delta : '-') + (c.theta != null ? ' &middot; &theta;' + c.theta : '')) : '';
-    const exit = isCall
-      ? ((tgt ? 'take @ $' + tgt : '') + (idea.invalid ? ' &middot; stop @ $' + idea.invalid : '') || '&mdash;')
-      : 'take +50-100% &middot; stop -50%';
+    const exit = ((tgt ? 'take @ $' + tgt : '') + (idea.invalid ? ' &middot; stop @ $' + idea.invalid : '')) || '&mdash;';
     return '<tr>'
       + '<td style="border-top:' + (i === 0 ? '2px solid var(--line)' : 'none') + '">' + symCell + '</td>'
       + '<td style="font-size:12px;border-top:' + (i === 0 ? '2px solid var(--line)' : 'none') + '"><b style="color:' + col + '">' + t.label + '</b>' + (tgt ? ' <span style="color:var(--muted)">&rarr; $' + tgt + '</span>' : '') + '</td>'
@@ -154,7 +175,7 @@ export function renderOptionsHtml(optIdeas) {
   const callBlocks = oi.calls.map(c => tierRows(c, true)).join('');
   const putBlocks = oi.puts.map(p => tierRows(p, false)).join('');
   if (callBlocks || putBlocks) {
-    html += '<div class="sub">Each setup = 3 horizons: <b>Day</b> (TP1, ~1wk) &middot; <b>Swing</b> (TP2, ~1mo) &middot; <b>Runner</b> (TP3, ~3mo), each with its own expiry + OTM strike. &Delta; = directional exposure, &theta; = daily time-decay ($/contract-share). "Exit" = underlying levels to close the option (calls) or premium rules (puts). Options can expire worthless.</div>';
+    html += '<div class="sub">3 horizons per setup, each anchored to a liquidity draw: <b>Day</b> = 1H, <b>Swing</b> = 4H, <b>Runner</b> = Daily. Strike = OTM toward that target; <b>expiry is ATR-sized</b> (how long price needs to reach the target at its average range). Calls aim at buy-side liquidity above; puts at sell-side liquidity below. &Delta; = directional exposure, &theta; = daily decay. "Exit" = close when the underlying tags take/stop. Options can expire worthless.</div>';
     html += '<table><thead><tr><th>Symbol</th><th>Horizon &rarr; target</th><th>Suggested contract</th><th class="r">~Prem</th><th>Greeks</th><th>Exit</th></tr></thead><tbody>';
     if (oi.calls.length) html += '<tr><td colspan="6" style="font-weight:600;color:#16a34a;background:rgba(22,163,74,0.06)">CALLS &mdash; bullish setups</td></tr>' + callBlocks;
     if (oi.puts.length) html += '<tr><td colspan="6" style="font-weight:600;color:#dc2626;background:rgba(220,38,38,0.06)">PUTS &mdash; bearish (downtrend) names</td></tr>' + putBlocks;
