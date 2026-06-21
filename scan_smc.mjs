@@ -320,6 +320,8 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
   }
   // Recommended options (Day/Swing/Runner tiers) - rendered by the shared module.
   const optHtml = renderOptionsHtml(optIdeas);
+  // collapsible section: turn a section's leading <h2> into a tappable <summary>
+  const sec = (html, open) => { const m = html.match(/^\s*<h2[^>]*>([\s\S]*?)<\/h2>([\s\S]*)$/); return m ? '<details class="sec"' + (open ? ' open' : '') + '><summary>' + m[1] + '</summary>' + m[2] + '</details>' : html; };
   const __out = '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
     + '<meta http-equiv="refresh" content="300"><title>SMC scan</title><style>'
     + ':root{--bg:#fff;--fg:#1a1a1a;--muted:#6b7280;--line:#e5e7eb}'
@@ -335,20 +337,22 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     + '.tag{font-size:11px;padding:1px 5px;border-radius:5px;margin-left:4px;border:1px solid}footer{margin-top:16px;color:var(--muted);font-size:12px}'
     + '.tbl{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;margin-bottom:4px}'
     + '@media(max-width:680px){body{padding:12px}h1{font-size:18px}.sub{font-size:12px}table{font-size:12px}th,td{padding:7px 6px}.controls{gap:6px}select{flex:1 1 auto}}'
+    + '.sec{border-top:1px solid var(--line)}.sec>summary{cursor:pointer;list-style:none;font-size:16px;font-weight:600;padding:13px 2px;display:flex;align-items:center;gap:8px;-webkit-user-select:none;user-select:none}.sec>summary::-webkit-details-marker{display:none}.sec>summary::before{content:"\\25B8";color:var(--muted);font-weight:400}.sec[open]>summary::before{content:"\\25BE"}.sec>summary span{font-weight:400}.sec[open]{padding-bottom:10px}'
     + '</style></head><body>'
     + '<h1>SMC scan</h1><div class="sub">Generated ' + ts + ' ET &middot; ' + rows.length + ' scanned' + skipped + ' &middot; auto-reloads every 5 min &middot; not financial advice</div>'
-    + brHtml
-    + evHtml
-    + hlHtml
-    + exHtml
-    + optHtml
-    + '<h2 style="font-size:16px;font-weight:600;margin:22px 0 6px">Buy scan</h2>'
+    + sec(brHtml, true)
+    + sec(evHtml, false)
+    + sec(hlHtml, false)
+    + sec(exHtml, true)
+    + sec(optHtml, false)
+    + '<details class="sec"><summary>Buy scan</summary>'
     + '<div class="controls">'
     + '<select id="f-score"><option value="5">Actionable (score &ge; 5)</option><option value="7">Buy only (&ge; 7)</option><option value="3">Watch &amp; up (&ge; 3)</option><option value="0">All</option></select>'
     + '<select id="f-sort"><option value="score">Sort: score</option><option value="rr">Sort: reward/risk</option><option value="price">Sort: price</option><option value="sym">Sort: symbol</option></select>'
     + '<label><input type="checkbox" id="f-rr">R &ge; 2</label><label><input type="checkbox" id="f-hold">My holdings</label><label><input type="checkbox" id="f-lev">Hide leveraged</label>'
     + '</div><div id="count"></div>'
     + '<table><thead><tr><th>Symbol</th><th>Score</th><th title="A=Daily/4H/1H all aligned, B=2 aligned, C=weak">Grade</th><th title="overall trend (info only - setups are long)">Trend</th><th>Action</th><th class="r">Price</th><th class="r">Entry zone</th><th class="r">Stop</th><th class="r">TP1 day &middot; TP2 swing &middot; TP3 run</th><th class="r">R</th><th>Basis (why)</th></tr></thead><tbody id="tb"></tbody></table>'
+    + '</details>'
     + '<footer>HOLD = you own it &middot; LEV = leveraged ETF, tactical only (decay) &middot; mechanical heuristics, confirm on chart &middot; nothing places orders</footer>'
     + '<script>var DATA=' + data + ';'
     + 'var $=function(id){return document.getElementById(id)};'
