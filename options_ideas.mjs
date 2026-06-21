@@ -1,9 +1,9 @@
-// Recommended directional options ideas derived from the SMC buy-scan results.
-// Calls on the strongest bullish setups, puts on the most bearish (DOWN) names.
-// Uses CBOE's free delayed options feed (no API key). Decision-support only.
+// Directional options ideas from the SMC scan, with DAY / SWING / RUNNER tiers.
+// Each tier gets its own expiry (~1wk / ~1mo / ~3mo) and an OTM strike anchored to
+// that tier's scan target (TP1 day / TP2 swing / TP3 runner), scaled by conviction
+// and capped by the implied-move. Includes greeks + exit levels.
+// Data: CBOE free delayed options feed (no key). Decision-support only, never advice.
 
-// underlying ticker -> matching leveraged ETF play (bull for calls, bear for puts).
-// Single-stock 2x where it exists, else the sector/index proxy.
 const ETF = {
   NVDA: { bull: 'NVDU (2x)', bear: 'NVDD (2x)' },
   AAPL: { bull: 'AAPU (2x)', bear: '' },
@@ -13,7 +13,6 @@ const ETF = {
   META: { bull: 'METU (2x)', bear: '' },
   SPCX: { bull: 'SPCH (2x)', bear: 'SSPC (2x)' },
 };
-// sector fallback by membership
 const SEMIS = new Set(['NVDA', 'AVGO', 'AMD', 'TSM', 'MU', 'AMAT', 'LRCX', 'SMCI', 'SMH', 'ARM', 'MRVL', 'ASML']);
 const BIGTECH = new Set(['PLTR', 'MSFT', 'GOOGL', 'META', 'AMZN', 'SNOW', 'CRWD', 'TSLA', 'AAPL', 'NFLX', 'ORCL', 'ANET', 'QQQ', 'XLK']);
 const ENERGY = new Set(['XOM', 'CVX', 'OXY', 'SLB', 'COP', 'XLE']);
@@ -40,46 +39,41 @@ async function fetchChain(sym) {
     if (!r.ok) return null;
     const d = (await r.json()).data;
     if (!d || !d.options || !d.current_price) return null;
-    const price = d.current_price;
-    const opts = d.options.map(o => { const p = parseOcc(o.option); return p ? { ...p, bid: o.bid, ask: o.ask, iv: o.iv, delta: o.delta, oi: o.open_interest, vol: o.volume } : null; }).filter(Boolean);
-    return { price, opts };
+    const opts = d.options.map(o => { const p = parseOcc(o.option); return p ? { ...p, bid: o.bid, ask: o.ask, iv: o.iv, delta: o.delta, theta: o.theta, oi: o.open_interest } : null; }).filter(Boolean);
+    return { price: d.current_price, opts };
   } catch (e) { return null; }
 }
 
-// Adaptive OTM strike: sized to the setup's target (calls) or the implied-vol
-// expected move (puts), then scaled by conviction (higher score -> further OTM).
-// ~30-45 DTE, liquidity floor so the quote is tradable.
-function pick(chain, type, nowMs, info = {}) {
+// Adaptive OTM strike for a given horizon: anchor to `target` (or implied move if
+// no target), scaled by conviction, capped at 1.25x the implied move; pick the
+// nearest liquid listed strike on the OTM side at the expiry closest to targetDTE.
+function pickTier(chain, type, nowMs, target, score, targetDTE) {
   const price = chain.price;
   const all = chain.opts.filter(o => o.type === type);
   const expiries = [...new Set(all.map(o => o.expiryMs))].sort((a, b) => a - b);
-  const targetMs = nowMs + 35 * 864e5;
-  const expiry = expiries.filter(e => e - nowMs >= 14 * 864e5).sort((a, b) => Math.abs(a - targetMs) - Math.abs(b - targetMs))[0] || expiries.find(e => e > nowMs);
+  const wantMs = nowMs + targetDTE * 864e5;
+  const minMs = nowMs + 2 * 864e5;
+  const expiry = expiries.filter(e => e >= minMs).sort((a, b) => Math.abs(a - wantMs) - Math.abs(b - wantMs))[0] || expiries.find(e => e > nowMs);
   if (!expiry) return null;
   const dte = Math.round((expiry - nowMs) / 864e5);
   const chain2 = all.filter(o => o.expiryMs === expiry);
   if (!chain2.length) return null;
-  // expected move from at-the-money implied volatility over the holding period
   const atm = chain2.slice().sort((a, b) => Math.abs(a.strike - price) - Math.abs(b.strike - price))[0];
   const iv = (atm && atm.iv > 0) ? atm.iv : 0.5;
   const EM = price * iv * Math.sqrt(dte / 365);
-  // conviction: stronger setups push the strike further OTM (more leverage)
-  const sc = info.score || 5;
-  const cf = sc >= 8 ? 0.65 : sc >= 7 ? 0.55 : sc >= 5 ? 0.42 : 0.32;
+  const cf = score >= 8 ? 0.65 : score >= 7 ? 0.55 : score >= 5 ? 0.42 : 0.32;
   let desired;
   if (type === 'C') {
-    const tgt = (info.target && info.target > price) ? info.target : price + EM; // anchor to swing target if we have it
+    const tgt = (target && target > price) ? target : price + EM;
     desired = price + cf * (tgt - price);
     if (!(desired > price)) desired = price + 0.3 * EM;
+    desired = Math.min(desired, price + 1.25 * EM);
   } else {
-    const tgt = (info.target && info.target > 0 && info.target < price) ? info.target : price - EM;
+    const tgt = (target && target > 0 && target < price) ? target : price - EM;
     desired = price - cf * (price - tgt);
     if (!(desired < price)) desired = price - 0.3 * EM;
+    desired = Math.max(desired, price - 1.25 * EM);
   }
-  // predictive guardrail: keep the strike within ~1.25x the implied move (don't chase a far target into a lottery strike)
-  const maxOff = 1.25 * EM;
-  desired = type === 'C' ? Math.min(desired, price + maxOff) : Math.max(desired, price - maxOff);
-  // nearest listed strike on the OTM side to the desired level, with a liquidity floor
   let side = type === 'C' ? chain2.filter(o => o.strike >= price) : chain2.filter(o => o.strike <= price);
   if (!side.length) side = chain2;
   const liquid = side.filter(o => (o.oi || 0) >= 25);
@@ -92,30 +86,83 @@ function pick(chain, type, nowMs, info = {}) {
     strike: top.strike,
     expiry: new Date(expiry).toISOString().slice(0, 10),
     dte,
+    otmPct: +Math.abs((top.strike - price) / price * 100).toFixed(1),
     premium: +mid.toFixed(2),
     breakeven: +(type === 'C' ? top.strike + mid : top.strike - mid).toFixed(2),
     iv: top.iv ? +(top.iv * 100).toFixed(0) : null,
+    delta: top.delta != null ? +Math.abs(top.delta).toFixed(2) : null,
+    theta: top.theta != null ? +top.theta.toFixed(2) : null,
     oi: top.oi || 0,
-    otmPct: +Math.abs((top.strike - price) / price * 100).toFixed(1),
   };
 }
 
-export async function buildOptionsIdeas(ok, nowMs, n = 6) {
-  // options only on regular underlyings (never on 2x/3x leveraged or inverse ETFs - confusing/illiquid)
-  const bullish = ok.filter(r => !r.leveraged && r.dir !== 'short' && (r.action === 'BUY' || r.action === 'ACCUMULATE' || r.score >= 5)).slice(0, n);
-  const bearish = ok.filter(r => !r.leveraged && r.dir === 'short').sort((a, b) => b.score - a.score).slice(0, n);
+const TIERS = [
+  { key: 'day', label: 'Day', dte: 7 },
+  { key: 'swing', label: 'Swing', dte: 30 },
+  { key: 'runner', label: 'Runner', dte: 90 },
+];
+
+export async function buildOptionsIdeas(ok, nowMs, n = 4) {
+  const bullish = ok.filter(r => !r.leveraged && r.direction !== 'short' && (r.action === 'BUY' || r.action === 'ACCUMULATE' || r.score >= 5)).slice(0, n);
+  const bearish = ok.filter(r => !r.leveraged && r.direction === 'short').sort((a, b) => b.score - a.score).slice(0, n);
   const calls = [], puts = [];
   for (const r of bullish) {
+    const L = r.levels || {};
     const ch = await fetchChain(r.symbol);
-    const c = ch ? pick(ch, 'C', nowMs, { target: r.tp2, score: r.score }) : null;
-    calls.push({ sym: r.symbol, score: r.score, grade: r.grade, action: r.action, target: r.tp2, invalid: r.stop, etf: etfFor(r.symbol).bull, contract: c });
+    const tiers = {};
+    for (const t of TIERS) {
+      const tgt = t.key === 'day' ? L.tp1 : t.key === 'swing' ? L.tp2 : L.tp3;
+      tiers[t.key] = ch ? pickTier(ch, 'C', nowMs, tgt, r.score, t.dte) : null;
+    }
+    calls.push({ sym: r.symbol, score: r.score, grade: r.grade, action: r.action, invalid: L.stop, targets: { tp1: L.tp1, tp2: L.tp2, tp3: L.tp3 }, etf: etfFor(r.symbol).bull, tiers });
     await new Promise(z => setTimeout(z, 100));
   }
   for (const r of bearish) {
     const ch = await fetchChain(r.symbol);
-    const p = ch ? pick(ch, 'P', nowMs, { score: r.score }) : null;
-    puts.push({ sym: r.symbol, score: r.score, grade: r.grade, etf: etfFor(r.symbol).bear, contract: p });
+    const tiers = {};
+    for (const t of TIERS) tiers[t.key] = ch ? pickTier(ch, 'P', nowMs, null, r.score, t.dte) : null;
+    puts.push({ sym: r.symbol, score: r.score, grade: r.grade, etf: etfFor(r.symbol).bear, tiers });
     await new Promise(z => setTimeout(z, 100));
   }
   return { calls, puts };
+}
+
+// Renders the dashboard "Recommended options" section (shared by local + cloud).
+export function renderOptionsHtml(optIdeas) {
+  const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const oi = optIdeas || { calls: [], puts: [] };
+  let html = '<h2 style="font-size:16px;font-weight:600;margin:18px 0 6px">Recommended options <span style="font-size:12px;font-weight:400;color:var(--muted)">(Day / Swing / Runner &mdash; high-risk, confirm live pricing, not advice)</span></h2>';
+  const tierRows = (idea, isCall) => TIERS.map((t, i) => {
+    const c = idea.tiers ? idea.tiers[t.key] : null;
+    const tgt = isCall ? (idea.targets || {})[t.key === 'day' ? 'tp1' : t.key === 'swing' ? 'tp2' : 'tp3'] : null;
+    const col = isCall ? '#16a34a' : '#dc2626';
+    const symCell = i === 0 ? '<b>' + esc(idea.sym) + '</b><div style="font-size:11px;color:var(--muted)">' + idea.score + '/8 ' + esc(idea.grade || '-') + '</div>' : '';
+    const contract = c ? ('$' + c.strike + ' <span style="color:var(--muted)">(' + c.otmPct + '% OTM)</span> &middot; ' + c.expiry + ' &middot; ' + c.dte + 'd' + (c.iv ? ' &middot; IV' + c.iv + '%' : '')) : '<span style="color:var(--muted)">n/a</span>';
+    const greeks = c ? ('&Delta;' + (c.delta != null ? c.delta : '-') + (c.theta != null ? ' &middot; &theta;' + c.theta : '')) : '';
+    const exit = isCall
+      ? ((tgt ? 'take @ $' + tgt : '') + (idea.invalid ? ' &middot; stop @ $' + idea.invalid : '') || '&mdash;')
+      : 'take +50-100% &middot; stop -50%';
+    return '<tr>'
+      + '<td style="border-top:' + (i === 0 ? '2px solid var(--line)' : 'none') + '">' + symCell + '</td>'
+      + '<td style="font-size:12px;border-top:' + (i === 0 ? '2px solid var(--line)' : 'none') + '"><b style="color:' + col + '">' + t.label + '</b>' + (tgt ? ' <span style="color:var(--muted)">&rarr; $' + tgt + '</span>' : '') + '</td>'
+      + '<td style="font-size:12px;border-top:' + (i === 0 ? '2px solid var(--line)' : 'none') + '">' + contract + '</td>'
+      + '<td class="r" style="border-top:' + (i === 0 ? '2px solid var(--line)' : 'none') + '">' + (c && c.premium ? '$' + c.premium : '&mdash;') + '</td>'
+      + '<td style="font-size:11px;color:var(--muted);border-top:' + (i === 0 ? '2px solid var(--line)' : 'none') + '">' + greeks + '</td>'
+      + '<td style="font-size:11px;color:var(--muted);border-top:' + (i === 0 ? '2px solid var(--line)' : 'none') + '">' + exit + '</td>'
+      + '</tr>';
+  }).join('');
+  const callBlocks = oi.calls.map(c => tierRows(c, true)).join('');
+  const putBlocks = oi.puts.map(p => tierRows(p, false)).join('');
+  if (callBlocks || putBlocks) {
+    html += '<div class="sub">Each setup = 3 horizons: <b>Day</b> (TP1, ~1wk) &middot; <b>Swing</b> (TP2, ~1mo) &middot; <b>Runner</b> (TP3, ~3mo), each with its own expiry + OTM strike. &Delta; = directional exposure, &theta; = daily time-decay ($/contract-share). "Exit" = underlying levels to close the option (calls) or premium rules (puts). Options can expire worthless.</div>';
+    html += '<table><thead><tr><th>Symbol</th><th>Horizon &rarr; target</th><th>Suggested contract</th><th class="r">~Prem</th><th>Greeks</th><th>Exit</th></tr></thead><tbody>';
+    if (oi.calls.length) html += '<tr><td colspan="6" style="font-weight:600;color:#16a34a;background:rgba(22,163,74,0.06)">CALLS &mdash; bullish setups</td></tr>' + callBlocks;
+    if (oi.puts.length) html += '<tr><td colspan="6" style="font-weight:600;color:#dc2626;background:rgba(220,38,38,0.06)">PUTS &mdash; bearish (downtrend) names</td></tr>' + putBlocks;
+    html += '</tbody></table>';
+    const alts = oi.calls.concat(oi.puts).filter(x => x.etf).map(x => esc(x.sym) + '&rarr;' + esc(x.etf));
+    if (alts.length) html += '<div class="sub">Leveraged ETF alternatives (same-direction): ' + alts.join(' &middot; ') + '</div>';
+  } else {
+    html += '<div class="sub">No high-conviction options ideas right now (no qualifying bullish/bearish setups in the latest scan).</div>';
+  }
+  return html;
 }

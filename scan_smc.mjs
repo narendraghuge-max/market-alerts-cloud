@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 const __reportDir = dirname(fileURLToPath(import.meta.url));
 import { analyzeExit as analyzeExitH, HOLDINGS as EXIT_HOLDINGS, RANK as EXIT_RANK, exitOne } from './scan_exits.mjs';
-import { buildOptionsIdeas } from './options_ideas.mjs';
+import { buildOptionsIdeas, renderOptionsHtml } from './options_ideas.mjs';
 
 const HOLDINGS = new Set(Object.keys(EXIT_HOLDINGS)); // derived from holdings secret (single source of truth)
 const LEVERAGED = new Set(['SOXL','SOXS','NVDU','NVDD','TECL','TECS','WEBL','WEBS','TQQQ','SQQQ','SPXL','SPXS','TNA','TZA','ERX','ERY','GUSH','DRIP','AAPU','MSFU','AMZU','GGLL','METU','SPCH','SSPC']);
@@ -318,19 +318,8 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
         + '<td style="font-size:11px;color:var(--muted);max-width:340px;line-height:1.45">' + esc(r.basis || '') + '</td></tr>').join('')
       + '</tbody></table>';
   }
-  // Recommended options (from the scan): calls on bullish setups, puts on bearish names.
-  let optHtml = '<h2 style="font-size:16px;font-weight:600;margin:18px 0 6px">Recommended options <span style="font-size:12px;font-weight:400;color:var(--muted)">(from the scan &mdash; high-risk, confirm live pricing, not advice)</span></h2>';
-  const _oi = optIdeas || { calls: [], puts: [] };
-  const fmtC = c => c ? ('$' + c.strike + (c.otmPct ? ' (' + c.otmPct + '% OTM)' : '') + ' &middot; exp ' + c.expiry + ' (' + c.dte + 'd' + (c.iv ? ', IV ' + c.iv + '%' : '') + ')') : '<span style="color:var(--muted)">no listed options yet</span>';
-  const optRows = [];
-  for (const c of _oi.calls) optRows.push('<tr><td style="color:#16a34a;font-weight:700;white-space:nowrap">BUY CALL</td><td><b>' + esc(c.sym) + '</b></td><td style="font-size:12px">' + c.score + '/8 ' + esc(c.grade || '-') + ' &middot; ' + esc(c.action) + '</td><td style="font-size:12px">' + fmtC(c.contract) + '</td><td class="r">' + (c.contract && c.contract.premium ? '$' + c.contract.premium : '&mdash;') + '</td><td class="r" style="color:var(--muted)">' + (c.contract ? c.contract.breakeven : '&mdash;') + '</td><td style="font-size:12px;color:var(--muted)">' + (c.target ? 'target ' + c.target : '') + (c.invalid ? ' &middot; invalid &lt;' + c.invalid : '') + '</td><td style="font-size:12px">' + esc(c.etf || '&mdash;') + '</td></tr>');
-  for (const p of _oi.puts) optRows.push('<tr><td style="color:#dc2626;font-weight:700;white-space:nowrap">BUY PUT</td><td><b>' + esc(p.sym) + '</b></td><td style="font-size:12px">' + p.score + '/8 ' + esc(p.grade || '-') + ' &middot; downtrend</td><td style="font-size:12px">' + fmtC(p.contract) + '</td><td class="r">' + (p.contract && p.contract.premium ? '$' + p.contract.premium : '&mdash;') + '</td><td class="r" style="color:var(--muted)">' + (p.contract ? p.contract.breakeven : '&mdash;') + '</td><td style="font-size:12px;color:var(--muted)">bearish structure</td><td style="font-size:12px">' + esc(p.etf || '&mdash;') + '</td></tr>');
-  if (optRows.length) {
-    optHtml += '<div class="sub">Calls = bullish setups &middot; Puts = bearish (downtrend) names &middot; ~35-day, OTM strikes sized to the setup target &amp; implied move (stronger setups reach further OTM). Options decay with time and can expire worthless; the "leveraged alt" is a same-direction ETF play.</div>'
-      + '<table><thead><tr><th>Idea</th><th>Symbol</th><th>Setup</th><th>Suggested contract</th><th class="r">~Premium</th><th class="r">Breakeven</th><th>Scan levels</th><th>Leveraged alt</th></tr></thead><tbody>' + optRows.join('') + '</tbody></table>';
-  } else {
-    optHtml += '<div class="sub">No high-conviction options ideas right now (no qualifying bullish/bearish setups in the latest scan).</div>';
-  }
+  // Recommended options (Day/Swing/Runner tiers) - rendered by the shared module.
+  const optHtml = renderOptionsHtml(optIdeas);
   const __out = '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
     + '<meta http-equiv="refresh" content="300"><title>SMC scan</title><style>'
     + ':root{--bg:#fff;--fg:#1a1a1a;--muted:#6b7280;--line:#e5e7eb}'
