@@ -83,20 +83,27 @@ function pickTier(chain, type, nowMs, target, score, targetDTE) {
   const atm = chain2.slice().sort((a, b) => Math.abs(a.strike - price) - Math.abs(b.strike - price))[0];
   const iv = (atm && atm.iv > 0) ? atm.iv : 0.5;
   const EM = price * iv * Math.sqrt(dte / 365);
-  const cf = score >= 8 ? 0.65 : score >= 7 ? 0.55 : score >= 5 ? 0.42 : 0.32;
-  let desired;
+  const cf = score >= 8 ? 0.6 : score >= 7 ? 0.5 : score >= 5 ? 0.4 : 0.3;
+  // Anchor the strike so the take-target prints IN-the-money: a call strike must sit
+  // AT or BELOW the target (a put AT or ABOVE it) — otherwise the option is still OTM
+  // when the target hits and you'd sell for less than you paid. Aim partway from spot
+  // to the target (conviction-scaled) and hard-cap on the in-the-money side of it.
+  // tgtUsed = the structural scan target when it's a real directional draw (above spot
+  // for calls / below for puts), else fall back to the implied move. Everything below
+  // (strike cap, displayed target, exit premium) keys off this one value, so they stay
+  // consistent and the option is always in-the-money when the target prints.
+  let desired, side, tgtUsed;
   if (type === 'C') {
-    const tgt = (target && target > price) ? target : price + EM;
-    desired = price + cf * (tgt - price);
-    if (!(desired > price)) desired = price + 0.3 * EM;
-    desired = Math.min(desired, price + 1.25 * EM);
+    tgtUsed = (target && target > price) ? target : price + EM;
+    desired = Math.max(price - 0.4 * EM, Math.min(price + cf * (tgtUsed - price), tgtUsed));
+    side = chain2.filter(o => o.strike <= tgtUsed && o.strike >= price - 0.6 * EM);
+    if (!side.length) side = chain2.filter(o => o.strike <= tgtUsed);
   } else {
-    const tgt = (target && target > 0 && target < price) ? target : price - EM;
-    desired = price - cf * (price - tgt);
-    if (!(desired < price)) desired = price - 0.3 * EM;
-    desired = Math.max(desired, price - 1.25 * EM);
+    tgtUsed = (target && target > 0 && target < price) ? target : price - EM;
+    desired = Math.min(price + 0.4 * EM, Math.max(price - cf * (price - tgtUsed), tgtUsed));
+    side = chain2.filter(o => o.strike >= tgtUsed && o.strike <= price + 0.6 * EM);
+    if (!side.length) side = chain2.filter(o => o.strike >= tgtUsed);
   }
-  let side = type === 'C' ? chain2.filter(o => o.strike >= price) : chain2.filter(o => o.strike <= price);
   if (!side.length) side = chain2;
   const liquid = side.filter(o => (o.oi || 0) >= 25 && (o.ask > 0 || o.bid > 0));
   const quoted = side.filter(o => o.ask > 0 || o.bid > 0);
@@ -105,18 +112,20 @@ function pickTier(chain, type, nowMs, target, score, targetDTE) {
   const top = pool[0];
   if (!top) return null;
   const mid = (top.bid > 0 && top.ask > 0) ? (top.bid + top.ask) / 2 : (top.ask || top.bid || 0);
-  // Projected SELL premium if the underlying tags `target`. Assume the move lands
-  // around mid-horizon (~60% of time-to-expiry still left) — a conservative, fillable
-  // limit-sell anchor rather than an instant-spike best case. exitMult = sell/entry.
+  // Projected SELL premium if the underlying tags `target`. Assume the target prints
+  // around a third of the way through the horizon (~70% of time-to-expiry still left)
+  // — a realistic, fillable limit-sell anchor, not an instant-spike best case.
+  // If no listed strike sits on the in-the-money side of the target (weak/late setup),
+  // clamp the effective target to the chosen strike so it's never below it — the exit
+  // then prices at-the-money and the multiple honestly goes <1x (red = skip / use ETF).
+  const effTarget = type === 'C' ? Math.max(tgtUsed, top.strike) : Math.min(tgtUsed, top.strike);
   const sigma = (top.iv && top.iv > 0) ? top.iv : iv;
-  let exitPrem = null, exitMult = null;
-  if (target && target > 0 && ((type === 'C' && target > price) || (type === 'P' && target < price))) {
-    const tRemain = Math.max(1, dte * 0.6) / 365;
-    exitPrem = +bsPrice(type, target, top.strike, tRemain, sigma).toFixed(2);
-    if (mid > 0) exitMult = +(exitPrem / mid).toFixed(1);
-  }
+  const tRemain = Math.max(1, dte * 0.7) / 365;
+  const exitPrem = +bsPrice(type, effTarget, top.strike, tRemain, sigma).toFixed(2);
+  const exitMult = mid > 0 ? +(exitPrem / mid).toFixed(1) : null;
   return {
     strike: top.strike,
+    target: +effTarget.toFixed(2),
     expiry: new Date(expiry).toISOString().slice(0, 10),
     dte,
     otmPct: +Math.abs((top.strike - price) / price * 100).toFixed(1),
@@ -186,7 +195,7 @@ export function renderOptionsHtml(optIdeas) {
   let html = '<h2 style="font-size:16px;font-weight:600;margin:18px 0 6px">Recommended options <span style="font-size:12px;font-weight:400;color:var(--muted)">(Day / Swing / Runner &mdash; high-risk, confirm live pricing, not advice)</span></h2>';
   const tierRows = (idea, isCall) => TIERS.map((t, i) => {
     const c = idea.tiers ? idea.tiers[t.key] : null;
-    const tgt = (idea.targets || {})[t.key];
+    const tgt = c ? c.target : (idea.targets || {})[t.key];
     const col = isCall ? '#16a34a' : '#dc2626';
     const bt = i === 0 ? '2px solid var(--line)' : 'none';
     const td = (inner, extra) => '<td style="border-top:' + bt + ';' + (extra || '') + '">' + inner + '</td>';
