@@ -44,6 +44,23 @@ async function fetchChain(sym) {
   } catch (e) { return null; }
 }
 
+// Lightweight Black-Scholes (rates=0) used to project what the contract is worth
+// if the underlying tags the take-target — i.e. a sensible limit-SELL anchor.
+function ncdf(x) {
+  const s = x < 0 ? -1 : 1, z = Math.abs(x) / Math.SQRT2;
+  const t = 1 / (1 + 0.3275911 * z);
+  const y = 1 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-z * z);
+  return 0.5 * (1 + s * y);
+}
+function bsPrice(type, S, K, Tyears, sigma) {
+  const intrinsic = type === 'C' ? Math.max(0, S - K) : Math.max(0, K - S);
+  if (!(Tyears > 0) || !(sigma > 0) || !(S > 0) || !(K > 0)) return intrinsic;
+  const v = sigma * Math.sqrt(Tyears);
+  const d1 = (Math.log(S / K) + 0.5 * sigma * sigma * Tyears) / v, d2 = d1 - v;
+  const px = type === 'C' ? S * ncdf(d1) - K * ncdf(d2) : K * ncdf(-d2) - S * ncdf(-d1);
+  return Math.max(px, intrinsic);
+}
+
 // Adaptive OTM strike for a given horizon: anchor to `target` (or implied move if
 // no target), scaled by conviction, capped at 1.25x the implied move; pick the
 // nearest liquid listed strike on the OTM side at the expiry closest to targetDTE.
@@ -88,12 +105,24 @@ function pickTier(chain, type, nowMs, target, score, targetDTE) {
   const top = pool[0];
   if (!top) return null;
   const mid = (top.bid > 0 && top.ask > 0) ? (top.bid + top.ask) / 2 : (top.ask || top.bid || 0);
+  // Projected SELL premium if the underlying tags `target`. Assume the move lands
+  // around mid-horizon (~60% of time-to-expiry still left) — a conservative, fillable
+  // limit-sell anchor rather than an instant-spike best case. exitMult = sell/entry.
+  const sigma = (top.iv && top.iv > 0) ? top.iv : iv;
+  let exitPrem = null, exitMult = null;
+  if (target && target > 0 && ((type === 'C' && target > price) || (type === 'P' && target < price))) {
+    const tRemain = Math.max(1, dte * 0.6) / 365;
+    exitPrem = +bsPrice(type, target, top.strike, tRemain, sigma).toFixed(2);
+    if (mid > 0) exitMult = +(exitPrem / mid).toFixed(1);
+  }
   return {
     strike: top.strike,
     expiry: new Date(expiry).toISOString().slice(0, 10),
     dte,
     otmPct: +Math.abs((top.strike - price) / price * 100).toFixed(1),
     premium: +mid.toFixed(2),
+    exitPrem,
+    exitMult,
     breakeven: +(type === 'C' ? top.strike + mid : top.strike - mid).toFixed(2),
     iv: top.iv ? +(top.iv * 100).toFixed(0) : null,
     delta: top.delta != null ? +Math.abs(top.delta).toFixed(2) : null,
@@ -159,29 +188,37 @@ export function renderOptionsHtml(optIdeas) {
     const c = idea.tiers ? idea.tiers[t.key] : null;
     const tgt = (idea.targets || {})[t.key];
     const col = isCall ? '#16a34a' : '#dc2626';
+    const bt = i === 0 ? '2px solid var(--line)' : 'none';
+    const td = (inner, extra) => '<td style="border-top:' + bt + ';' + (extra || '') + '">' + inner + '</td>';
     const symCell = i === 0 ? '<b>' + esc(idea.sym) + '</b><div style="font-size:11px;color:var(--muted)">' + idea.score + '/8 ' + esc(idea.grade || '-') + '</div>' : '';
+    const etfCell = i === 0 ? (idea.etf ? esc(idea.etf) : '<span style="color:var(--muted)">&mdash;</span>') : '';
     const contract = c ? ('$' + c.strike + ' <span style="color:var(--muted)">(' + c.otmPct + '% OTM)</span> &middot; ' + c.expiry + ' &middot; ' + c.dte + 'd' + (c.iv ? ' &middot; IV' + c.iv + '%' : '')) : '<span style="color:var(--muted)">n/a</span>';
     const greeks = c ? ('&Delta;' + (c.delta != null ? c.delta : '-') + (c.theta != null ? ' &middot; &theta;' + c.theta : '')) : '';
-    const exit = ((tgt ? 'take @ $' + tgt : '') + (idea.invalid ? ' &middot; stop @ $' + idea.invalid : '')) || '&mdash;';
+    const entry = c && c.premium ? '$' + c.premium : '&mdash;';
+    const multCol = c && c.exitMult ? (c.exitMult >= 1 ? '#16a34a' : '#dc2626') : 'var(--muted)';
+    const target = c && c.exitPrem != null
+      ? '<b>$' + c.exitPrem + '</b>' + (c.exitMult ? ' <span style="color:' + multCol + '">(' + c.exitMult + 'x)</span>' : '')
+      : '&mdash;';
+    const stop = idea.invalid ? '$' + idea.invalid : '&mdash;';
     return '<tr>'
-      + '<td style="border-top:' + (i === 0 ? '2px solid var(--line)' : 'none') + '">' + symCell + '</td>'
-      + '<td style="font-size:12px;border-top:' + (i === 0 ? '2px solid var(--line)' : 'none') + '"><b style="color:' + col + '">' + t.label + '</b>' + (tgt ? ' <span style="color:var(--muted)">&rarr; $' + tgt + '</span>' : '') + '</td>'
-      + '<td style="font-size:12px;border-top:' + (i === 0 ? '2px solid var(--line)' : 'none') + '">' + contract + '</td>'
-      + '<td class="r" style="border-top:' + (i === 0 ? '2px solid var(--line)' : 'none') + '">' + (c && c.premium ? '$' + c.premium : '&mdash;') + '</td>'
-      + '<td style="font-size:11px;color:var(--muted);border-top:' + (i === 0 ? '2px solid var(--line)' : 'none') + '">' + greeks + '</td>'
-      + '<td style="font-size:11px;color:var(--muted);border-top:' + (i === 0 ? '2px solid var(--line)' : 'none') + '">' + exit + '</td>'
+      + td(symCell)
+      + td(etfCell, 'font-size:12px')
+      + td('<b style="color:' + col + '">' + t.label + '</b>' + (tgt ? ' <span style="color:var(--muted)">&rarr; $' + tgt + '</span>' : ''), 'font-size:12px')
+      + td(contract, 'font-size:12px')
+      + '<td class="r" style="border-top:' + bt + '">' + entry + '</td>'
+      + '<td class="r" style="border-top:' + bt + '">' + target + '</td>'
+      + td(greeks, 'font-size:11px;color:var(--muted)')
+      + td(stop, 'font-size:11px;color:var(--muted)')
       + '</tr>';
   }).join('');
   const callBlocks = oi.calls.map(c => tierRows(c, true)).join('');
   const putBlocks = oi.puts.map(p => tierRows(p, false)).join('');
   if (callBlocks || putBlocks) {
-    html += '<div class="sub">3 horizons per setup, each anchored to a liquidity draw: <b>Day</b> = 1H, <b>Swing</b> = 4H, <b>Runner</b> = Daily. Strike = OTM toward that target; <b>expiry is ATR-sized</b> (how long price needs to reach the target at its average range). Calls aim at buy-side liquidity above; puts at sell-side liquidity below. &Delta; = directional exposure, &theta; = daily decay. "Exit" = close when the underlying tags take/stop. Options can expire worthless.</div>';
-    html += '<table><thead><tr><th>Symbol</th><th>Horizon &rarr; target</th><th>Suggested contract</th><th class="r">~Prem</th><th>Greeks</th><th>Exit</th></tr></thead><tbody>';
-    if (oi.calls.length) html += '<tr><td colspan="6" style="font-weight:600;color:#16a34a;background:rgba(22,163,74,0.06)">CALLS &mdash; bullish setups</td></tr>' + callBlocks;
-    if (oi.puts.length) html += '<tr><td colspan="6" style="font-weight:600;color:#dc2626;background:rgba(220,38,38,0.06)">PUTS &mdash; bearish (downtrend) names</td></tr>' + putBlocks;
+    html += '<div class="sub">3 horizons per setup, each anchored to a liquidity draw: <b>Day</b> = 1H, <b>Swing</b> = 4H, <b>Runner</b> = Daily. Strike = OTM toward that target; <b>expiry is ATR-sized</b> (how long price needs to reach the target at its average range). <b>Alt</b> = same-direction leveraged ETF if you would rather not trade the option. <b>Entry ~</b> = mid you would pay to open; <b>Target ~</b> = estimated contract mid if the underlying tags the take-target around mid-horizon &mdash; <b>set your limit-sell near here</b> (x = gain vs entry). &Delta; = directional exposure, &theta; = daily decay. <b>Stop</b> = underlying price that invalidates the idea. Options can expire worthless.</div>';
+    html += '<table><thead><tr><th>Symbol</th><th>Alt (lev. ETF)</th><th>Horizon &rarr; target</th><th>Suggested contract</th><th class="r">Entry ~</th><th class="r">Target ~</th><th>Greeks</th><th>Stop</th></tr></thead><tbody>';
+    if (oi.calls.length) html += '<tr><td colspan="8" style="font-weight:600;color:#16a34a;background:rgba(22,163,74,0.06)">CALLS &mdash; bullish setups</td></tr>' + callBlocks;
+    if (oi.puts.length) html += '<tr><td colspan="8" style="font-weight:600;color:#dc2626;background:rgba(220,38,38,0.06)">PUTS &mdash; bearish (downtrend) names</td></tr>' + putBlocks;
     html += '</tbody></table>';
-    const alts = oi.calls.concat(oi.puts).filter(x => x.etf).map(x => esc(x.sym) + '&rarr;' + esc(x.etf));
-    if (alts.length) html += '<div class="sub">Leveraged ETF alternatives (same-direction): ' + alts.join(' &middot; ') + '</div>';
   } else {
     html += '<div class="sub">No high-conviction options ideas right now (no qualifying bullish/bearish setups in the latest scan).</div>';
   }
