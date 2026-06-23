@@ -144,6 +144,41 @@ function anchorFor(sym) {
   return 'SPY';
 }
 
+// Ranked LIQUIDITY DRAWS in the trade direction — the levels price is actually hunting,
+// nearest-first, each with a human label. Sources, strongest first: equal highs/lows
+// (stacked stops), prior day/week high-low (PDH/PDL/PWH/PWL), raw swing pivots (1H/4H/D),
+// and the nearest unfilled fair-value gap (an imbalance magnet). Near-equal levels merge.
+function liquidityDraws(dir, price, h1, h4, daily, atrRef) {
+  const above = dir === 'long';
+  const beyondPx = p => above ? p > price * 1.0006 : p < price * 0.9994;
+  const tol = Math.max(atrRef * 0.2, price * 0.0012);
+  const out = [];
+  for (const [bars, s, tf] of [[h1, 2, '1H'], [h4, 2, '4H'], [daily, 3, 'D']]) {
+    const lv = (above ? pivots(bars, s).highs : pivots(bars, s).lows).map(x => x.p).filter(beyondPx).sort((a, b) => a - b);
+    const used = new Array(lv.length).fill(false);
+    for (let i = 0; i < lv.length; i++) {
+      if (used[i]) continue;
+      const cluster = [lv[i]];
+      for (let j = i + 1; j < lv.length; j++) if (!used[j] && Math.abs(lv[j] - lv[i]) <= tol) { cluster.push(lv[j]); used[j] = true; }
+      const p = above ? Math.max(...cluster) : Math.min(...cluster);
+      out.push({ p, type: cluster.length >= 2 ? `EQ${above ? 'H' : 'L'} ${tf}` : `${tf} swing`, str: cluster.length >= 2 ? 3 : 1 });
+    }
+  }
+  if (daily.length >= 12) {
+    const pd = daily[daily.length - 2], pw = daily.slice(-11, -6);
+    const pwH = Math.max(...pw.map(b => b.h)), pwL = Math.min(...pw.map(b => b.l));
+    for (const [p, t] of (above ? [[pd.h, 'PDH'], [pwH, 'PWH']] : [[pd.l, 'PDL'], [pwL, 'PWL']])) if (beyondPx(p)) out.push({ p, type: t, str: 2 });
+  }
+  for (let i = h1.length - 1; i >= Math.max(2, h1.length - 40); i--) {
+    const edge = above ? (h1[i].l > h1[i - 2].h ? h1[i - 2].h : null) : (h1[i].h < h1[i - 2].l ? h1[i - 2].l : null);
+    if (edge != null && beyondPx(edge)) { out.push({ p: edge, type: '1H FVG', str: 2 }); break; }
+  }
+  out.sort((a, b) => above ? a.p - b.p : b.p - a.p);
+  const ded = [];
+  for (const d of out) { const c = ded.find(x => Math.abs(x.p - d.p) <= tol); if (!c) ded.push(d); else if (d.str > c.str) { c.type = d.type; c.str = d.str; } }
+  return ded;
+}
+
 // Top-down MULTI-TIMEFRAME ICT engine — BIDIRECTIONAL (long & short). Daily/4H/1H bias
 // picks the side; a swing-structure state machine (HH/HL/LH/LL + BOS/ChoCH) + 1H POI
 // (OB/FVG/breaker, displacement-validated + freshness/mitigation) -> 15m liquidity sweep
@@ -252,27 +287,44 @@ function analyze(symbol, daily, h4, h1, m15, anchors) {
   else { entry1 = Math.max(refShallow, price * 1.001); entry2 = Math.max(refDeep, entry1 * 1.001); }
   const entryInPoi = poiPresent && entry1 <= poiTop * 1.004 && entry1 >= poiBot * 0.996;
 
-  // ---- Stop: beyond the swept liquidity (structural invalidation) ----
-  let stop;
-  if (dir === 'long') { const sl = Math.min(legAnchor, entry2, poiPresent ? poiBot : Infinity); stop = sl - 0.0015 * sl; }
-  else { const sh = Math.max(legAnchor, entry2, poiPresent ? poiTop : -Infinity); stop = sh + 0.0015 * sh; }
-
-  // ---- Tiered targets = liquidity draws in the trade direction: 1H(day) -> 4H(swing) -> Daily(runner) ----
-  let T1, T2, T3;
+  // ---- Stop: structural invalidation beyond the swept liquidity + order block, ATR-buffered,
+  //      extended to clear the nearest minor pool so a stop-hunt sweep doesn't tag you out ----
+  const atr15 = atr(m15, 14) || price * 0.005;
+  let stop, stopAnchor;
   if (dir === 'long') {
-    T1 = nearestHighAbove(h1, price, 2) ?? (price + 0.5 * range);
-    T2 = nearestHighAbove(h4, Math.max(price, T1), 2) ?? (T1 + 0.8 * range);
-    T3 = nearestHighAbove(daily, Math.max(T1, T2), 3) ?? (T2 + 1.0 * range);
-    if (T1 <= price) T1 = price + 0.3 * range;
-    if (T2 <= T1) T2 = T1 + Math.max(0.5 * (T1 - entry1), 0.4 * range);
-    if (T3 <= T2) T3 = T2 + Math.max(0.5 * (T2 - T1), 0.4 * range);
+    stopAnchor = Math.min(legAnchor, entry2, poiPresent ? poiBot : Infinity);
+    const pool = nearestLowBelow(m15, stopAnchor, 2);
+    if (pool != null && stopAnchor - pool < 0.5 * atr1) stopAnchor = pool;
+    stop = stopAnchor - Math.max(0.0015 * stopAnchor, 0.25 * atr15);
   } else {
-    T1 = nearestLowBelow(h1, price, 2) ?? (price - 0.5 * range);
-    T2 = nearestLowBelow(h4, Math.min(price, T1), 2) ?? (T1 - 0.8 * range);
-    T3 = nearestLowBelow(daily, Math.min(T1, T2), 3) ?? (T2 - 1.0 * range);
-    if (T1 >= price) T1 = price - 0.3 * range;
-    if (T2 >= T1) T2 = T1 - Math.max(0.5 * (price - T1), 0.4 * range);
-    if (T3 >= T2) T3 = T2 - Math.max(0.5 * (T1 - T2), 0.4 * range);
+    stopAnchor = Math.max(legAnchor, entry2, poiPresent ? poiTop : -Infinity);
+    const pool = nearestHighAbove(m15, stopAnchor, 2);
+    if (pool != null && pool - stopAnchor < 0.5 * atr1) stopAnchor = pool;
+    stop = stopAnchor + Math.max(0.0015 * stopAnchor, 0.25 * atr15);
+  }
+
+  // ---- Tiered targets = ranked LIQUIDITY DRAWS (equal highs/lows, prior day/week H-L, swings,
+  //      nearest unfilled FVG), nearest-first; standard-deviation-style projection as fallback ----
+  const draws = liquidityDraws(dir, price, h1, h4, daily, atr1);
+  const proj = m => price + sign * m * range;
+  const gap = Math.max(atr1 * 0.3, price * 0.0015);
+  const tierGap = Math.max(gap, 0.6 * range);   // keep day -> swing -> runner meaningfully spread
+  const nextBeyond = (lvl, md) => draws.find(d => sign * (d.p - lvl) > md);
+  const d1 = draws[0] || null;
+  const d2 = d1 ? nextBeyond(d1.p, tierGap) : null;
+  const d3 = d2 ? nextBeyond(d2.p, tierGap) : null;
+  let T1 = d1 ? d1.p : proj(1.0);
+  let T2 = d2 ? d2.p : T1 + sign * Math.max(gap, 0.7 * range);
+  let T3 = d3 ? d3.p : T2 + sign * Math.max(gap, 0.8 * range);
+  const tt = [d1 ? d1.type : 'measured', d2 ? d2.type : 'measured', d3 ? d3.type : 'measured'];
+  if (sign > 0) {
+    if (T1 <= price) T1 = proj(0.5);
+    if (T2 <= T1) T2 = T1 + Math.max(gap, 0.4 * range);
+    if (T3 <= T2) T3 = T2 + Math.max(gap, 0.4 * range);
+  } else {
+    if (T1 >= price) T1 = proj(0.5);
+    if (T2 >= T1) T2 = T1 - Math.max(gap, 0.4 * range);
+    if (T3 >= T2) T3 = T2 - Math.max(gap, 0.4 * range);
   }
   const riskU = Math.max(Math.abs(entry1 - stop), 1e-6);
   const rr1 = Math.abs(T1 - entry1) / riskU;
@@ -345,7 +397,7 @@ function analyze(symbol, daily, h4, h1, m15, anchors) {
   bp.push(poiPresent ? `into a ${poiKind} (${f2(poiBot)}-${f2(poiTop)})${tag ? ' [' + tag + ']' : ''}` : `no clean 1H ${dir === 'long' ? 'demand' : 'supply'} zone yet`);
   bp.push(sweep ? `15m grabbed ${dir === 'long' ? 'sell' : 'buy'}-side liquidity (swept ${f2(sweptLvl)})${bos ? `, then ${dir === 'long' ? 'BOS up' : 'ChoCH down'}` : ''}${volSurge ? ', on a volume surge' : ''}` : 'no fresh 15m liquidity grab yet');
   bp.push(`entry in the ${zoneKind}: ${f2(entry2)} (deep) to ${f2(entry1)} (shallow)${entryInPoi ? ', inside the 1H zone' : ''}`);
-  bp.push(`targets: TP1 ${f2(T1)} (day) -> TP2 ${f2(T2)} (swing) -> TP3 ${f2(T3)} (runner); ~${f2(rr1)}R`);
+  bp.push(`targets (liquidity draws): TP1 ${f2(T1)} [${tt[0]}] -> TP2 ${f2(T2)} [${tt[1]}] -> TP3 ${f2(T3)} [${tt[2]}]; ~${f2(rr1)}R`);
   bp.push(`structure: 1H ${struct1.state}${struct1.label ? ` (last ${struct1.label})` : ''}${struct1.event ? `, ${struct1.event} @ ${f2(struct1.eventLevel)}` : ''}; Daily ${structD.state}`);
   if (smt) bp.push(`SMT divergence vs ${anchorSym}: anchor did not confirm the ${dir === 'long' ? 'lower low (bullish)' : 'higher high (bearish)'}`);
   const basis = bp.join('; ');
