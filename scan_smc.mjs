@@ -281,22 +281,33 @@ function analyze(symbol, daily, h4, h1, m15, anchors) {
   if (legFar == null) legFar = dir === 'long' ? (sHighs.at(-1)?.p ?? Math.max(...m15.slice(-20).map(b => b.h))) : (sLows.at(-1)?.p ?? Math.min(...m15.slice(-20).map(b => b.l)));
   const range = Math.max(Math.abs(legFar - legAnchor), 1e-6);
 
-  // ---- OTE 0.62-0.79 retrace from the leg, refined by a 15m OB inside the band ----
+  // ---- Entry zone = a recognized POI inside the OTE discount/premium band, refined to its
+  //      consequent encroachment (CE = 50%) — SAME concept set as the stop & targets: order
+  //      block / FVG / breaker, premium-discount, displacement, CE. Priority: 15m OB -> 15m FVG
+  //      -> the 1H POI (OB/FVG/breaker already found); falls back to the raw OTE band. ----
   const ote62 = legFar - sign * 0.62 * range, ote79 = legFar - sign * 0.79 * range;
   const oteLo = Math.min(ote62, ote79), oteHi = Math.max(ote62, ote79);
-  let refShallow = ote62, refDeep = ote79, zoneKind = `15m OTE 0.62-0.79 (${dir === 'long' ? 'discount' : 'premium'} pullback)`;
-  for (let i = n - 2; i >= Math.max(1, n - 45); i--) {
+  const inBand = (lo, hi) => lo <= oteHi && hi >= oteLo;
+  let zLo = oteLo, zHi = oteHi, zoneKind = `OTE 0.62-0.79 (${dir === 'long' ? 'discount' : 'premium'} pullback)`, zfound = false;
+  for (let i = n - 2; i >= Math.max(1, n - 45) && !zfound; i--) {           // 15m order block in OTE
     const isOB = dir === 'long' ? (m15[i].c < m15[i].o) : (m15[i].c > m15[i].o);
-    if (isOB && m15[i].l <= oteHi && m15[i].h >= oteLo) {
-      refShallow = dir === 'long' ? Math.min(m15[i].h, oteHi) : Math.max(m15[i].l, oteLo);
-      refDeep = dir === 'long' ? Math.max(m15[i].l, oteLo) : Math.min(m15[i].h, oteHi);
-      zoneKind = '15m order block in the OTE zone'; break;
-    }
+    if (isOB && inBand(m15[i].l, m15[i].h)) { zLo = Math.max(m15[i].l, oteLo); zHi = Math.min(m15[i].h, oteHi); zoneKind = '15m order block ∩ OTE'; zfound = true; }
   }
-  // entries clamped to the correct side of price (entry1 = shallow/fills first, entry2 = deep)
+  for (let i = n - 1; i >= Math.max(2, n - 45) && !zfound; i--) {           // 15m FVG in OTE
+    const isFVG = dir === 'long' ? (m15[i].l > m15[i - 2].h) : (m15[i].h < m15[i - 2].l);
+    if (!isFVG) continue;
+    const a = dir === 'long' ? m15[i].l : m15[i].h, b = dir === 'long' ? m15[i - 2].h : m15[i - 2].l;
+    if (inBand(Math.min(a, b), Math.max(a, b))) { zLo = Math.max(Math.min(a, b), oteLo); zHi = Math.min(Math.max(a, b), oteHi); zoneKind = '15m FVG ∩ OTE'; zfound = true; }
+  }
+  if (!zfound && poiPresent && inBand(poiBot, poiTop)) {                    // the 1H POI (incl. breaker) in OTE
+    zLo = Math.max(poiBot, oteLo); zHi = Math.min(poiTop, oteHi); zoneKind = poiKind + ' ∩ OTE';
+  }
+  const entryCE = (zLo + zHi) / 2;   // consequent encroachment of the entry POI = the optimal fill
+  // entry1 = shallow edge (fills first / nearest price), entry2 = deep edge; clamp to price side
+  const zNear = dir === 'long' ? zHi : zLo, zFar = dir === 'long' ? zLo : zHi;
   let entry1, entry2;
-  if (dir === 'long') { entry1 = Math.min(refShallow, price * 0.999); entry2 = Math.min(refDeep, entry1 * 0.999); }
-  else { entry1 = Math.max(refShallow, price * 1.001); entry2 = Math.max(refDeep, entry1 * 1.001); }
+  if (dir === 'long') { entry1 = Math.min(zNear, price * 0.999); entry2 = Math.min(zFar, entry1 * 0.999); }
+  else { entry1 = Math.max(zNear, price * 1.001); entry2 = Math.max(zFar, entry1 * 1.001); }
   const entryInPoi = poiPresent && entry1 <= poiTop * 1.004 && entry1 >= poiBot * 0.996;
 
   // ---- Stop: anchored STRICTLY to the displacement-leg origin (the swept extreme that launched
@@ -409,7 +420,7 @@ function analyze(symbol, daily, h4, h1, m15, anchors) {
   bp.push(goodLocation ? `price in daily ${dir === 'long' ? 'discount (good value to buy)' : 'premium (good value to short)'}` : `price in daily ${dir === 'long' ? 'premium (chasing)' : 'discount (early to short)'}`);
   bp.push(poiPresent ? `into a ${poiKind} (${f2(poiBot)}-${f2(poiTop)})${tag ? ' [' + tag + ']' : ''}` : `no clean 1H ${dir === 'long' ? 'demand' : 'supply'} zone yet`);
   bp.push(sweep ? `15m grabbed ${dir === 'long' ? 'sell' : 'buy'}-side liquidity (swept ${f2(sweptLvl)})${bos ? `, then ${dir === 'long' ? 'BOS up' : 'ChoCH down'}` : ''}${volSurge ? ', on a volume surge' : ''}` : 'no fresh 15m liquidity grab yet');
-  bp.push(`entry in the ${zoneKind}: ${f2(entry2)} (deep) to ${f2(entry1)} (shallow)${entryInPoi ? ', inside the 1H zone' : ''}; stop ${f2(stop)} just beyond the displacement-leg origin (${dir === 'long' ? 'swept low' : 'swept high'})`);
+  bp.push(`entry POI: ${zoneKind}, ${f2(entry2)} to ${f2(entry1)} (optimal CE ${f2(entryCE)})${entryInPoi ? ', inside the 1H zone' : ''}; stop ${f2(stop)} just beyond the displacement-leg origin (${dir === 'long' ? 'swept low' : 'swept high'})`);
   bp.push(`targets (liquidity draws): TP1 ${f2(T1)} [${tt[0]}] -> TP2 ${f2(T2)} [${tt[1]}] -> TP3 ${f2(T3)} [${tt[2]}]; ~${f2(rr1)}R`);
   bp.push(`structure: 1H ${struct1.state}${struct1.label ? ` (last ${struct1.label})` : ''}${struct1.event ? `, ${struct1.event} @ ${f2(struct1.eventLevel)}` : ''}; Daily ${structD.state}`);
   if (smt) bp.push(`SMT divergence vs ${anchorSym}: anchor did not confirm the ${dir === 'long' ? 'lower low (bullish)' : 'higher high (bearish)'}`);
