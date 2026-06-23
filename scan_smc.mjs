@@ -169,9 +169,21 @@ function liquidityDraws(dir, price, h1, h4, daily, atrRef) {
     const pwH = Math.max(...pw.map(b => b.h)), pwL = Math.min(...pw.map(b => b.l));
     for (const [p, t] of (above ? [[pd.h, 'PDH'], [pwH, 'PWH']] : [[pd.l, 'PDL'], [pwL, 'PWL']])) if (beyondPx(p)) out.push({ p, type: t, str: 2 });
   }
+  // nearest OPPOSING order block to mitigate (supply above for longs / demand below for shorts),
+  // targeted at its consequent encroachment = 50% of the OB. Requires displacement away from it.
+  for (let i = h1.length - 4; i >= Math.max(2, h1.length - 40); i--) {
+    const isOpp = above ? (h1[i].c > h1[i].o) : (h1[i].c < h1[i].o);
+    if (!isOpp) continue;
+    let disp = false;
+    for (let k = i + 1; k <= Math.min(h1.length - 1, i + 3); k++) if ((above ? h1[i].l - h1[k].c : h1[k].c - h1[i].h) >= atrRef) { disp = true; break; }
+    if (!disp) continue;
+    const ce = (h1[i].h + h1[i].l) / 2;
+    if (beyondPx(ce)) { out.push({ p: ce, type: 'opp OB (CE)', str: 2 }); break; }
+  }
+  // nearest unfilled fair-value gap, targeted at its consequent encroachment = 50% of the gap
   for (let i = h1.length - 1; i >= Math.max(2, h1.length - 40); i--) {
-    const edge = above ? (h1[i].l > h1[i - 2].h ? h1[i - 2].h : null) : (h1[i].h < h1[i - 2].l ? h1[i - 2].l : null);
-    if (edge != null && beyondPx(edge)) { out.push({ p: edge, type: '1H FVG', str: 2 }); break; }
+    const ce = above ? (h1[i].l > h1[i - 2].h ? (h1[i].l + h1[i - 2].h) / 2 : null) : (h1[i].h < h1[i - 2].l ? (h1[i].h + h1[i - 2].l) / 2 : null);
+    if (ce != null && beyondPx(ce)) { out.push({ p: ce, type: '1H FVG (CE)', str: 2 }); break; }
   }
   out.sort((a, b) => above ? a.p - b.p : b.p - a.p);
   const ded = [];
@@ -287,17 +299,18 @@ function analyze(symbol, daily, h4, h1, m15, anchors) {
   else { entry1 = Math.max(refShallow, price * 1.001); entry2 = Math.max(refDeep, entry1 * 1.001); }
   const entryInPoi = poiPresent && entry1 <= poiTop * 1.004 && entry1 >= poiBot * 0.996;
 
-  // ---- Stop: structural invalidation beyond the swept liquidity + order block, ATR-buffered,
-  //      extended to clear the nearest minor pool so a stop-hunt sweep doesn't tag you out ----
+  // ---- Stop: anchored STRICTLY to the displacement-leg origin (the swept extreme that launched
+  //      the impulse/BOS, refined by the 15m order-block edge), then extended to clear the nearest
+  //      minor pool (stop-hunt awareness) and ATR-buffered. Tighter & cleaner than min-of-many. ----
   const atr15 = atr(m15, 14) || price * 0.005;
   let stop, stopAnchor;
   if (dir === 'long') {
-    stopAnchor = Math.min(legAnchor, entry2, poiPresent ? poiBot : Infinity);
+    stopAnchor = Math.min(legAnchor, entry2);   // displacement-leg origin (swept low / OB low)
     const pool = nearestLowBelow(m15, stopAnchor, 2);
     if (pool != null && stopAnchor - pool < 0.5 * atr1) stopAnchor = pool;
     stop = stopAnchor - Math.max(0.0015 * stopAnchor, 0.25 * atr15);
   } else {
-    stopAnchor = Math.max(legAnchor, entry2, poiPresent ? poiTop : -Infinity);
+    stopAnchor = Math.max(legAnchor, entry2);   // displacement-leg origin (swept high / OB high)
     const pool = nearestHighAbove(m15, stopAnchor, 2);
     if (pool != null && pool - stopAnchor < 0.5 * atr1) stopAnchor = pool;
     stop = stopAnchor + Math.max(0.0015 * stopAnchor, 0.25 * atr15);
@@ -396,7 +409,7 @@ function analyze(symbol, daily, h4, h1, m15, anchors) {
   bp.push(goodLocation ? `price in daily ${dir === 'long' ? 'discount (good value to buy)' : 'premium (good value to short)'}` : `price in daily ${dir === 'long' ? 'premium (chasing)' : 'discount (early to short)'}`);
   bp.push(poiPresent ? `into a ${poiKind} (${f2(poiBot)}-${f2(poiTop)})${tag ? ' [' + tag + ']' : ''}` : `no clean 1H ${dir === 'long' ? 'demand' : 'supply'} zone yet`);
   bp.push(sweep ? `15m grabbed ${dir === 'long' ? 'sell' : 'buy'}-side liquidity (swept ${f2(sweptLvl)})${bos ? `, then ${dir === 'long' ? 'BOS up' : 'ChoCH down'}` : ''}${volSurge ? ', on a volume surge' : ''}` : 'no fresh 15m liquidity grab yet');
-  bp.push(`entry in the ${zoneKind}: ${f2(entry2)} (deep) to ${f2(entry1)} (shallow)${entryInPoi ? ', inside the 1H zone' : ''}`);
+  bp.push(`entry in the ${zoneKind}: ${f2(entry2)} (deep) to ${f2(entry1)} (shallow)${entryInPoi ? ', inside the 1H zone' : ''}; stop ${f2(stop)} just beyond the displacement-leg origin (${dir === 'long' ? 'swept low' : 'swept high'})`);
   bp.push(`targets (liquidity draws): TP1 ${f2(T1)} [${tt[0]}] -> TP2 ${f2(T2)} [${tt[1]}] -> TP3 ${f2(T3)} [${tt[2]}]; ~${f2(rr1)}R`);
   bp.push(`structure: 1H ${struct1.state}${struct1.label ? ` (last ${struct1.label})` : ''}${struct1.event ? `, ${struct1.event} @ ${f2(struct1.eventLevel)}` : ''}; Daily ${structD.state}`);
   if (smt) bp.push(`SMT divergence vs ${anchorSym}: anchor did not confirm the ${dir === 'long' ? 'lower low (bullish)' : 'higher high (bearish)'}`);
