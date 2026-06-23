@@ -102,12 +102,55 @@ function nearestLowBelow(bars, price, s = 2) {
   return ls[0] ?? null;
 }
 
+// Proper swing-structure state machine: walks fractal pivots in time order, labels each
+// swing HH/HL/LH/LL, tracks bull/bear/range state, and surfaces the latest BOS (break in
+// the trend = continuation) vs ChoCH (break against = potential reversal). A live close
+// beyond the last confirmed swing counts as an in-progress break.
+function structure(bars, s = 2) {
+  const piv = pivots(bars, s);
+  const pts = [...piv.highs.map(h => ({ i: h.i, p: h.p, k: 'H' })), ...piv.lows.map(l => ({ i: l.i, p: l.p, k: 'L' }))].sort((a, b) => a.i - b.i);
+  let state = 'range', lastH = null, lastL = null, label = null, event = null, eventLevel = null;
+  for (const pt of pts) {
+    if (pt.k === 'H') {
+      if (lastH != null) {
+        if (pt.p > lastH) { label = 'HH'; if (state === 'bear') { event = 'ChoCH-up'; eventLevel = lastH; } else if (state === 'bull') { event = 'BOS-up'; eventLevel = lastH; } state = 'bull'; }
+        else label = 'LH';
+      }
+      lastH = pt.p;
+    } else {
+      if (lastL != null) {
+        if (pt.p < lastL) { label = 'LL'; if (state === 'bull') { event = 'ChoCH-down'; eventLevel = lastL; } else if (state === 'bear') { event = 'BOS-down'; eventLevel = lastL; } state = 'bear'; }
+        else label = 'HL';
+      }
+      lastL = pt.p;
+    }
+  }
+  const c = bars.at(-1).c;
+  if (lastH != null && c > lastH) { event = state === 'bear' ? 'ChoCH-up' : 'BOS-up'; eventLevel = lastH; state = 'bull'; }
+  else if (lastL != null && c < lastL) { event = state === 'bull' ? 'ChoCH-down' : 'BOS-down'; eventLevel = lastL; state = 'bear'; }
+  return { state, bias: state === 'bull' ? 'up' : state === 'bear' ? 'down' : 'flat', label, event, eventLevel };
+}
+
+// SMT (Smart-Money Technique) divergence: a name and a correlated anchor (its sector ETF /
+// index) should sweep liquidity together. If the name makes a fresh extreme the anchor
+// refuses to confirm, that non-confirmation is an institutional tell. Anchors fetched once.
+const SMT_ANCHORS = ['SMH', 'QQQ', 'SPY', 'XLE', 'IWM'];
+function anchorFor(sym) {
+  if (UNIVERSE.Semiconductors.includes(sym)) return sym === 'SMH' ? 'QQQ' : 'SMH';
+  if (UNIVERSE['AI / Big tech'].includes(sym) || UNIVERSE['Tech broad'].includes(sym)) return sym === 'QQQ' ? 'SMH' : 'QQQ';
+  if (UNIVERSE.Energy.includes(sym)) return sym === 'XLE' ? 'SPY' : 'XLE';
+  if (UNIVERSE['Index / regime'].includes(sym)) return sym === 'SPY' ? 'QQQ' : 'SPY';
+  if (UNIVERSE.Space.includes(sym)) return 'QQQ';
+  return 'SPY';
+}
+
 // Top-down MULTI-TIMEFRAME ICT engine — BIDIRECTIONAL (long & short). Daily/4H/1H bias
-// picks the side; 1H POI (OB/FVG/breaker, displacement-validated + freshness/mitigation)
-// -> 15m liquidity sweep + BOS/ChoCH (volume-confirmed) -> OTE entry. 10-point confluence.
+// picks the side; a swing-structure state machine (HH/HL/LH/LL + BOS/ChoCH) + 1H POI
+// (OB/FVG/breaker, displacement-validated + freshness/mitigation) -> 15m liquidity sweep
+// (volume + SMT-divergence confirmed) -> OTE entry. 12-point confluence.
 // Targets tier 1H=day, 4H=swing, Daily=runner (upside for longs, downside for shorts).
-const MAXSCORE = 10;
-function analyze(symbol, daily, h4, h1, m15) {
+const MAXSCORE = 12;
+function analyze(symbol, daily, h4, h1, m15, anchors) {
   const price = m15.at(-1).c;
   const f2 = x => x.toFixed(2);
 
@@ -247,7 +290,29 @@ function analyze(symbol, daily, h4, h1, m15) {
     putStop = nearestHighAbove(h1, price, 2) ?? (price + 0.5 * range);
   }
 
-  // ---- 10-point confluence score ----
+  // ---- Swing-structure state machine (HH/HL/LH/LL + BOS/ChoCH) ----
+  const struct1 = structure(h1, 2), structD = structure(daily, 3);
+  const structAgree = dir === 'long' ? struct1.state === 'bull' : struct1.state === 'bear';
+
+  // ---- SMT divergence vs a correlated anchor at the sweep (non-confirmation = institutional tell) ----
+  const anchorSym = anchorFor(symbol);
+  const anchorM15 = anchors ? anchors[anchorSym] : null;
+  let smt = false;
+  if (sweep && !LEVERAGED.has(symbol) && anchorM15 && anchorM15.length >= 24) {
+    const W = 12;
+    const sLast = m15.slice(-W), sPrior = m15.slice(-2 * W, -W), aLast = anchorM15.slice(-W), aPrior = anchorM15.slice(-2 * W, -W);
+    if (dir === 'long') {
+      const symLL = Math.min(...sLast.map(b => b.l)) < Math.min(...sPrior.map(b => b.l));
+      const aLL = Math.min(...aLast.map(b => b.l)) < Math.min(...aPrior.map(b => b.l));
+      smt = symLL && !aLL;   // name made a lower low, anchor held = bullish divergence
+    } else {
+      const symHH = Math.max(...sLast.map(b => b.h)) > Math.max(...sPrior.map(b => b.h));
+      const aHH = Math.max(...aLast.map(b => b.h)) > Math.max(...aPrior.map(b => b.h));
+      smt = symHH && !aHH;   // name made a higher high, anchor failed = bearish divergence
+    }
+  }
+
+  // ---- 12-point confluence score ----
   const entryLoc = dir === 'long' ? entry1 < mid : entry1 > mid;
   const flags = {
     dailyAligned: dir === 'long' ? biasD === 'up' : biasD === 'down',
@@ -260,13 +325,15 @@ function analyze(symbol, daily, h4, h1, m15) {
     goodTarget: rr1 >= 1.0,
     volume: volSurge,
     displacement: displaced || bos,
+    structure: structAgree,
+    smt,
   };
-  const score = Object.values(flags).filter(Boolean).length;  // 0..10
+  const score = Object.values(flags).filter(Boolean).length;  // 0..12
   const goodR = rr1 >= 1.0;
   let action = 'AVOID';
-  if (trendOk && sweep && goodR && entryInPoi && score >= 8) action = dir === 'long' ? 'BUY' : 'SHORT';
-  else if (trendOk && sweep && goodR && score >= 6) action = dir === 'long' ? 'ACCUMULATE' : 'SHORT-SCALE';
-  else if (score >= 4) action = 'WATCH';
+  if (trendOk && sweep && goodR && entryInPoi && score >= 9) action = dir === 'long' ? 'BUY' : 'SHORT';
+  else if (trendOk && sweep && goodR && score >= 7) action = dir === 'long' ? 'ACCUMULATE' : 'SHORT-SCALE';
+  else if (score >= 5) action = 'WATCH';
   const aligned = dir === 'long' ? upCount : downCount;
   const grade = aligned === 3 ? 'A' : aligned === 2 ? 'B' : 'C';
 
@@ -279,6 +346,8 @@ function analyze(symbol, daily, h4, h1, m15) {
   bp.push(sweep ? `15m grabbed ${dir === 'long' ? 'sell' : 'buy'}-side liquidity (swept ${f2(sweptLvl)})${bos ? `, then ${dir === 'long' ? 'BOS up' : 'ChoCH down'}` : ''}${volSurge ? ', on a volume surge' : ''}` : 'no fresh 15m liquidity grab yet');
   bp.push(`entry in the ${zoneKind}: ${f2(entry2)} (deep) to ${f2(entry1)} (shallow)${entryInPoi ? ', inside the 1H zone' : ''}`);
   bp.push(`targets: TP1 ${f2(T1)} (day) -> TP2 ${f2(T2)} (swing) -> TP3 ${f2(T3)} (runner); ~${f2(rr1)}R`);
+  bp.push(`structure: 1H ${struct1.state}${struct1.label ? ` (last ${struct1.label})` : ''}${struct1.event ? `, ${struct1.event} @ ${f2(struct1.eventLevel)}` : ''}; Daily ${structD.state}`);
+  if (smt) bp.push(`SMT divergence vs ${anchorSym}: anchor did not confirm the ${dir === 'long' ? 'lower low (bullish)' : 'higher high (bearish)'}`);
   const basis = bp.join('; ');
 
   return {
@@ -295,7 +364,7 @@ function analyze(symbol, daily, h4, h1, m15) {
   };
 }
 
-async function scanOne(symbol) {
+async function scanOne(symbol, anchors) {
   try {
     const [daily, h1, m15] = await Promise.all([
       fetchCandles(symbol, '1d', '1y'),
@@ -304,7 +373,7 @@ async function scanOne(symbol) {
     ]);
     if (daily.length < 200 || h1.length < 40 || m15.length < 60) return { symbol, error: `insufficient data` };
     const h4 = resample(h1, 4);
-    return analyze(symbol, daily, h4, h1, m15);
+    return analyze(symbol, daily, h4, h1, m15, anchors);
   } catch (e) { return { symbol, error: e.message }; }
 }
 
@@ -412,7 +481,7 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     + sec(optHtml, false)
     + '<details class="sec"><summary>Buy scan</summary>'
     + '<div class="controls">'
-    + '<select id="f-score"><option value="6">Actionable (score &ge; 6)</option><option value="8">Strong only (&ge; 8)</option><option value="4">Watch &amp; up (&ge; 4)</option><option value="0">All</option></select>'
+    + '<select id="f-score"><option value="7">Actionable (score &ge; 7)</option><option value="9">Strong only (&ge; 9)</option><option value="5">Watch &amp; up (&ge; 5)</option><option value="0">All</option></select>'
     + '<select id="f-sort"><option value="score">Sort: score</option><option value="rr">Sort: reward/risk</option><option value="price">Sort: price</option><option value="sym">Sort: symbol</option></select>'
     + '<label><input type="checkbox" id="f-rr">R &ge; 2</label><label><input type="checkbox" id="f-hold">My holdings</label><label><input type="checkbox" id="f-lev">Hide leveraged</label>'
     + '</div><div id="count"></div>'
@@ -428,12 +497,12 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     + 'function render(){var mS=+$("f-score").value,so=$("f-sort").value,q2=$("f-rr").checked,ho=$("f-hold").checked,hl=$("f-lev").checked;'
     + 'var rows=DATA.filter(function(r){return r.score>=mS});if(q2)rows=rows.filter(function(r){return r.rr>=2});if(ho)rows=rows.filter(function(r){return r.hold});if(hl)rows=rows.filter(function(r){return !r.lev});'
     + 'rows.sort(function(a,b){return so==="sym"?a.sym.localeCompare(b.sym):so==="price"?b.price-a.price:(b[so]-a[so])||(b.score-a.score)});'
-    + '$("count").textContent="Showing "+rows.length+" of "+DATA.length+" \\u2014 "+rows.filter(function(r){return r.score>=6}).length+" actionable";'
+    + '$("count").textContent="Showing "+rows.length+" of "+DATA.length+" \\u2014 "+rows.filter(function(r){return r.score>=7}).length+" actionable";'
     + 'var h="";for(var i=0;i<rows.length;i++){var r=rows[i];'
     + 'var tg=(r.hold?"<span class=tag style=\\"color:#2563eb;border-color:#2563eb\\">HOLD</span>":"")+(r.lev?"<span class=tag style=\\"color:#d97706;border-color:#d97706\\">LEV</span>":"");'
-    + 'var zc=r.zone==="discount"?"#16a34a":"#d97706";var rc=r.rr>=2?"#16a34a":"var(--muted)";var sc=r.score>=8?"#16a34a":r.score>=6?"#2563eb":r.score>=4?"var(--muted)":"#dc2626";'
+    + 'var zc=r.zone==="discount"?"#16a34a":"#d97706";var rc=r.rr>=2?"#16a34a":"var(--muted)";var sc=r.score>=9?"#16a34a":r.score>=7?"#2563eb":r.score>=5?"var(--muted)":"#dc2626";'
     + 'h+="<tr><td><b>"+r.sym+"</b>"+tg+"</td>"'
-    + '+"<td style=\\"color:"+sc+";font-weight:600\\">"+r.score+"/10</td>"'
+    + '+"<td style=\\"color:"+sc+";font-weight:600\\">"+r.score+"/12</td>"'
     + '+"<td style=\\"color:"+gcol(r.grade)+";font-weight:600\\">"+(r.grade||"-")+"</td>"'
     + '+"<td style=\\"font-weight:600;color:"+(r.dir==="short"?"#dc2626":r.dir==="long"?"#16a34a":"#6b7280")+"\\">"+(r.dir==="short"?"DOWN":r.dir==="long"?"UP":"flat")+"</td>"'
     + '+"<td><span class=pill style=\\"color:"+ac(r.action)+"\\">"+al(r.action)+"</span></td>"'
@@ -453,8 +522,11 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
 async function main() {
   let symbols = subset.length ? subset : [...new Set(Object.values(UNIVERSE).flat())];
   const results = [];
+  // pre-fetch SMT anchor 15m candles ONCE (sector/index correlates), reused for every name
+  const anchors = {};
+  for (const a of SMT_ANCHORS) { try { anchors[a] = await fetchCandles(a, '15m', '1mo'); } catch (e) {} await new Promise(r => setTimeout(r, 120)); }
   // light throttle to be gentle on Yahoo
-  for (const s of symbols) { results.push(await scanOne(s)); await new Promise(r => setTimeout(r, 120)); }
+  for (const s of symbols) { results.push(await scanOne(s, anchors)); await new Promise(r => setTimeout(r, 120)); }
 
   const ok = results.filter(r => !r.error).sort((a, b) => b.score - a.score);
   const errs = results.filter(r => r.error);
@@ -509,7 +581,7 @@ async function main() {
   for (const r of buys) {
     const tags = [r.holding ? 'HOLDING' : '', r.leveraged ? 'LEVERAGED/tactical' : ''].filter(Boolean).join(' ');
     const L = r.levels;
-    console.log(`${icon(r.action)} ${r.symbol.padEnd(5)} ${String(r.score)}/10  $${r.price}  ${r.bias}/${r.zone} ${tags}`);
+    console.log(`${icon(r.action)} ${r.symbol.padEnd(5)} ${String(r.score)}/12  $${r.price}  ${r.bias}/${r.zone} ${tags}`);
     console.log(`      E1 ${L.entry1} | E2 ${L.entry2} | Stop ${L.stop} | TP1 ${L.tp1} | TP2 ${L.tp2} | TP3 ${L.tp3} | ~${L.rr}R`);
   }
   if (!buys.length) console.log('(no actionable long/short setups this run)');
