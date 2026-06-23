@@ -193,6 +193,9 @@ export function renderOptionsHtml(optIdeas) {
   const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   const oi = optIdeas || { calls: [], puts: [] };
   let html = '<h2 style="font-size:16px;font-weight:600;margin:18px 0 6px">Recommended options <span style="font-size:12px;font-weight:400;color:var(--muted)">(Day / Swing / Runner &mdash; high-risk, confirm live pricing, not advice)</span></h2>';
+  // An option is only worth buying over the ETF if it clears a real gain at its target
+  // (after the time-decay it pays while you hold it). Below this, steer to the ETF.
+  const GOOD = 1.15;
   const tierRows = (idea, isCall) => TIERS.map((t, i) => {
     const c = idea.tiers ? idea.tiers[t.key] : null;
     const tgt = c ? c.target : (idea.targets || {})[t.key];
@@ -201,21 +204,26 @@ export function renderOptionsHtml(optIdeas) {
     const td = (inner, extra) => '<td style="border-top:' + bt + ';' + (extra || '') + '">' + inner + '</td>';
     const symCell = i === 0 ? '<b>' + esc(idea.sym) + '</b><div style="font-size:11px;color:var(--muted)">' + idea.score + '/8 ' + esc(idea.grade || '-') + '</div>' : '';
     const etfCell = i === 0 ? (idea.etf ? esc(idea.etf) : '<span style="color:var(--muted)">&mdash;</span>') : '';
-    const contract = c ? ('$' + c.strike + ' <span style="color:var(--muted)">(' + c.otmPct + '% OTM)</span> &middot; ' + c.expiry + ' &middot; ' + c.dte + 'd' + (c.iv ? ' &middot; IV' + c.iv + '%' : '')) : '<span style="color:var(--muted)">n/a</span>';
-    const greeks = c ? ('&Delta;' + (c.delta != null ? c.delta : '-') + (c.theta != null ? ' &middot; &theta;' + c.theta : '')) : '';
-    const entry = c && c.premium ? '$' + c.premium : '&mdash;';
-    const multCol = c && c.exitMult ? (c.exitMult >= 1 ? '#16a34a' : '#dc2626') : 'var(--muted)';
-    const target = c && c.exitPrem != null
-      ? '<b>$' + c.exitPrem + '</b>' + (c.exitMult ? ' <span style="color:' + multCol + '">(' + c.exitMult + 'x)</span>' : '')
-      : '&mdash;';
     const stop = idea.invalid ? '$' + idea.invalid : '&mdash;';
+    const wins = c && c.exitMult != null && c.exitMult >= GOOD;
+    let contract, buy, sell, greeks;
+    if (wins) {
+      contract = '$' + c.strike + ' <span style="color:var(--muted)">(' + c.otmPct + '% OTM)</span> &middot; ' + c.expiry + ' &middot; ' + c.dte + 'd' + (c.iv ? ' &middot; IV' + c.iv + '%' : '');
+      buy = '$' + c.premium;
+      sell = '<b style="color:#16a34a">$' + c.exitPrem + '</b> <span style="color:#16a34a">(' + c.exitMult + 'x)</span>';
+      greeks = '&Delta;' + (c.delta != null ? c.delta : '-') + (c.theta != null ? ' &middot; &theta;' + c.theta : '');
+    } else {
+      // The option's decay would eat the move — point at the leveraged ETF (Alt column).
+      contract = '<span style="color:var(--muted)">move too small for the option &mdash; <b>use the ETF</b> (Alt col) for this horizon</span>';
+      buy = '&mdash;'; sell = '<span style="color:var(--muted)">ETF</span>'; greeks = '';
+    }
     return '<tr>'
       + td(symCell)
       + td(etfCell, 'font-size:12px')
       + td('<b style="color:' + col + '">' + t.label + '</b>' + (tgt ? ' <span style="color:var(--muted)">&rarr; $' + tgt + '</span>' : ''), 'font-size:12px')
       + td(contract, 'font-size:12px')
-      + '<td class="r" style="border-top:' + bt + '">' + entry + '</td>'
-      + '<td class="r" style="border-top:' + bt + '">' + target + '</td>'
+      + '<td class="r" style="border-top:' + bt + '">' + buy + '</td>'
+      + '<td class="r" style="border-top:' + bt + '">' + sell + '</td>'
       + td(greeks, 'font-size:11px;color:var(--muted)')
       + td(stop, 'font-size:11px;color:var(--muted)')
       + '</tr>';
@@ -223,8 +231,8 @@ export function renderOptionsHtml(optIdeas) {
   const callBlocks = oi.calls.map(c => tierRows(c, true)).join('');
   const putBlocks = oi.puts.map(p => tierRows(p, false)).join('');
   if (callBlocks || putBlocks) {
-    html += '<div class="sub">3 horizons per setup, each anchored to a liquidity draw: <b>Day</b> = 1H, <b>Swing</b> = 4H, <b>Runner</b> = Daily. Strike = OTM toward that target; <b>expiry is ATR-sized</b> (how long price needs to reach the target at its average range). <b>Alt</b> = same-direction leveraged ETF if you would rather not trade the option. <b>Entry ~</b> = mid you would pay to open; <b>Target ~</b> = estimated contract mid if the underlying tags the take-target around mid-horizon &mdash; <b>set your limit-sell near here</b> (x = gain vs entry). &Delta; = directional exposure, &theta; = daily decay. <b>Stop</b> = underlying price that invalidates the idea. Options can expire worthless.</div>';
-    html += '<table><thead><tr><th>Symbol</th><th>Alt (lev. ETF)</th><th>Horizon &rarr; target</th><th>Suggested contract</th><th class="r">Entry ~</th><th class="r">Target ~</th><th>Greeks</th><th>Stop</th></tr></thead><tbody>';
+    html += '<div class="sub"><b>How to read this:</b> each name shows 3 holding lengths &mdash; <b>Day</b> (~days), <b>Swing</b> (~2 weeks), <b>Runner</b> (~1 month+). For each: <b>Buy ~</b> = the option mid you pay to open, <b>Sell ~</b> = the estimated mid to close when price reaches the target (the <b>x</b> is your gain &mdash; set your limit-sell there). Only <b>profitable</b> options are shown; when the move is too small to beat time-decay, the row says <b>use the ETF</b> instead (the Alt column &mdash; no expiry, no decay). <b>Stop</b> = the underlying price that kills the idea. &Delta;/&theta; = how much the option moves with the stock / loses per day. High-risk; confirm live pricing; not advice.</div>';
+    html += '<table><thead><tr><th>Symbol</th><th>Alt (lev. ETF)</th><th>Horizon &rarr; target</th><th>Suggested contract</th><th class="r">Buy ~</th><th class="r">Sell ~</th><th>Greeks</th><th>Stop</th></tr></thead><tbody>';
     if (oi.calls.length) html += '<tr><td colspan="8" style="font-weight:600;color:#16a34a;background:rgba(22,163,74,0.06)">CALLS &mdash; bullish setups</td></tr>' + callBlocks;
     if (oi.puts.length) html += '<tr><td colspan="8" style="font-weight:600;color:#dc2626;background:rgba(220,38,38,0.06)">PUTS &mdash; bearish (downtrend) names</td></tr>' + putBlocks;
     html += '</tbody></table>';
