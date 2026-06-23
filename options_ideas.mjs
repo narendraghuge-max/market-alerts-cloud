@@ -83,7 +83,7 @@ function pickTier(chain, type, nowMs, target, score, targetDTE) {
   const atm = chain2.slice().sort((a, b) => Math.abs(a.strike - price) - Math.abs(b.strike - price))[0];
   const iv = (atm && atm.iv > 0) ? atm.iv : 0.5;
   const EM = price * iv * Math.sqrt(dte / 365);
-  const cf = score >= 8 ? 0.6 : score >= 7 ? 0.5 : score >= 5 ? 0.4 : 0.3;
+  const cf = score >= 9 ? 0.6 : score >= 7 ? 0.5 : score >= 5 ? 0.4 : 0.3;
   // Anchor the strike so the take-target prints IN-the-money: a call strike must sit
   // AT or BELOW the target (a put AT or ABOVE it) — otherwise the option is still OTM
   // when the target hits and you'd sell for less than you paid. Aim partway from spot
@@ -156,8 +156,8 @@ function dteFromATR(distance, atr, lo, hi) {
 }
 
 export async function buildOptionsIdeas(ok, nowMs, n = 4) {
-  const bullish = ok.filter(r => !r.leveraged && r.direction !== 'short' && (r.action === 'BUY' || r.action === 'ACCUMULATE' || r.score >= 5)).slice(0, n);
-  const bearish = ok.filter(r => !r.leveraged && r.direction === 'short').sort((a, b) => b.score - a.score).slice(0, n);
+  const bullish = ok.filter(r => !r.leveraged && r.direction !== 'short' && (r.action === 'BUY' || r.action === 'ACCUMULATE' || r.score >= 6)).slice(0, n);
+  const bearish = ok.filter(r => !r.leveraged && r.direction === 'short' && (r.action === 'SHORT' || r.action === 'SHORT-SCALE' || r.score >= 6)).sort((a, b) => b.score - a.score).slice(0, n);
   const calls = [], puts = [];
   for (const r of bullish) {
     const L = r.levels || {};
@@ -202,7 +202,7 @@ export function renderOptionsHtml(optIdeas) {
     const col = isCall ? '#16a34a' : '#dc2626';
     const bt = i === 0 ? '2px solid var(--line)' : 'none';
     const td = (inner, extra) => '<td style="border-top:' + bt + ';' + (extra || '') + '">' + inner + '</td>';
-    const symCell = i === 0 ? '<b>' + esc(idea.sym) + '</b><div style="font-size:11px;color:var(--muted)">' + idea.score + '/8 ' + esc(idea.grade || '-') + '</div>' : '';
+    const symCell = i === 0 ? '<b>' + esc(idea.sym) + '</b><div style="font-size:11px;color:var(--muted)">' + idea.score + '/10 ' + esc(idea.grade || '-') + '</div>' : '';
     const etfCell = i === 0 ? (idea.etf ? esc(idea.etf) : '<span style="color:var(--muted)">&mdash;</span>') : '';
     const stop = idea.invalid ? '$' + idea.invalid : '&mdash;';
     const wins = c && c.exitMult != null && c.exitMult >= GOOD;

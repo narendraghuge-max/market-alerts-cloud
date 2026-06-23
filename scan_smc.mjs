@@ -48,6 +48,7 @@ async function fetchCandles(symbol, interval, range) {
 }
 
 function ema(arr, p) { const k = 2 / (p + 1); let e = arr[0]; for (let i = 1; i < arr.length; i++) e = arr[i] * k + e * (1 - k); return e; }
+function avgVol(bars, n = 20) { const s = bars.slice(-n); return s.length ? s.reduce((a, b) => a + b.v, 0) / s.length : 0; }
 function atr(bars, p = 14) {
   const tr = [];
   for (let i = 1; i < bars.length; i++) tr.push(Math.max(bars[i].h - bars[i].l, Math.abs(bars[i].h - bars[i - 1].c), Math.abs(bars[i].l - bars[i - 1].c)));
@@ -101,143 +102,191 @@ function nearestLowBelow(bars, price, s = 2) {
   return ls[0] ?? null;
 }
 
-// Top-down MULTI-TIMEFRAME ICT engine (LONG setups only). Daily/4H/1H bias -> 1H POI
-// -> 15m precise entry. Targets tier 1H=day, 4H=swing, Daily=runner.
-// "direction" is INFO ONLY (the trend read up/down/flat); setups & levels are always long.
+// Top-down MULTI-TIMEFRAME ICT engine — BIDIRECTIONAL (long & short). Daily/4H/1H bias
+// picks the side; 1H POI (OB/FVG/breaker, displacement-validated + freshness/mitigation)
+// -> 15m liquidity sweep + BOS/ChoCH (volume-confirmed) -> OTE entry. 10-point confluence.
+// Targets tier 1H=day, 4H=swing, Daily=runner (upside for longs, downside for shorts).
+const MAXSCORE = 10;
 function analyze(symbol, daily, h4, h1, m15) {
   const price = m15.at(-1).c;
   const f2 = x => x.toFixed(2);
 
-  // ---- MTF bias (Daily, 4H, 1H) ----
+  // ---- MTF bias (Daily, 4H, 1H) -> hunt the favored side ----
   const biasD = biasOf(daily), bias4 = biasOf(h4), bias1 = biasOf(h1);
   const upCount = [biasD, bias4, bias1].filter(b => b === 'up').length;
   const downCount = [biasD, bias4, bias1].filter(b => b === 'down').length;
-  const direction = upCount > downCount ? 'long' : downCount > upCount ? 'short' : 'neutral';  // INFO only
+  const trend = upCount > downCount ? 'long' : downCount > upCount ? 'short' : 'neutral'; // true MTF read (info)
+  const dir = trend === 'short' ? 'short' : 'long';   // neutral defaults to long (dip-buy bias)
+  const sign = dir === 'long' ? 1 : -1;
+  const beyond = (a, b) => sign * (a - b) > 0;         // a further in profit direction than b
   const dC = daily.map(b => b.c);
-  const dAbove200 = price > ema(dC, 200);
-  const trendOk = biasD === 'up' && bias4 !== 'down' && dAbove200;
+  const ema200d = ema(dC, 200);
+  const trendOk = dir === 'long'
+    ? (biasD === 'up' && bias4 !== 'down' && price > ema200d)
+    : (biasD === 'down' && bias4 !== 'up' && price < ema200d);
 
-  // ---- Daily dealing range -> discount/premium ----
+  // ---- Daily dealing range -> discount/premium (longs want discount, shorts want premium) ----
   const dHi = Math.max(...daily.slice(-40).map(b => b.h));
   const dLo = Math.min(...daily.slice(-40).map(b => b.l));
-  const discount = price < (dHi + dLo) / 2;
+  const mid = (dHi + dLo) / 2;
+  const goodLocation = dir === 'long' ? price < mid : price > mid;
+  const atr1 = atr(h1, 14) || price * 0.01, atrDaily = atr(daily, 14);
+  const n = m15.length;
 
-  // ---- 1H point of interest: bullish order block / FVG at-or-below price ----
-  let poiTop = null, poiBot = null, poiKind = null;
+  // ---- 1H POI on the trade side: OB / FVG, displacement-validated, freshness(mitigation) + breaker ----
+  let poiTop = null, poiBot = null, poiKind = null, poiIdx = -1, displaced = false, fresh = false, breaker = false;
+  let firstOB = null;
   for (let i = h1.length - 2; i >= Math.max(1, h1.length - 30); i--) {
-    if (h1[i].c < h1[i].o && h1[i].l <= price) { poiTop = h1[i].h; poiBot = h1[i].l; poiKind = '1H order block'; break; }
+    const isOB = dir === 'long' ? (h1[i].c < h1[i].o && h1[i].l <= price) : (h1[i].c > h1[i].o && h1[i].h >= price);
+    if (!isOB) continue;
+    // displacement: strong move OUT of the OB in trade dir within ~3 bars, or an FVG just after
+    let disp = false;
+    for (let k = i + 1; k <= Math.min(h1.length - 1, i + 3); k++) if (sign * (h1[k].c - h1[i].c) >= 1.2 * atr1) { disp = true; break; }
+    if (!disp && i + 2 <= h1.length - 1) disp = dir === 'long' ? (h1[i + 2].l > h1[i].h) : (h1[i + 2].h < h1[i].l);
+    if (disp) { poiTop = h1[i].h; poiBot = h1[i].l; poiKind = '1H order block'; poiIdx = i; displaced = true; break; }
+    if (!firstOB) firstOB = { top: h1[i].h, bot: h1[i].l, idx: i };
   }
-  for (let i = h1.length - 1; i >= Math.max(2, h1.length - 30); i--) {
-    if (h1[i].l > h1[i - 2].h && h1[i - 2].h <= price) {
-      const bot = h1[i - 2].h, top = h1[i].l;
-      if (poiBot == null || bot > poiBot) { poiTop = top; poiBot = bot; poiKind = '1H fair-value gap'; }
-      break;
+  if (poiBot == null && firstOB) { poiTop = firstOB.top; poiBot = firstOB.bot; poiKind = '1H order block'; poiIdx = firstOB.idx; displaced = false; }
+  if (poiBot == null) {   // no OB -> nearest FVG imbalance on our side (an FVG is itself displacement)
+    for (let i = h1.length - 1; i >= Math.max(2, h1.length - 30); i--) {
+      const isFVG = dir === 'long' ? (h1[i].l > h1[i - 2].h && h1[i - 2].h <= price) : (h1[i].h < h1[i - 2].l && h1[i - 2].l >= price);
+      if (!isFVG) continue;
+      const a = dir === 'long' ? h1[i].l : h1[i].h, b = dir === 'long' ? h1[i - 2].h : h1[i - 2].l;
+      poiTop = Math.max(a, b); poiBot = Math.min(a, b); poiKind = '1H fair-value gap'; poiIdx = i; displaced = true; break;
     }
+  }
+  // freshness (mitigation): the zone hasn't been revisited since it formed = unmitigated, highest quality
+  if (poiIdx >= 0) { let touches = 0; for (let k = poiIdx + 1; k < h1.length - 1; k++) if (h1[k].l <= poiTop && h1[k].h >= poiBot) touches++; fresh = touches === 0; }
+  // breaker: a recent opposing pivot price has broken through and may retest as flipped support/resistance
+  const piv1 = pivots(h1, 3);
+  if (dir === 'long') {
+    const bh = piv1.highs.map(x => x.p).filter(p => p < price).sort((x, y) => y - x)[0];
+    if (bh != null && (price - bh) / price < 0.05) { breaker = true; if (poiBot == null) { poiTop = bh; poiBot = bh - atr1; poiKind = '1H breaker (reclaimed high)'; fresh = true; displaced = true; } }
+  } else {
+    const bl = piv1.lows.map(x => x.p).filter(p => p > price).sort((x, y) => x - y)[0];
+    if (bl != null && (bl - price) / price < 0.05) { breaker = true; if (poiBot == null) { poiBot = bl; poiTop = bl + atr1; poiKind = '1H breaker (reclaimed low)'; fresh = true; displaced = true; } }
   }
   const poiPresent = poiBot != null;
 
-  // ---- 15m execution: fresh sweep + break of structure ----
-  const n = m15.length;
-  const piv = pivots(m15, 2);
-  const sHighs = piv.highs, sLows = piv.lows;
-  let sweep = false, sweepLow = null, sweepIdx = -1, raided = null;
+  // ---- 15m execution: liquidity sweep (opposite side) + BOS/ChoCH, volume-confirmed ----
+  const piv = pivots(m15, 2), sHighs = piv.highs, sLows = piv.lows;
+  const avgV = avgVol(m15, 20);
+  let sweep = false, sweptLvl = null, sweepIdx = -1, sweepPx = null, volSurge = false;
   for (let i = n - 1; i >= Math.max(2, n - 10); i--) {
-    const priorLows = sLows.filter(x => x.i < i);
-    const lvl = priorLows.length ? priorLows.at(-1).p : null;
-    if (lvl != null && m15[i].l < lvl && m15[i].c > lvl) { sweep = true; sweepLow = m15[i].l; sweepIdx = i; raided = lvl; break; }
+    const priors = dir === 'long' ? sLows.filter(x => x.i < i) : sHighs.filter(x => x.i < i);
+    const lvl = priors.length ? priors.at(-1).p : null;
+    if (lvl == null) continue;
+    const grabbed = dir === 'long' ? (m15[i].l < lvl && m15[i].c > lvl) : (m15[i].h > lvl && m15[i].c < lvl);
+    if (grabbed) { sweep = true; sweptLvl = lvl; sweepIdx = i; sweepPx = dir === 'long' ? m15[i].l : m15[i].h; volSurge = avgV > 0 && m15[i].v > 1.4 * avgV; break; }
   }
-  let bosUp = false, legHigh = null;
+  let bos = false, legFar = null;
   if (sweep) {
-    const ph = sHighs.filter(x => x.i < sweepIdx).at(-1);
-    const ref = ph ? ph.p : null;
-    let hi = -Infinity;
-    for (let i = sweepIdx; i < n; i++) { if (m15[i].h > hi) hi = m15[i].h; if (ref != null && m15[i].c > ref) bosUp = true; }
-    legHigh = hi;
+    const opp = (dir === 'long' ? sHighs : sLows).filter(x => x.i < sweepIdx).at(-1);
+    const ref = opp ? opp.p : null;
+    let ext = dir === 'long' ? -Infinity : Infinity;
+    for (let i = sweepIdx; i < n; i++) { ext = dir === 'long' ? Math.max(ext, m15[i].h) : Math.min(ext, m15[i].l); if (ref != null && beyond(m15[i].c, ref)) bos = true; }
+    legFar = ext;
   }
-  const legLow = sweep ? sweepLow : (sLows.at(-1)?.p ?? Math.min(...m15.slice(-20).map(b => b.l)));
-  const lh = legHigh ?? (sHighs.at(-1)?.p ?? Math.max(...m15.slice(-20).map(b => b.h)));
-  const range = Math.max(lh - legLow, 1e-6);
+  const legAnchor = sweep ? sweepPx : (dir === 'long' ? (sLows.at(-1)?.p ?? Math.min(...m15.slice(-20).map(b => b.l))) : (sHighs.at(-1)?.p ?? Math.max(...m15.slice(-20).map(b => b.h))));
+  if (legFar == null) legFar = dir === 'long' ? (sHighs.at(-1)?.p ?? Math.max(...m15.slice(-20).map(b => b.h))) : (sLows.at(-1)?.p ?? Math.min(...m15.slice(-20).map(b => b.l)));
+  const range = Math.max(Math.abs(legFar - legAnchor), 1e-6);
 
-  // ---- Entry: leg-anchored OTE (0.62-0.79 retracement = a real discount pullback), refined by an OB/FVG inside it ----
-  const ote62 = lh - 0.62 * range;   // shallow retrace -> Entry-1 (fills first)
-  const ote79 = lh - 0.79 * range;   // deep retrace    -> Entry-2
+  // ---- OTE 0.62-0.79 retrace from the leg, refined by a 15m OB inside the band ----
+  const ote62 = legFar - sign * 0.62 * range, ote79 = legFar - sign * 0.79 * range;
   const oteLo = Math.min(ote62, ote79), oteHi = Math.max(ote62, ote79);
-  let refTop = ote62, refBot = ote79, zoneKind = '15m OTE 0.62-0.79 (discount pullback)';
-  // refine: a 15m bullish order block (down-candle) overlapping the OTE band = the origin zone
+  let refShallow = ote62, refDeep = ote79, zoneKind = `15m OTE 0.62-0.79 (${dir === 'long' ? 'discount' : 'premium'} pullback)`;
   for (let i = n - 2; i >= Math.max(1, n - 45); i--) {
-    if (m15[i].c < m15[i].o && m15[i].l <= oteHi && m15[i].h >= oteLo) {
-      refTop = Math.min(m15[i].h, oteHi); refBot = Math.max(m15[i].l, oteLo);
+    const isOB = dir === 'long' ? (m15[i].c < m15[i].o) : (m15[i].c > m15[i].o);
+    if (isOB && m15[i].l <= oteHi && m15[i].h >= oteLo) {
+      refShallow = dir === 'long' ? Math.min(m15[i].h, oteHi) : Math.max(m15[i].l, oteLo);
+      refDeep = dir === 'long' ? Math.max(m15[i].l, oteLo) : Math.min(m15[i].h, oteHi);
       zoneKind = '15m order block in the OTE zone'; break;
     }
   }
-  if (zoneKind.indexOf('order block') < 0) {  // else a 15m bullish FVG inside the OTE band
-    for (let i = n - 1; i >= Math.max(2, n - 45); i--) {
-      if (m15[i].l > m15[i - 2].h && m15[i].l >= oteLo && m15[i - 2].h <= oteHi) {
-        refTop = Math.min(m15[i].l, oteHi); refBot = Math.max(m15[i - 2].h, oteLo);
-        zoneKind = '15m FVG in the OTE zone'; break;
-      }
-    }
-  }
-  // Entry-1 = shallow edge, Entry-2 = deep edge; clamp at/below price (if price already deep in discount, entries sit near price)
-  const entry1 = Math.min(refTop, price * 0.999);
-  const entry2 = Math.min(refBot, entry1 * 0.999);
+  // entries clamped to the correct side of price (entry1 = shallow/fills first, entry2 = deep)
+  let entry1, entry2;
+  if (dir === 'long') { entry1 = Math.min(refShallow, price * 0.999); entry2 = Math.min(refDeep, entry1 * 0.999); }
+  else { entry1 = Math.max(refShallow, price * 1.001); entry2 = Math.max(refDeep, entry1 * 1.001); }
   const entryInPoi = poiPresent && entry1 <= poiTop * 1.004 && entry1 >= poiBot * 0.996;
 
-  // ---- Stop: below the swept liquidity low (structural invalidation) ----
-  const structLow = Math.min(legLow, entry2, poiPresent ? poiBot : Infinity);
-  const stop = structLow - 0.0015 * structLow;
+  // ---- Stop: beyond the swept liquidity (structural invalidation) ----
+  let stop;
+  if (dir === 'long') { const sl = Math.min(legAnchor, entry2, poiPresent ? poiBot : Infinity); stop = sl - 0.0015 * sl; }
+  else { const sh = Math.max(legAnchor, entry2, poiPresent ? poiTop : -Infinity); stop = sh + 0.0015 * sh; }
 
-  // ---- Tiered targets: 1H (day) -> 4H (swing) -> Daily (runner) ----
-  let T1 = nearestHighAbove(h1, price, 2) ?? (price + 0.5 * range);
-  let T2 = nearestHighAbove(h4, Math.max(price, T1), 2) ?? (T1 + 0.8 * range);
-  let T3 = nearestHighAbove(daily, Math.max(T1, T2), 3) ?? (T2 + 1.0 * range);
-  if (T1 <= price) T1 = price + 0.3 * range;
-  if (T2 <= T1) T2 = T1 + Math.max(0.5 * (T1 - entry1), 0.4 * range);
-  if (T3 <= T2) T3 = T2 + Math.max(0.5 * (T2 - T1), 0.4 * range);
+  // ---- Tiered targets = liquidity draws in the trade direction: 1H(day) -> 4H(swing) -> Daily(runner) ----
+  let T1, T2, T3;
+  if (dir === 'long') {
+    T1 = nearestHighAbove(h1, price, 2) ?? (price + 0.5 * range);
+    T2 = nearestHighAbove(h4, Math.max(price, T1), 2) ?? (T1 + 0.8 * range);
+    T3 = nearestHighAbove(daily, Math.max(T1, T2), 3) ?? (T2 + 1.0 * range);
+    if (T1 <= price) T1 = price + 0.3 * range;
+    if (T2 <= T1) T2 = T1 + Math.max(0.5 * (T1 - entry1), 0.4 * range);
+    if (T3 <= T2) T3 = T2 + Math.max(0.5 * (T2 - T1), 0.4 * range);
+  } else {
+    T1 = nearestLowBelow(h1, price, 2) ?? (price - 0.5 * range);
+    T2 = nearestLowBelow(h4, Math.min(price, T1), 2) ?? (T1 - 0.8 * range);
+    T3 = nearestLowBelow(daily, Math.min(T1, T2), 3) ?? (T2 - 1.0 * range);
+    if (T1 >= price) T1 = price - 0.3 * range;
+    if (T2 >= T1) T2 = T1 - Math.max(0.5 * (price - T1), 0.4 * range);
+    if (T3 >= T2) T3 = T2 - Math.max(0.5 * (T1 - T2), 0.4 * range);
+  }
+  const riskU = Math.max(Math.abs(entry1 - stop), 1e-6);
+  const rr1 = Math.abs(T1 - entry1) / riskU;
 
-  // ---- Downside liquidity draws (for PUT ideas): mirror of the upside targets ----
-  let D1 = nearestLowBelow(h1, price, 2) ?? (price - 0.5 * range);
-  let D2 = nearestLowBelow(h4, Math.min(price, D1), 2) ?? (D1 - 0.8 * range);
-  let D3 = nearestLowBelow(daily, Math.min(D1, D2), 3) ?? (D2 - 1.0 * range);
-  if (D1 >= price) D1 = price - 0.3 * range;
-  if (D2 >= D1) D2 = D1 - Math.max(0.5 * (price - D1), 0.4 * range);
-  if (D3 >= D2) D3 = D2 - Math.max(0.5 * (D1 - D2), 0.4 * range);
-  const putStop = nearestHighAbove(h1, price, 2) ?? nearestHighAbove(h4, price, 2) ?? (price + 0.5 * range); // bear invalidation: structure high above
-  const atrDaily = atr(daily, 14);
+  // ---- Downside draws + bear stop for the OPTIONS put path (= the targets/stop when short) ----
+  let D1, D2, D3, putStop;
+  if (dir === 'short') { D1 = T1; D2 = T2; D3 = T3; putStop = stop; }
+  else {
+    D1 = nearestLowBelow(h1, price, 2) ?? (price - 0.5 * range);
+    D2 = nearestLowBelow(h4, Math.min(price, D1), 2) ?? (D1 - 0.8 * range);
+    D3 = nearestLowBelow(daily, Math.min(D1, D2), 3) ?? (D2 - 1.0 * range);
+    if (D1 >= price) D1 = price - 0.3 * range;
+    if (D2 >= D1) D2 = D1 - Math.max(0.5 * (price - D1), 0.4 * range);
+    if (D3 >= D2) D3 = D2 - Math.max(0.5 * (D1 - D2), 0.4 * range);
+    putStop = nearestHighAbove(h1, price, 2) ?? (price + 0.5 * range);
+  }
 
-  const riskU = Math.max(entry1 - stop, 1e-6);
-  const rr1 = (T1 - entry1) / riskU;
-
-  // ---- MTF score ----
-  const entryDisc = entry1 < (dHi + dLo) / 2;   // entry itself sits in the discount half
+  // ---- 10-point confluence score ----
+  const entryLoc = dir === 'long' ? entry1 < mid : entry1 > mid;
   const flags = {
-    dailyUp: biasD === 'up', fourHUp: bias4 === 'up', oneHUp: bias1 === 'up',
-    discount, poi: poiPresent, entryDisc, sweep, goodTarget: rr1 >= 1.0,
+    dailyAligned: dir === 'long' ? biasD === 'up' : biasD === 'down',
+    fourHAligned: dir === 'long' ? bias4 === 'up' : bias4 === 'down',
+    oneHAligned: dir === 'long' ? bias1 === 'up' : bias1 === 'down',
+    location: goodLocation,
+    poi: poiPresent,
+    entryLoc,
+    sweep,
+    goodTarget: rr1 >= 1.0,
+    volume: volSurge,
+    displacement: displaced || bos,
   };
-  const score = Object.values(flags).filter(Boolean).length;
+  const score = Object.values(flags).filter(Boolean).length;  // 0..10
   const goodR = rr1 >= 1.0;
   let action = 'AVOID';
-  if (trendOk && sweep && goodR && entryInPoi && score >= 7) action = 'BUY';
-  else if (trendOk && sweep && goodR && score >= 5) action = 'ACCUMULATE';
-  else if (score >= 3) action = 'WATCH';
-  const grade = upCount === 3 ? 'A' : upCount === 2 ? 'B' : 'C';
+  if (trendOk && sweep && goodR && entryInPoi && score >= 8) action = dir === 'long' ? 'BUY' : 'SHORT';
+  else if (trendOk && sweep && goodR && score >= 6) action = dir === 'long' ? 'ACCUMULATE' : 'SHORT-SCALE';
+  else if (score >= 4) action = 'WATCH';
+  const aligned = dir === 'long' ? upCount : downCount;
+  const grade = aligned === 3 ? 'A' : aligned === 2 ? 'B' : 'C';
 
   // ---- Basis: top-down MTF story ----
+  const tag = [displaced ? 'displacement-confirmed' : '', fresh ? 'fresh/unmitigated' : '', breaker ? 'breaker' : ''].filter(Boolean).join(', ');
   const bp = [];
-  bp.push(`bias: Daily ${biasD}, 4H ${bias4}, 1H ${bias1} (trend ${direction}, grade ${grade})`);
-  bp.push(discount ? 'price in daily discount (good value)' : 'price in daily premium (chasing)');
-  bp.push(poiPresent ? `pulling into a ${poiKind} (${f2(poiBot)}-${f2(poiTop)})` : 'no clean 1H demand zone below yet');
-  bp.push(sweep ? `15m grabbed liquidity (swept ${f2(raided ?? legLow)})${bosUp ? ' and broke structure up' : ''}` : 'no fresh 15m liquidity grab yet');
-  bp.push(`entry in the ${zoneKind}: ${f2(entry2)} (deep 0.79) to ${f2(entry1)} (shallow 0.62)${entryInPoi ? ', inside the 1H zone' : ''}`);
-  bp.push(`targets: TP1 ${f2(T1)} = 1H liquidity (day) -> TP2 ${f2(T2)} = 4H liquidity (swing) -> TP3 ${f2(T3)} = daily liquidity (runner)`);
-  if (direction === 'short') bp.push('heads-up: overall trend is DOWN, so a long here is counter-trend (lower odds)');
+  bp.push(`bias: Daily ${biasD}, 4H ${bias4}, 1H ${bias1} (hunting ${dir.toUpperCase()}, grade ${grade})`);
+  bp.push(goodLocation ? `price in daily ${dir === 'long' ? 'discount (good value to buy)' : 'premium (good value to short)'}` : `price in daily ${dir === 'long' ? 'premium (chasing)' : 'discount (early to short)'}`);
+  bp.push(poiPresent ? `into a ${poiKind} (${f2(poiBot)}-${f2(poiTop)})${tag ? ' [' + tag + ']' : ''}` : `no clean 1H ${dir === 'long' ? 'demand' : 'supply'} zone yet`);
+  bp.push(sweep ? `15m grabbed ${dir === 'long' ? 'sell' : 'buy'}-side liquidity (swept ${f2(sweptLvl)})${bos ? `, then ${dir === 'long' ? 'BOS up' : 'ChoCH down'}` : ''}${volSurge ? ', on a volume surge' : ''}` : 'no fresh 15m liquidity grab yet');
+  bp.push(`entry in the ${zoneKind}: ${f2(entry2)} (deep) to ${f2(entry1)} (shallow)${entryInPoi ? ', inside the 1H zone' : ''}`);
+  bp.push(`targets: TP1 ${f2(T1)} (day) -> TP2 ${f2(T2)} (swing) -> TP3 ${f2(T3)} (runner); ~${f2(rr1)}R`);
   const basis = bp.join('; ');
 
   return {
-    symbol, price: +price.toFixed(2), score, action, basis, grade, direction,
+    symbol, price: +price.toFixed(2), score, action, basis, grade, direction: dir, trend,
     leveraged: LEVERAGED.has(symbol), holding: HOLDINGS.has(symbol),
-    bias: trendOk ? 'bull' : 'weak', zone: discount ? 'discount' : 'premium',
-    flags,
+    bias: trendOk ? (dir === 'long' ? 'bull' : 'bear') : 'weak',
+    zone: goodLocation ? (dir === 'long' ? 'discount' : 'premium') : (dir === 'long' ? 'premium' : 'discount'),
+    flags, displaced, fresh, breaker, volSurge,
     levels: {
       entry1: +entry1.toFixed(2), entry2: +entry2.toFixed(2), stop: +stop.toFixed(2),
       tp1: +T1.toFixed(2), tp2: +T2.toFixed(2), tp3: +T3.toFixed(2), rr: +rr1.toFixed(2),
@@ -261,7 +310,7 @@ async function scanOne(symbol) {
 
 function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: [] }) {
   const ts = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
-  const data = JSON.stringify(rows.map(r => ({ sym: r.symbol, score: r.score, action: r.action, grade: r.grade, dir: r.direction, price: r.price, bias: r.bias, zone: r.zone, hold: r.holding ? 1 : 0, lev: r.leveraged ? 1 : 0, basis: r.basis, ...r.levels })));
+  const data = JSON.stringify(rows.map(r => ({ sym: r.symbol, score: r.score, action: r.action, grade: r.grade, dir: r.trend, price: r.price, bias: r.bias, zone: r.zone, hold: r.holding ? 1 : 0, lev: r.leveraged ? 1 : 0, basis: r.basis, ...r.levels })));
   const skipped = errs.length ? ' &middot; skipped: ' + errs.map(e => e.symbol).join(', ') : '';
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   let brHtml = '';
@@ -363,11 +412,11 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     + sec(optHtml, false)
     + '<details class="sec"><summary>Buy scan</summary>'
     + '<div class="controls">'
-    + '<select id="f-score"><option value="5">Actionable (score &ge; 5)</option><option value="7">Buy only (&ge; 7)</option><option value="3">Watch &amp; up (&ge; 3)</option><option value="0">All</option></select>'
+    + '<select id="f-score"><option value="6">Actionable (score &ge; 6)</option><option value="8">Strong only (&ge; 8)</option><option value="4">Watch &amp; up (&ge; 4)</option><option value="0">All</option></select>'
     + '<select id="f-sort"><option value="score">Sort: score</option><option value="rr">Sort: reward/risk</option><option value="price">Sort: price</option><option value="sym">Sort: symbol</option></select>'
     + '<label><input type="checkbox" id="f-rr">R &ge; 2</label><label><input type="checkbox" id="f-hold">My holdings</label><label><input type="checkbox" id="f-lev">Hide leveraged</label>'
     + '</div><div id="count"></div>'
-    + '<table><thead><tr><th>Symbol</th><th>Score</th><th title="A=Daily/4H/1H all aligned, B=2 aligned, C=weak">Grade</th><th title="overall trend (info only - setups are long)">Trend</th><th>Action</th><th class="r">Price</th><th class="r">Entry zone</th><th class="r">Stop</th><th class="r">TP1 day &middot; TP2 swing &middot; TP3 run</th><th class="r">R</th><th>Basis (why)</th></tr></thead><tbody id="tb"></tbody></table>'
+    + '<table><thead><tr><th>Symbol</th><th>Score</th><th title="A=Daily/4H/1H all aligned, B=2 aligned, C=weak">Grade</th><th title="overall trend Daily/4H/1H - longs and shorts are both traded">Trend</th><th>Action</th><th class="r">Price</th><th class="r">Entry zone</th><th class="r">Stop</th><th class="r">TP1 day &middot; TP2 swing &middot; TP3 run</th><th class="r">R</th><th>Basis (why)</th></tr></thead><tbody id="tb"></tbody></table>'
     + '</details>'
     + '<footer>HOLD = you own it &middot; LEV = leveraged ETF, tactical only (decay) &middot; mechanical heuristics, confirm on chart &middot; nothing places orders</footer>'
     + '<script>var DATA=' + data + ';'
@@ -379,12 +428,12 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     + 'function render(){var mS=+$("f-score").value,so=$("f-sort").value,q2=$("f-rr").checked,ho=$("f-hold").checked,hl=$("f-lev").checked;'
     + 'var rows=DATA.filter(function(r){return r.score>=mS});if(q2)rows=rows.filter(function(r){return r.rr>=2});if(ho)rows=rows.filter(function(r){return r.hold});if(hl)rows=rows.filter(function(r){return !r.lev});'
     + 'rows.sort(function(a,b){return so==="sym"?a.sym.localeCompare(b.sym):so==="price"?b.price-a.price:(b[so]-a[so])||(b.score-a.score)});'
-    + '$("count").textContent="Showing "+rows.length+" of "+DATA.length+" \\u2014 "+rows.filter(function(r){return r.score>=5}).length+" actionable";'
+    + '$("count").textContent="Showing "+rows.length+" of "+DATA.length+" \\u2014 "+rows.filter(function(r){return r.score>=6}).length+" actionable";'
     + 'var h="";for(var i=0;i<rows.length;i++){var r=rows[i];'
     + 'var tg=(r.hold?"<span class=tag style=\\"color:#2563eb;border-color:#2563eb\\">HOLD</span>":"")+(r.lev?"<span class=tag style=\\"color:#d97706;border-color:#d97706\\">LEV</span>":"");'
-    + 'var zc=r.zone==="discount"?"#16a34a":"#d97706";var rc=r.rr>=2?"#16a34a":"var(--muted)";var sc=r.score>=7?"#16a34a":r.score>=5?"#2563eb":r.score>=3?"var(--muted)":"#dc2626";'
+    + 'var zc=r.zone==="discount"?"#16a34a":"#d97706";var rc=r.rr>=2?"#16a34a":"var(--muted)";var sc=r.score>=8?"#16a34a":r.score>=6?"#2563eb":r.score>=4?"var(--muted)":"#dc2626";'
     + 'h+="<tr><td><b>"+r.sym+"</b>"+tg+"</td>"'
-    + '+"<td style=\\"color:"+sc+";font-weight:600\\">"+r.score+"/8</td>"'
+    + '+"<td style=\\"color:"+sc+";font-weight:600\\">"+r.score+"/10</td>"'
     + '+"<td style=\\"color:"+gcol(r.grade)+";font-weight:600\\">"+(r.grade||"-")+"</td>"'
     + '+"<td style=\\"font-weight:600;color:"+(r.dir==="short"?"#dc2626":r.dir==="long"?"#16a34a":"#6b7280")+"\\">"+(r.dir==="short"?"DOWN":r.dir==="long"?"UP":"flat")+"</td>"'
     + '+"<td><span class=pill style=\\"color:"+ac(r.action)+"\\">"+al(r.action)+"</span></td>"'
@@ -460,7 +509,7 @@ async function main() {
   for (const r of buys) {
     const tags = [r.holding ? 'HOLDING' : '', r.leveraged ? 'LEVERAGED/tactical' : ''].filter(Boolean).join(' ');
     const L = r.levels;
-    console.log(`${icon(r.action)} ${r.symbol.padEnd(5)} ${String(r.score)}/8  $${r.price}  ${r.bias}/${r.zone} ${tags}`);
+    console.log(`${icon(r.action)} ${r.symbol.padEnd(5)} ${String(r.score)}/10  $${r.price}  ${r.bias}/${r.zone} ${tags}`);
     console.log(`      E1 ${L.entry1} | E2 ${L.entry2} | Stop ${L.stop} | TP1 ${L.tp1} | TP2 ${L.tp2} | TP3 ${L.tp3} | ~${L.rr}R`);
   }
   if (!buys.length) console.log('(no actionable long/short setups this run)');
