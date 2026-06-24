@@ -84,6 +84,21 @@ function volumeProfile(bars, binCount = 48) {
   return { poc: f2(lo + (poc + 0.5) * bs), val: f2(lo + loB * bs), vah: f2(lo + (hiB + 1) * bs) };
 }
 
+// Short SMC x volume-profile confluence read: where the ref (entry/price) sits vs value,
+// and whether a take-profit lines up with a volume wall (POC / value edge = strong TP)
+// or sits in open space (price rips through). dir = 'long' | 'short'.
+function vpConfluence(ref, tps, vp, dir = 'long') {
+  if (!vp || ref == null) return '';
+  const { poc, val, vah } = vp;
+  const near = (a, b) => b > 0 && Math.abs(a - b) / b <= 0.015;
+  const loc = ref < val ? 'discount (below value)' : ref > vah ? 'extended (above value)' : 'inside value';
+  const lab = ['TP1', 'TP2', 'TP3'];
+  const walls = dir === 'short' ? [poc, val] : [poc, vah];
+  let wall = '';
+  for (let i = 0; i < (tps || []).length; i++) { if (tps[i] != null && walls.some(L => near(tps[i], L))) { wall = lab[i] + ' at a volume wall (strong take-profit)'; break; } }
+  return loc + '; ' + (wall || 'targets in open space (less resistance)');
+}
+
 function resample(bars, factor) {
   const out = [];
   for (let i = 0; i < bars.length; i += factor) {
@@ -180,6 +195,8 @@ function analyzeExit(sym, cfg, daily, h1) {
   else if (cfg.winner || (pnlPct != null && pnlPct >= 25)) plan = `Up ${pnlPct != null ? f2(pnlPct) + '%' : 'nicely'} - protect it: trim ~1/3 near ${T1}, trail your stop up, ride the rest to ${T2} / ${T3}`;
   else if (trend === 'up') plan = `Healthy - ride toward ${T1} then ${T2}; trim ~1/3 at each and move your stop up. Bail under ${cfg.stop}`;
   else plan = `Hold; first upside ${T1}, then ${T2} / ${T3}. Bail under ${cfg.stop}`;
+  const vpRead = vpConfluence(price, [T1, T2, T3], vp, 'long');
+  if (vpRead) plan += '  |  vol: ' + vpRead;
 
   return { sym, status, reason, sellAt, plan, basis, grade, trend, price: f2(price), stop: cfg.stop, tp1: T1, tp2: T2, tp3: T3, vp, ema50: f2(ema50), distPct: f2(distPct), premium, lev: !!cfg.lev, winner: !!cfg.winner, note: cfg.note || '', shares: cfg.shares, cost: cost != null ? f2(cost) : null, pnl: pnl != null ? f2(pnl) : null, pnlPct: pnlPct != null ? f2(pnlPct) : null };
 }
@@ -246,7 +263,7 @@ async function main() {
   console.log(`\nNot financial advice - no orders placed.`);
 }
 
-export { analyzeExit, HOLDINGS, RANK, fetchCandles, one as exitOne, volumeProfile };
+export { analyzeExit, HOLDINGS, RANK, fetchCandles, one as exitOne, volumeProfile, vpConfluence };
 
 const __isMain = process.argv[1] && process.argv[1].replace(/\\/g, '/').endsWith('scan_exits.mjs');
 if (__isMain) main();

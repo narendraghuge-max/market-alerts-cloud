@@ -10,7 +10,7 @@ import { writeFileSync, readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 const __reportDir = dirname(fileURLToPath(import.meta.url));
-import { analyzeExit as analyzeExitH, HOLDINGS as EXIT_HOLDINGS, RANK as EXIT_RANK, exitOne, volumeProfile } from './scan_exits.mjs';
+import { analyzeExit as analyzeExitH, HOLDINGS as EXIT_HOLDINGS, RANK as EXIT_RANK, exitOne, volumeProfile, vpConfluence } from './scan_exits.mjs';
 import { buildOptionsIdeas, renderOptionsHtml } from './options_ideas.mjs';
 
 const HOLDINGS = new Set(Object.keys(EXIT_HOLDINGS)); // derived from holdings secret (single source of truth)
@@ -426,6 +426,8 @@ function analyze(symbol, daily, h4, h1, m15, anchors) {
   if (smt) bp.push(`SMT divergence vs ${anchorSym}: anchor did not confirm the ${dir === 'long' ? 'lower low (bullish)' : 'higher high (bearish)'}`);
   const vp = volumeProfile(daily.slice(-30));   // recent ~1-month window (long windows lag on trending names)
   if (vp) bp.push(`volume profile: POC ${vp.poc} (magnet/key support-resistance), value area ${vp.val}-${vp.vah}; entry ${entry1 < vp.val ? 'below value area (real discount)' : entry1 <= vp.vah ? 'inside the fair-value zone' : 'above value area (extended)'}`);
+  const vpRead = vp ? vpConfluence(entry1, [T1, T2, T3], vp, dir) : '';
+  if (vpRead) bp.push('SMC-vol read: entry ' + vpRead);
   const basis = bp.join('; ');
 
   return {
