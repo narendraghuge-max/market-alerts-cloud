@@ -562,7 +562,7 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
   // collapsible section: turn a section's leading <h2> into a tappable <summary>
   const sec = (html, open) => { const m = html.match(/^\s*<h2[^>]*>([\s\S]*?)<\/h2>([\s\S]*)$/); return m ? '<details class="sec"' + (open ? ' open' : '') + '><summary>' + m[1] + '</summary>' + m[2] + '</details>' : html; };
   const __out = '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-    + '<meta http-equiv="refresh" content="300"><title>SMC scan</title><style>'
+    + '<meta http-equiv="refresh" content="300"><title>Investment Navigator</title><style>'
     + ':root{--bg:#fff;--fg:#1a1a1a;--muted:#6b7280;--line:#e5e7eb}'
     + '@media(prefers-color-scheme:dark){:root{--bg:#0f1115;--fg:#e8e8e8;--muted:#9aa0aa;--line:#272b32}}'
     + 'body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:20px}'
@@ -578,7 +578,7 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     + '@media(max-width:680px){body{padding:12px}h1{font-size:18px}.sub{font-size:12px}table{font-size:12px}th,td{padding:7px 6px}.controls{gap:6px}select{flex:1 1 auto}}'
     + '.sec{border-top:1px solid var(--line)}.sec>summary{cursor:pointer;list-style:none;font-size:16px;font-weight:600;padding:13px 2px;display:flex;align-items:center;gap:8px;-webkit-user-select:none;user-select:none}.sec>summary::-webkit-details-marker{display:none}.sec>summary::before{content:"\\25B8";color:var(--muted);font-weight:400}.sec[open]>summary::before{content:"\\25BE"}.sec>summary span{font-weight:400}.sec[open]{padding-bottom:10px}'
     + '</style></head><body>'
-    + '<h1>SMC scan</h1><div class="sub">Generated ' + ts + ' ET &middot; ' + rows.length + ' scanned' + skipped + ' &middot; auto-reloads every 5 min &middot; not financial advice</div>'
+    + '<h1>Investment Navigator</h1><div class="sub" style="margin:0 0 8px;font-size:13px;color:var(--fg)">Always watching your money &mdash; like a fund manager who never logs off.</div><div class="sub">Generated ' + ts + ' ET &middot; ' + rows.length + ' scanned' + skipped + ' &middot; auto-reloads every 5 min &middot; not financial advice</div>'
     + sec(brHtml, true)
     + sec(evHtml, false)
     + sec(hlHtml, false)
@@ -689,7 +689,7 @@ async function main() {
   if (asJson) { console.log(JSON.stringify({ generated: new Date().toISOString(), results: ok, errors: errs }, null, 2)); return; }
 
   const buys = ok.filter(r => ACTIONABLE.has(r.action));
-  console.log(`SMC SCAN — ${ok.length} scanned, ${buys.length} actionable buy setups\n`);
+  console.log(`INVESTMENT NAVIGATOR — ${ok.length} scanned, ${buys.length} actionable buy setups\n`);
   const icon = a => a === 'BUY' ? 'BUY  ' : a === 'ACCUMULATE' ? 'ACCUM' : a === 'SHORT' ? 'SHORT' : a === 'SHORT-SCALE' ? 'SHRT+' : a === 'WATCH' ? 'WATCH' : 'AVOID';
   for (const r of buys) {
     const tags = [r.holding ? 'HOLDING' : '', r.leveraged ? 'LEVERAGED/tactical' : ''].filter(Boolean).join(' ');
