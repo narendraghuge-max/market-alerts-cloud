@@ -1,0 +1,34 @@
+name: add-domain
+# One-off: attaches investmentnavigator.vercel.app to the Vercel project.
+# Uses the secrets already stored in GitHub (token never leaves GitHub).
+on:
+  workflow_dispatch:
+    inputs:
+      domain:
+        description: "vercel.app subdomain to attach"
+        required: true
+        default: "investmentnavigator.vercel.app"
+jobs:
+  add-domain:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Attach domain to project via Vercel API
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          DOMAIN: ${{ github.event.inputs.domain }}
+        run: |
+          echo "Attaching $DOMAIN to project $VERCEL_PROJECT_ID (team $VERCEL_ORG_ID)"
+          code=$(curl -s -o /tmp/resp.json -w "%{http_code}" -X POST \
+            "https://api.vercel.com/v10/projects/$VERCEL_PROJECT_ID/domains?teamId=$VERCEL_ORG_ID" \
+            -H "Authorization: Bearer $VERCEL_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "{\"name\":\"$DOMAIN\"}")
+          echo "HTTP $code"
+          cat /tmp/resp.json; echo ""
+          if [ "$code" = "200" ] || [ "$code" = "201" ] || [ "$code" = "409" ]; then
+            echo "RESULT: OK ($code)"
+          else
+            echo "RESULT: FAILED ($code)"; exit 1
+          fi
