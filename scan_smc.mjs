@@ -528,7 +528,7 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
         + '<td class="r" style="color:' + ((r.pnl || 0) >= 0 ? '#16a34a' : '#dc2626') + '">' + (r.pnl != null ? ((r.pnl >= 0 ? '+' : '-') + money(r.pnl) + ' (' + (r.pnlPct >= 0 ? '+' : '') + r.pnlPct.toFixed(1) + '%)') : '-') + '</td>'
         + '<td class="r">' + r.stop + ' <span style="color:var(--muted)">(' + r.distPct.toFixed(1) + '%)</span></td>'
         + '<td class="r" style="font-size:12px">' + (r.tp1 != null ? r.tp1 + ' &middot; ' + r.tp2 + ' &middot; ' + r.tp3 : '&mdash;') + '</td>'
-        + '<td class="r" style="font-size:11px">' + (r.vp ? 'POC ' + r.vp.poc + '<div style="color:var(--muted)">VA ' + r.vp.val + '&ndash;' + r.vp.vah + '</div>' : '&mdash;') + '</td>'
+        + '<td class="r" style="font-size:11px">' + (r.vp ? 'POC ' + r.vp.poc + '<div style="color:var(--muted)">VA ' + r.vp.val + '&ndash;' + r.vp.vah + (r.vp.regime === 'choppy' ? ' <b style="color:#dc2626">choppy</b>' : r.vp.regime === 'tight' ? ' tight' : '') + '</div>' : '&mdash;') + '</td>'
         + '<td class="r">' + r.ema50.toFixed(2) + '</td>'
         + '<td style="font-size:12px;color:' + exCol(r.status) + '" title="' + esc(r.reason) + '">' + esc(r.plan || r.sellAt) + '</td>'
         + '<td style="font-size:11px;color:var(--muted);max-width:340px;line-height:1.45">' + esc(r.basis || '') + '</td></tr>').join('')
@@ -592,7 +592,7 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     + '+"<td class=r>"+fmt(r.entry1)+"\\u2013"+fmt(r.entry2)+"<div style=\\"font-size:11px;color:"+zc+"\\">"+(r.dir==="short"?(r.zone==="premium"?"premium (good short)":"discount (late short)"):(r.zone==="discount"?"discount (good)":"premium (chasing)"))+"</div></td>"'
     + '+"<td class=r style=\\"color:#dc2626\\">"+fmt(r.stop)+"</td>"'
     + '+"<td class=r style=\\"color:var(--muted)\\">"+fmt(r.tp1)+" \\u00b7 <span style=\\"color:var(--fg)\\">"+fmt(r.tp2)+"</span> \\u00b7 "+fmt(r.tp3)+"</td>"'
-    + '+"<td class=r style=\\"font-size:11px\\">"+(r.vp?"POC "+r.vp.poc+"<div style=\\"color:var(--muted)\\">VA "+r.vp.val+"\\u2013"+r.vp.vah+"</div>":"\\u2014")+"</td>"'
+    + '+"<td class=r style=\\"font-size:11px\\">"+(r.vp?"POC "+r.vp.poc+"<div style=\\"color:var(--muted)\\">VA "+r.vp.val+"\\u2013"+r.vp.vah+(r.vp.regime==="choppy"?" <b style=\\"color:#dc2626\\">choppy</b>":r.vp.regime==="tight"?" tight":"")+"</div>":"\\u2014")+"</td>"'
     + '+"<td class=r style=\\"color:"+rc+";font-weight:600\\">"+r.rr.toFixed(1)+"R</td>"'
     + '+"<td style=\\"font-size:11px;color:var(--muted);max-width:360px;line-height:1.45\\">"+(r.basis||"")+"</td></tr>"}'
     + 'if(!rows.length)h="<tr><td colspan=12 style=\\"padding:16px;text-align:center;color:var(--muted)\\">No setups match these filters.</td></tr>";$("tb").innerHTML=h}'

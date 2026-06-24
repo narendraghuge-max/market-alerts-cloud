@@ -81,7 +81,9 @@ function volumeProfile(bars, binCount = 48) {
     const bel = loB > 0 ? vol[loB - 1] : -1, abv = hiB < binCount - 1 ? vol[hiB + 1] : -1;
     if (abv >= bel) acc += vol[++hiB]; else acc += vol[--loB];
   }
-  return { poc: f2(lo + (poc + 0.5) * bs), val: f2(lo + loB * bs), vah: f2(lo + (hiB + 1) * bs) };
+  const val = f2(lo + loB * bs), vah = f2(lo + (hiB + 1) * bs), px = bars.at(-1).c;
+  const widthPct = px > 0 ? Math.round((vah - val) / px * 100) : 0;   // value-area width as % of price = choppiness
+  return { poc: f2(lo + (poc + 0.5) * bs), val, vah, widthPct, regime: widthPct > 15 ? 'choppy' : widthPct < 7 ? 'tight' : 'normal' };
 }
 
 // Short SMC x volume-profile confluence read: where the ref (entry/price) sits vs value,
@@ -98,7 +100,7 @@ function vpConfluence(ref, tps, vp, dir = 'long') {
   const walls = dir === 'short' ? [poc, val] : [poc, vah];
   let wall = '';
   for (let i = 0; i < (tps || []).length; i++) { if (tps[i] != null && walls.some(L => near(tps[i], L))) { wall = lab[i] + ' at a volume wall (strong take-profit)'; break; } }
-  return loc + '; ' + (wall || 'targets in open space (less resistance)');
+  return loc + '; ' + (wall || 'targets in open space (less resistance)') + (vp.regime === 'choppy' ? '; choppy range (trade tactical)' : '');
 }
 
 function resample(bars, factor) {
