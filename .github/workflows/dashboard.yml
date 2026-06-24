@@ -59,6 +59,7 @@ jobs:
           cp report.html site/index.html
           cp vercel.json site/ 2>/dev/null || true
           cp robots.txt site/ 2>/dev/null || true
+          node make_icon.mjs site   # PWA app icon + manifest (Investment Navigator)
 
       - name: Deploy to Vercel (same project = same URL)
         env:

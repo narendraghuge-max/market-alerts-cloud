@@ -562,7 +562,9 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
   // collapsible section: turn a section's leading <h2> into a tappable <summary>
   const sec = (html, open) => { const m = html.match(/^\s*<h2[^>]*>([\s\S]*?)<\/h2>([\s\S]*)$/); return m ? '<details class="sec"' + (open ? ' open' : '') + '><summary>' + m[1] + '</summary>' + m[2] + '</details>' : html; };
   const __out = '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-    + '<meta http-equiv="refresh" content="300"><title>Investment Navigator</title><style>'
+    + '<meta http-equiv="refresh" content="300"><title>Investment Navigator</title>'
+    + '<link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="apple-mobile-web-app-title" content="Investment Navigator"><meta name="theme-color" content="#0f1115"><link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/icon-192.png">'
+    + '<style>'
     + ':root{--bg:#fff;--fg:#1a1a1a;--muted:#6b7280;--line:#e5e7eb}'
     + '@media(prefers-color-scheme:dark){:root{--bg:#0f1115;--fg:#e8e8e8;--muted:#9aa0aa;--line:#272b32}}'
     + 'body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:20px}'
