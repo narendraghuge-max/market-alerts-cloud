@@ -514,7 +514,7 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     const totPnl = exitRows.reduce((s, r) => s + (r.pnl || 0), 0);
     exHtml = '<h2 style="font-size:16px;font-weight:600;margin:18px 0 6px">Holdings &mdash; exit watch</h2>'
       + '<div class="sub">' + exitRows.length + ' holdings &middot; total value ' + money(totEq) + ' &middot; total gain/loss <span style="color:' + (totPnl >= 0 ? '#16a34a' : '#dc2626') + '">' + (totPnl >= 0 ? '+' : '-') + money(totPnl) + '</span></div>'
-      + '<table><thead><tr><th>Signal</th><th title="Trend health across Daily/4H/1H. A=all up (healthy), C=broken">Grade</th><th title="overall trend Daily/4H/1H">Trend</th><th>Holding</th><th class="r">Price now</th><th class="r">Your cost</th><th class="r">Gain/loss</th><th class="r">Safety price</th><th class="r">Avg price</th><th>What to do</th><th>Basis (why)</th></tr></thead><tbody>'
+      + '<table><thead><tr><th>Signal</th><th title="Trend health across Daily/4H/1H. A=all up (healthy), C=broken">Grade</th><th title="overall trend Daily/4H/1H">Trend</th><th>Holding</th><th class="r">Price now</th><th class="r">Your cost</th><th class="r">Gain/loss</th><th class="r">Safety price</th><th class="r">Take-profit (day&middot;swing&middot;run)</th><th class="r">Avg price</th><th>What to do (plan)</th><th>Basis (why)</th></tr></thead><tbody>'
       + exitRows.map(r => '<tr><td><span class="pill" style="color:' + exCol(r.status) + '">' + r.status + '</span></td>'
         + '<td style="font-weight:600;color:' + (r.grade === 'A' ? '#16a34a' : r.grade === 'B' ? '#d97706' : '#6b7280') + '">' + (r.grade || '-') + '</td>'
         + '<td style="font-weight:600;color:' + (r.trend === 'up' ? '#16a34a' : r.trend === 'down' ? '#dc2626' : '#6b7280') + '">' + (r.trend === 'up' ? 'UP' : r.trend === 'down' ? 'DOWN' : 'flat') + '</td>'
@@ -523,8 +523,9 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
         + '<td class="r" style="color:var(--muted)">' + (r.cost != null ? r.cost.toFixed(2) : '-') + '</td>'
         + '<td class="r" style="color:' + ((r.pnl || 0) >= 0 ? '#16a34a' : '#dc2626') + '">' + (r.pnl != null ? ((r.pnl >= 0 ? '+' : '-') + money(r.pnl) + ' (' + (r.pnlPct >= 0 ? '+' : '') + r.pnlPct.toFixed(1) + '%)') : '-') + '</td>'
         + '<td class="r">' + r.stop + ' <span style="color:var(--muted)">(' + r.distPct.toFixed(1) + '%)</span></td>'
+        + '<td class="r" style="font-size:12px">' + (r.tp1 != null ? r.tp1 + ' &middot; ' + r.tp2 + ' &middot; ' + r.tp3 : '&mdash;') + '</td>'
         + '<td class="r">' + r.ema50.toFixed(2) + '</td>'
-        + '<td style="font-size:12px;color:' + exCol(r.status) + '" title="' + esc(r.reason) + '">' + r.sellAt + '</td>'
+        + '<td style="font-size:12px;color:' + exCol(r.status) + '" title="' + esc(r.reason) + '">' + esc(r.plan || r.sellAt) + '</td>'
         + '<td style="font-size:11px;color:var(--muted);max-width:340px;line-height:1.45">' + esc(r.basis || '') + '</td></tr>').join('')
       + '</tbody></table>';
   }

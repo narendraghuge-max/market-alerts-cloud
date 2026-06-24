@@ -80,6 +80,10 @@ function biasOf(bars) {
   if (falling && !(hh && hl)) return 'down';
   return 'flat';
 }
+function nearestHighAbove(bars, price, s = 2) {
+  const hs = pivots(bars, s).highs.filter(h => h > price).sort((a, b) => a - b);
+  return hs[0] ?? null;
+}
 
 function analyzeExit(sym, cfg, daily, h1) {
   const price = h1.at(-1).c;
@@ -130,7 +134,26 @@ function analyzeExit(sym, cfg, daily, h1) {
   eb.push(distPct >= 0 ? `now ${f2(distPct)}% above your safety price (${cfg.stop})` : `now below your safety price (${cfg.stop})`);
   const basis = eb.join('; ');
 
-  return { sym, status, reason, sellAt, basis, grade, trend, price: f2(price), stop: cfg.stop, ema50: f2(ema50), distPct: f2(distPct), premium, lev: !!cfg.lev, winner: !!cfg.winner, note: cfg.note || '', shares: cfg.shares, cost: cost != null ? f2(cost) : null, pnl: pnl != null ? f2(pnl) : null, pnlPct: pnlPct != null ? f2(pnlPct) : null };
+  // ---- upside take-profit levels (liquidity draws above): TP1 1H day, TP2 4H swing, TP3 daily runner ----
+  let T1 = nearestHighAbove(h1, price, 2) ?? price * 1.02;
+  let T2 = nearestHighAbove(resample(h1, 4), Math.max(price, T1), 2) ?? T1 * 1.03;
+  let T3 = nearestHighAbove(daily, Math.max(T1, T2), 3) ?? T2 * 1.05;
+  if (T1 <= price) T1 = price * 1.02;
+  if (T2 <= T1) T2 = T1 * 1.03;
+  if (T3 <= T2) T3 = T2 * 1.05;
+  T1 = f2(T1); T2 = f2(T2); T3 = f2(T3);
+
+  // ---- adaptive position/profit plan ----
+  let plan;
+  if (status === 'SELL') plan = sellAt;
+  else if (status === 'TRIM') plan = `${sellAt}; if it holds, next upside ${T1} / ${T2}`;
+  else if (pnlPct != null && pnlPct < 0) plan = `Down ${f2(Math.abs(pnlPct))}% - play defense: hold above ${cfg.stop}, needs to reclaim ${T1} to turn up${cost != null ? `; breakeven ${f2(cost)}` : ''}`;
+  else if (price >= T1 * 0.995) plan = `At first target ${T1} - trim ~1/3 here, lift your stop, let the rest run to ${T2} / ${T3}`;
+  else if (cfg.winner || (pnlPct != null && pnlPct >= 25)) plan = `Up ${pnlPct != null ? f2(pnlPct) + '%' : 'nicely'} - protect it: trim ~1/3 near ${T1}, trail your stop up, ride the rest to ${T2} / ${T3}`;
+  else if (trend === 'up') plan = `Healthy - ride toward ${T1} then ${T2}; trim ~1/3 at each and move your stop up. Bail under ${cfg.stop}`;
+  else plan = `Hold; first upside ${T1}, then ${T2} / ${T3}. Bail under ${cfg.stop}`;
+
+  return { sym, status, reason, sellAt, plan, basis, grade, trend, price: f2(price), stop: cfg.stop, tp1: T1, tp2: T2, tp3: T3, ema50: f2(ema50), distPct: f2(distPct), premium, lev: !!cfg.lev, winner: !!cfg.winner, note: cfg.note || '', shares: cfg.shares, cost: cost != null ? f2(cost) : null, pnl: pnl != null ? f2(pnl) : null, pnlPct: pnlPct != null ? f2(pnlPct) : null };
 }
 
 async function one(sym, cfg) {
@@ -148,8 +171,9 @@ async function one(sym, cfg) {
         sym, status: 'NEW', grade: '-', trend: 'flat',
         reason: 'too new for structure analysis (limited price history)',
         sellAt: `manage manually - safety floor ${cfg.stop}`,
+        plan: `manage manually - take profits in stages; safety floor ${cfg.stop}`,
         basis: 'limited data (new listing / low history) - only price and P&L shown, no structural levels',
-        price: f2(price), stop: cfg.stop, ema50: f2(price), distPct: f2(distPct), premium: false,
+        price: f2(price), stop: cfg.stop, tp1: null, tp2: null, tp3: null, ema50: f2(price), distPct: f2(distPct), premium: false,
         lev: !!cfg.lev, winner: !!cfg.winner, note: cfg.note || '', shares: cfg.shares,
         cost: cost != null ? f2(cost) : null, pnl: pnl != null ? f2(pnl) : null, pnlPct: pnlPct != null ? f2(pnlPct) : null,
       };
