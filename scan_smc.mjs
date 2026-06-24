@@ -425,7 +425,7 @@ function analyze(symbol, daily, h4, h1, m15, anchors) {
   bp.push(`structure: 1H ${struct1.state}${struct1.label ? ` (last ${struct1.label})` : ''}${struct1.event ? `, ${struct1.event} @ ${f2(struct1.eventLevel)}` : ''}; Daily ${structD.state}`);
   if (smt) bp.push(`SMT divergence vs ${anchorSym}: anchor did not confirm the ${dir === 'long' ? 'lower low (bullish)' : 'higher high (bearish)'}`);
   const vp = volumeProfile(daily.slice(-30));   // recent ~1-month window (long windows lag on trending names)
-  if (vp) bp.push(`volume profile: POC ${vp.poc} (magnet/key support-resistance), value area ${vp.val}-${vp.vah}; entry ${entry1 < vp.val ? 'below value area (real discount)' : entry1 <= vp.vah ? 'inside the fair-value zone' : 'above value area (extended)'}`);
+  if (vp) bp.push(`volume profile: POC ${vp.poc} (magnet/key support-resistance), value area ${vp.val}-${vp.vah}; entry ${dir === 'short' ? (entry1 > vp.vah ? 'above value (premium - good for a short)' : entry1 < vp.val ? 'below value (extended/late short)' : 'inside value') : (entry1 < vp.val ? 'below value area (real discount)' : entry1 <= vp.vah ? 'inside the fair-value zone' : 'above value area (extended)')}`);
   const vpRead = vp ? vpConfluence(entry1, [T1, T2, T3], vp, dir) : '';
   if (vpRead) bp.push('SMC-vol read: entry ' + vpRead);
   const basis = bp.join('; ');
@@ -589,7 +589,7 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     + '+"<td style=\\"font-weight:600;color:"+(r.dir==="short"?"#dc2626":r.dir==="long"?"#16a34a":"#6b7280")+"\\">"+(r.dir==="short"?"DOWN":r.dir==="long"?"UP":"flat")+"</td>"'
     + '+"<td><span class=pill style=\\"color:"+ac(r.action)+"\\">"+al(r.action)+"</span></td>"'
     + '+"<td class=r>"+fmt(r.price)+"</td>"'
-    + '+"<td class=r>"+fmt(r.entry1)+"\\u2013"+fmt(r.entry2)+"<div style=\\"font-size:11px;color:"+zc+"\\">"+r.zone+"</div></td>"'
+    + '+"<td class=r>"+fmt(r.entry1)+"\\u2013"+fmt(r.entry2)+"<div style=\\"font-size:11px;color:"+zc+"\\">"+(r.dir==="short"?(r.zone==="premium"?"premium (good short)":"discount (late short)"):(r.zone==="discount"?"discount (good)":"premium (chasing)"))+"</div></td>"'
     + '+"<td class=r style=\\"color:#dc2626\\">"+fmt(r.stop)+"</td>"'
     + '+"<td class=r style=\\"color:var(--muted)\\">"+fmt(r.tp1)+" \\u00b7 <span style=\\"color:var(--fg)\\">"+fmt(r.tp2)+"</span> \\u00b7 "+fmt(r.tp3)+"</td>"'
     + '+"<td class=r style=\\"font-size:11px\\">"+(r.vp?"POC "+r.vp.poc+"<div style=\\"color:var(--muted)\\">VA "+r.vp.val+"\\u2013"+r.vp.vah+"</div>":"\\u2014")+"</td>"'

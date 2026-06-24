@@ -91,7 +91,9 @@ function vpConfluence(ref, tps, vp, dir = 'long') {
   if (!vp || ref == null) return '';
   const { poc, val, vah } = vp;
   const near = (a, b) => b > 0 && Math.abs(a - b) / b <= 0.015;
-  const loc = ref < val ? 'discount (below value)' : ref > vah ? 'extended (above value)' : 'inside value';
+  const loc = dir === 'short'
+    ? (ref > vah ? 'premium (above value - good to short)' : ref < val ? 'extended/late (below value)' : 'inside value')
+    : (ref < val ? 'discount (below value)' : ref > vah ? 'extended (above value)' : 'inside value');
   const lab = ['TP1', 'TP2', 'TP3'];
   const walls = dir === 'short' ? [poc, val] : [poc, vah];
   let wall = '';
