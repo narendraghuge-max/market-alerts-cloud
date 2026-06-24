@@ -158,7 +158,7 @@ function analyzeExit(sym, cfg, daily, h1) {
   if (winnerReverse) eb.push('a big winner just starting to turn down from its highs (take profit)');
   eb.push(belowEma50 ? `below its 50-day average line (${f2(ema50)}) - trend filter weak` : `above its 50-day average line (${f2(ema50)}) - trend filter ok`);
   eb.push(distPct >= 0 ? `now ${f2(distPct)}% above your safety price (${cfg.stop})` : `now below your safety price (${cfg.stop})`);
-  const vp = volumeProfile(daily.slice(-140));
+  const vp = volumeProfile(daily.slice(-30));   // recent ~1-month window (long windows lag on trending names)
   if (vp) eb.push(`volume profile: POC ${vp.poc} (the magnet/key support-resistance), value area ${vp.val}-${vp.vah} (price ${price < vp.val ? 'below value = cheap' : price > vp.vah ? 'above value = extended' : 'inside the fair-value zone'})`);
   const basis = eb.join('; ');
 

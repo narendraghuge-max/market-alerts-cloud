@@ -424,7 +424,7 @@ function analyze(symbol, daily, h4, h1, m15, anchors) {
   bp.push(`targets (liquidity draws): TP1 ${f2(T1)} [${tt[0]}] -> TP2 ${f2(T2)} [${tt[1]}] -> TP3 ${f2(T3)} [${tt[2]}]; ~${f2(rr1)}R`);
   bp.push(`structure: 1H ${struct1.state}${struct1.label ? ` (last ${struct1.label})` : ''}${struct1.event ? `, ${struct1.event} @ ${f2(struct1.eventLevel)}` : ''}; Daily ${structD.state}`);
   if (smt) bp.push(`SMT divergence vs ${anchorSym}: anchor did not confirm the ${dir === 'long' ? 'lower low (bullish)' : 'higher high (bearish)'}`);
-  const vp = volumeProfile(daily.slice(-140));
+  const vp = volumeProfile(daily.slice(-30));   // recent ~1-month window (long windows lag on trending names)
   if (vp) bp.push(`volume profile: POC ${vp.poc} (magnet/key support-resistance), value area ${vp.val}-${vp.vah}; entry ${entry1 < vp.val ? 'below value area (real discount)' : entry1 <= vp.vah ? 'inside the fair-value zone' : 'above value area (extended)'}`);
   const basis = bp.join('; ');
 
@@ -516,7 +516,7 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     const totPnl = exitRows.reduce((s, r) => s + (r.pnl || 0), 0);
     exHtml = '<h2 style="font-size:16px;font-weight:600;margin:18px 0 6px">Holdings &mdash; exit watch</h2>'
       + '<div class="sub">' + exitRows.length + ' holdings &middot; total value ' + money(totEq) + ' &middot; total gain/loss <span style="color:' + (totPnl >= 0 ? '#16a34a' : '#dc2626') + '">' + (totPnl >= 0 ? '+' : '-') + money(totPnl) + '</span></div>'
-      + '<table><thead><tr><th>Signal</th><th title="Trend health across Daily/4H/1H. A=all up (healthy), C=broken">Grade</th><th title="overall trend Daily/4H/1H">Trend</th><th>Holding</th><th class="r">Price now</th><th class="r">Your cost</th><th class="r">Gain/loss</th><th class="r">Safety price</th><th class="r">Take-profit (day&middot;swing&middot;run)</th><th class="r" title="Point of Control + value area from volume-by-price">Volume (POC&middot;value)</th><th class="r">Avg price</th><th>What to do (plan)</th><th>Basis (why)</th></tr></thead><tbody>'
+      + '<table><thead><tr><th>Signal</th><th title="Trend health across Daily/4H/1H. A=all up (healthy), C=broken">Grade</th><th title="overall trend Daily/4H/1H">Trend</th><th>Holding</th><th class="r">Price now</th><th class="r">Your cost</th><th class="r">Gain/loss</th><th class="r">Safety price</th><th class="r">Take-profit (day&middot;swing&middot;run)</th><th class="r" title="Point of Control + value area from the last 30 days of volume-by-price">Volume 30d (POC&middot;val)</th><th class="r">Avg price</th><th>What to do (plan)</th><th>Basis (why)</th></tr></thead><tbody>'
       + exitRows.map(r => '<tr><td><span class="pill" style="color:' + exCol(r.status) + '">' + r.status + '</span></td>'
         + '<td style="font-weight:600;color:' + (r.grade === 'A' ? '#16a34a' : r.grade === 'B' ? '#d97706' : '#6b7280') + '">' + (r.grade || '-') + '</td>'
         + '<td style="font-weight:600;color:' + (r.trend === 'up' ? '#16a34a' : r.trend === 'down' ? '#dc2626' : '#6b7280') + '">' + (r.trend === 'up' ? 'UP' : r.trend === 'down' ? 'DOWN' : 'flat') + '</td>'
@@ -565,7 +565,7 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     + '<select id="f-sort"><option value="score">Sort: score</option><option value="rr">Sort: reward/risk</option><option value="price">Sort: price</option><option value="sym">Sort: symbol</option></select>'
     + '<label><input type="checkbox" id="f-rr">R &ge; 2</label><label><input type="checkbox" id="f-hold">My holdings</label><label><input type="checkbox" id="f-lev">Hide leveraged</label>'
     + '</div><div id="count"></div>'
-    + '<table><thead><tr><th>Symbol</th><th>Score</th><th title="A=Daily/4H/1H all aligned, B=2 aligned, C=weak">Grade</th><th title="overall trend Daily/4H/1H - longs and shorts are both traded">Trend</th><th>Action</th><th class="r">Price</th><th class="r">Entry zone</th><th class="r">Stop</th><th class="r">TP1 day &middot; TP2 swing &middot; TP3 run</th><th class="r" title="POC + value area from volume-by-price">Volume (POC&middot;val)</th><th class="r">R</th><th>Basis (why)</th></tr></thead><tbody id="tb"></tbody></table>'
+    + '<table><thead><tr><th>Symbol</th><th>Score</th><th title="A=Daily/4H/1H all aligned, B=2 aligned, C=weak">Grade</th><th title="overall trend Daily/4H/1H - longs and shorts are both traded">Trend</th><th>Action</th><th class="r">Price</th><th class="r">Entry zone</th><th class="r">Stop</th><th class="r">TP1 day &middot; TP2 swing &middot; TP3 run</th><th class="r" title="POC + value area from the last 30 days of volume-by-price">Volume 30d (POC&middot;val)</th><th class="r">R</th><th>Basis (why)</th></tr></thead><tbody id="tb"></tbody></table>'
     + '</details>'
     + '<footer>HOLD = you own it &middot; LEV = leveraged ETF, tactical only (decay) &middot; mechanical heuristics, confirm on chart &middot; nothing places orders</footer>'
     + '<script>var DATA=' + data + ';'
