@@ -457,7 +457,7 @@ async function scanOne(symbol, anchors) {
 
 function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: [] }) {
   const ts = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
-  const data = JSON.stringify(rows.map(r => ({ sym: r.symbol, score: r.score, action: r.action, grade: r.grade, dir: r.trend, price: r.price, bias: r.bias, zone: r.zone, hold: r.holding ? 1 : 0, lev: r.leveraged ? 1 : 0, basis: r.basis, ...r.levels })));
+  const data = JSON.stringify(rows.map(r => ({ sym: r.symbol, score: r.score, action: r.action, grade: r.grade, dir: r.trend, price: r.price, bias: r.bias, zone: r.zone, hold: r.holding ? 1 : 0, lev: r.leveraged ? 1 : 0, basis: r.basis, vp: r.vp, ...r.levels })));
   const skipped = errs.length ? ' &middot; skipped: ' + errs.map(e => e.symbol).join(', ') : '';
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   let brHtml = '';
@@ -516,7 +516,7 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     const totPnl = exitRows.reduce((s, r) => s + (r.pnl || 0), 0);
     exHtml = '<h2 style="font-size:16px;font-weight:600;margin:18px 0 6px">Holdings &mdash; exit watch</h2>'
       + '<div class="sub">' + exitRows.length + ' holdings &middot; total value ' + money(totEq) + ' &middot; total gain/loss <span style="color:' + (totPnl >= 0 ? '#16a34a' : '#dc2626') + '">' + (totPnl >= 0 ? '+' : '-') + money(totPnl) + '</span></div>'
-      + '<table><thead><tr><th>Signal</th><th title="Trend health across Daily/4H/1H. A=all up (healthy), C=broken">Grade</th><th title="overall trend Daily/4H/1H">Trend</th><th>Holding</th><th class="r">Price now</th><th class="r">Your cost</th><th class="r">Gain/loss</th><th class="r">Safety price</th><th class="r">Take-profit (day&middot;swing&middot;run)</th><th class="r">Avg price</th><th>What to do (plan)</th><th>Basis (why)</th></tr></thead><tbody>'
+      + '<table><thead><tr><th>Signal</th><th title="Trend health across Daily/4H/1H. A=all up (healthy), C=broken">Grade</th><th title="overall trend Daily/4H/1H">Trend</th><th>Holding</th><th class="r">Price now</th><th class="r">Your cost</th><th class="r">Gain/loss</th><th class="r">Safety price</th><th class="r">Take-profit (day&middot;swing&middot;run)</th><th class="r" title="Point of Control + value area from volume-by-price">Volume (POC&middot;value)</th><th class="r">Avg price</th><th>What to do (plan)</th><th>Basis (why)</th></tr></thead><tbody>'
       + exitRows.map(r => '<tr><td><span class="pill" style="color:' + exCol(r.status) + '">' + r.status + '</span></td>'
         + '<td style="font-weight:600;color:' + (r.grade === 'A' ? '#16a34a' : r.grade === 'B' ? '#d97706' : '#6b7280') + '">' + (r.grade || '-') + '</td>'
         + '<td style="font-weight:600;color:' + (r.trend === 'up' ? '#16a34a' : r.trend === 'down' ? '#dc2626' : '#6b7280') + '">' + (r.trend === 'up' ? 'UP' : r.trend === 'down' ? 'DOWN' : 'flat') + '</td>'
@@ -526,6 +526,7 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
         + '<td class="r" style="color:' + ((r.pnl || 0) >= 0 ? '#16a34a' : '#dc2626') + '">' + (r.pnl != null ? ((r.pnl >= 0 ? '+' : '-') + money(r.pnl) + ' (' + (r.pnlPct >= 0 ? '+' : '') + r.pnlPct.toFixed(1) + '%)') : '-') + '</td>'
         + '<td class="r">' + r.stop + ' <span style="color:var(--muted)">(' + r.distPct.toFixed(1) + '%)</span></td>'
         + '<td class="r" style="font-size:12px">' + (r.tp1 != null ? r.tp1 + ' &middot; ' + r.tp2 + ' &middot; ' + r.tp3 : '&mdash;') + '</td>'
+        + '<td class="r" style="font-size:11px">' + (r.vp ? 'POC ' + r.vp.poc + '<div style="color:var(--muted)">VA ' + r.vp.val + '&ndash;' + r.vp.vah + '</div>' : '&mdash;') + '</td>'
         + '<td class="r">' + r.ema50.toFixed(2) + '</td>'
         + '<td style="font-size:12px;color:' + exCol(r.status) + '" title="' + esc(r.reason) + '">' + esc(r.plan || r.sellAt) + '</td>'
         + '<td style="font-size:11px;color:var(--muted);max-width:340px;line-height:1.45">' + esc(r.basis || '') + '</td></tr>').join('')
@@ -564,7 +565,7 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     + '<select id="f-sort"><option value="score">Sort: score</option><option value="rr">Sort: reward/risk</option><option value="price">Sort: price</option><option value="sym">Sort: symbol</option></select>'
     + '<label><input type="checkbox" id="f-rr">R &ge; 2</label><label><input type="checkbox" id="f-hold">My holdings</label><label><input type="checkbox" id="f-lev">Hide leveraged</label>'
     + '</div><div id="count"></div>'
-    + '<table><thead><tr><th>Symbol</th><th>Score</th><th title="A=Daily/4H/1H all aligned, B=2 aligned, C=weak">Grade</th><th title="overall trend Daily/4H/1H - longs and shorts are both traded">Trend</th><th>Action</th><th class="r">Price</th><th class="r">Entry zone</th><th class="r">Stop</th><th class="r">TP1 day &middot; TP2 swing &middot; TP3 run</th><th class="r">R</th><th>Basis (why)</th></tr></thead><tbody id="tb"></tbody></table>'
+    + '<table><thead><tr><th>Symbol</th><th>Score</th><th title="A=Daily/4H/1H all aligned, B=2 aligned, C=weak">Grade</th><th title="overall trend Daily/4H/1H - longs and shorts are both traded">Trend</th><th>Action</th><th class="r">Price</th><th class="r">Entry zone</th><th class="r">Stop</th><th class="r">TP1 day &middot; TP2 swing &middot; TP3 run</th><th class="r" title="POC + value area from volume-by-price">Volume (POC&middot;val)</th><th class="r">R</th><th>Basis (why)</th></tr></thead><tbody id="tb"></tbody></table>'
     + '</details>'
     + '<footer>HOLD = you own it &middot; LEV = leveraged ETF, tactical only (decay) &middot; mechanical heuristics, confirm on chart &middot; nothing places orders</footer>'
     + '<script>var DATA=' + data + ';'
@@ -589,9 +590,10 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     + '+"<td class=r>"+fmt(r.entry1)+"\\u2013"+fmt(r.entry2)+"<div style=\\"font-size:11px;color:"+zc+"\\">"+r.zone+"</div></td>"'
     + '+"<td class=r style=\\"color:#dc2626\\">"+fmt(r.stop)+"</td>"'
     + '+"<td class=r style=\\"color:var(--muted)\\">"+fmt(r.tp1)+" \\u00b7 <span style=\\"color:var(--fg)\\">"+fmt(r.tp2)+"</span> \\u00b7 "+fmt(r.tp3)+"</td>"'
+    + '+"<td class=r style=\\"font-size:11px\\">"+(r.vp?"POC "+r.vp.poc+"<div style=\\"color:var(--muted)\\">VA "+r.vp.val+"\\u2013"+r.vp.vah+"</div>":"\\u2014")+"</td>"'
     + '+"<td class=r style=\\"color:"+rc+";font-weight:600\\">"+r.rr.toFixed(1)+"R</td>"'
     + '+"<td style=\\"font-size:11px;color:var(--muted);max-width:360px;line-height:1.45\\">"+(r.basis||"")+"</td></tr>"}'
-    + 'if(!rows.length)h="<tr><td colspan=11 style=\\"padding:16px;text-align:center;color:var(--muted)\\">No setups match these filters.</td></tr>";$("tb").innerHTML=h}'
+    + 'if(!rows.length)h="<tr><td colspan=12 style=\\"padding:16px;text-align:center;color:var(--muted)\\">No setups match these filters.</td></tr>";$("tb").innerHTML=h}'
     + '["f-score","f-sort","f-rr","f-hold","f-lev"].forEach(function(id){$(id).addEventListener("input",render)});render();'
     + '</scr' + 'ipt></body></html>';
   // Wrap every table in a horizontal-scroll container so wide tables swipe cleanly on phones.
