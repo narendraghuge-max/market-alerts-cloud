@@ -58,6 +58,32 @@ function pivots(bars, s = 3) {
 }
 const f2 = n => (Math.round(n * 100) / 100);
 
+// Volume-by-price profile from OHLCV bars -> POC (point of control = highest-volume price,
+// a magnet/support-resistance) + value area (VAL..VAH, the ~70% of volume = "fair" range).
+// Each bar's volume is spread across the price range it covered (approximation of intrabar VP).
+function volumeProfile(bars, binCount = 48) {
+  if (!bars || bars.length < 20) return null;
+  const lo = Math.min(...bars.map(b => b.l)), hi = Math.max(...bars.map(b => b.h));
+  if (!(hi > lo)) return null;
+  const bs = (hi - lo) / binCount;
+  const vol = new Array(binCount).fill(0);
+  for (const b of bars) {
+    const v = b.v || 0; if (!v) continue;
+    const s = Math.max(0, Math.floor((b.l - lo) / bs));
+    const e = Math.min(binCount - 1, Math.floor((b.h - lo) / bs));
+    const per = v / (e - s + 1);
+    for (let i = s; i <= e; i++) vol[i] += per;
+  }
+  let poc = 0; for (let i = 1; i < binCount; i++) if (vol[i] > vol[poc]) poc = i;
+  const total = vol.reduce((a, x) => a + x, 0) || 1;
+  let acc = vol[poc], loB = poc, hiB = poc;
+  while (acc < total * 0.7 && (loB > 0 || hiB < binCount - 1)) {
+    const bel = loB > 0 ? vol[loB - 1] : -1, abv = hiB < binCount - 1 ? vol[hiB + 1] : -1;
+    if (abv >= bel) acc += vol[++hiB]; else acc += vol[--loB];
+  }
+  return { poc: f2(lo + (poc + 0.5) * bs), val: f2(lo + loB * bs), vah: f2(lo + (hiB + 1) * bs) };
+}
+
 function resample(bars, factor) {
   const out = [];
   for (let i = 0; i < bars.length; i += factor) {
@@ -132,6 +158,8 @@ function analyzeExit(sym, cfg, daily, h1) {
   if (winnerReverse) eb.push('a big winner just starting to turn down from its highs (take profit)');
   eb.push(belowEma50 ? `below its 50-day average line (${f2(ema50)}) - trend filter weak` : `above its 50-day average line (${f2(ema50)}) - trend filter ok`);
   eb.push(distPct >= 0 ? `now ${f2(distPct)}% above your safety price (${cfg.stop})` : `now below your safety price (${cfg.stop})`);
+  const vp = volumeProfile(daily.slice(-140));
+  if (vp) eb.push(`volume profile: POC ${vp.poc} (the magnet/key support-resistance), value area ${vp.val}-${vp.vah} (price ${price < vp.val ? 'below value = cheap' : price > vp.vah ? 'above value = extended' : 'inside the fair-value zone'})`);
   const basis = eb.join('; ');
 
   // ---- upside take-profit levels (liquidity draws above): TP1 1H day, TP2 4H swing, TP3 daily runner ----
@@ -153,7 +181,7 @@ function analyzeExit(sym, cfg, daily, h1) {
   else if (trend === 'up') plan = `Healthy - ride toward ${T1} then ${T2}; trim ~1/3 at each and move your stop up. Bail under ${cfg.stop}`;
   else plan = `Hold; first upside ${T1}, then ${T2} / ${T3}. Bail under ${cfg.stop}`;
 
-  return { sym, status, reason, sellAt, plan, basis, grade, trend, price: f2(price), stop: cfg.stop, tp1: T1, tp2: T2, tp3: T3, ema50: f2(ema50), distPct: f2(distPct), premium, lev: !!cfg.lev, winner: !!cfg.winner, note: cfg.note || '', shares: cfg.shares, cost: cost != null ? f2(cost) : null, pnl: pnl != null ? f2(pnl) : null, pnlPct: pnlPct != null ? f2(pnlPct) : null };
+  return { sym, status, reason, sellAt, plan, basis, grade, trend, price: f2(price), stop: cfg.stop, tp1: T1, tp2: T2, tp3: T3, vp, ema50: f2(ema50), distPct: f2(distPct), premium, lev: !!cfg.lev, winner: !!cfg.winner, note: cfg.note || '', shares: cfg.shares, cost: cost != null ? f2(cost) : null, pnl: pnl != null ? f2(pnl) : null, pnlPct: pnlPct != null ? f2(pnlPct) : null };
 }
 
 async function one(sym, cfg) {
@@ -173,7 +201,7 @@ async function one(sym, cfg) {
         sellAt: `manage manually - safety floor ${cfg.stop}`,
         plan: `manage manually - take profits in stages; safety floor ${cfg.stop}`,
         basis: 'limited data (new listing / low history) - only price and P&L shown, no structural levels',
-        price: f2(price), stop: cfg.stop, tp1: null, tp2: null, tp3: null, ema50: f2(price), distPct: f2(distPct), premium: false,
+        price: f2(price), stop: cfg.stop, tp1: null, tp2: null, tp3: null, vp: null, ema50: f2(price), distPct: f2(distPct), premium: false,
         lev: !!cfg.lev, winner: !!cfg.winner, note: cfg.note || '', shares: cfg.shares,
         cost: cost != null ? f2(cost) : null, pnl: pnl != null ? f2(pnl) : null, pnlPct: pnlPct != null ? f2(pnlPct) : null,
       };
@@ -218,7 +246,7 @@ async function main() {
   console.log(`\nNot financial advice - no orders placed.`);
 }
 
-export { analyzeExit, HOLDINGS, RANK, fetchCandles, one as exitOne };
+export { analyzeExit, HOLDINGS, RANK, fetchCandles, one as exitOne, volumeProfile };
 
 const __isMain = process.argv[1] && process.argv[1].replace(/\\/g, '/').endsWith('scan_exits.mjs');
 if (__isMain) main();

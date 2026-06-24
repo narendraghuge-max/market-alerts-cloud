@@ -10,7 +10,7 @@ import { writeFileSync, readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 const __reportDir = dirname(fileURLToPath(import.meta.url));
-import { analyzeExit as analyzeExitH, HOLDINGS as EXIT_HOLDINGS, RANK as EXIT_RANK, exitOne } from './scan_exits.mjs';
+import { analyzeExit as analyzeExitH, HOLDINGS as EXIT_HOLDINGS, RANK as EXIT_RANK, exitOne, volumeProfile } from './scan_exits.mjs';
 import { buildOptionsIdeas, renderOptionsHtml } from './options_ideas.mjs';
 
 const HOLDINGS = new Set(Object.keys(EXIT_HOLDINGS)); // derived from holdings secret (single source of truth)
@@ -424,10 +424,12 @@ function analyze(symbol, daily, h4, h1, m15, anchors) {
   bp.push(`targets (liquidity draws): TP1 ${f2(T1)} [${tt[0]}] -> TP2 ${f2(T2)} [${tt[1]}] -> TP3 ${f2(T3)} [${tt[2]}]; ~${f2(rr1)}R`);
   bp.push(`structure: 1H ${struct1.state}${struct1.label ? ` (last ${struct1.label})` : ''}${struct1.event ? `, ${struct1.event} @ ${f2(struct1.eventLevel)}` : ''}; Daily ${structD.state}`);
   if (smt) bp.push(`SMT divergence vs ${anchorSym}: anchor did not confirm the ${dir === 'long' ? 'lower low (bullish)' : 'higher high (bearish)'}`);
+  const vp = volumeProfile(daily.slice(-140));
+  if (vp) bp.push(`volume profile: POC ${vp.poc} (magnet/key support-resistance), value area ${vp.val}-${vp.vah}; entry ${entry1 < vp.val ? 'below value area (real discount)' : entry1 <= vp.vah ? 'inside the fair-value zone' : 'above value area (extended)'}`);
   const basis = bp.join('; ');
 
   return {
-    symbol, price: +price.toFixed(2), score, action, basis, grade, direction: dir, trend,
+    symbol, price: +price.toFixed(2), score, action, basis, grade, direction: dir, trend, vp,
     leveraged: LEVERAGED.has(symbol), holding: HOLDINGS.has(symbol),
     bias: trendOk ? (dir === 'long' ? 'bull' : 'bear') : 'weak',
     zone: goodLocation ? (dir === 'long' ? 'discount' : 'premium') : (dir === 'long' ? 'premium' : 'discount'),
