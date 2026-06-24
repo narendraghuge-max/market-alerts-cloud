@@ -31,19 +31,23 @@ Keep it under 170 words total. Not financial advice.`;
 async function gemini(p) {
   const key = process.env.GEMINI_API_KEY;
   if (!key) throw new Error('no GEMINI_API_KEY');
-  const model = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
+  // try several free models in order so an overloaded (503) / quota (429) one falls through
+  const models = (process.env.GEMINI_MODEL ? [process.env.GEMINI_MODEL] : [])
+    .concat(['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash-lite', 'gemini-flash-latest']);
+  const body = JSON.stringify({ contents: [{ parts: [{ text: p }] }], generationConfig: { temperature: 0.4, maxOutputTokens: 700, thinkingConfig: { thinkingBudget: 0 } } });
   let lastErr;
-  for (let attempt = 0; attempt < 3; attempt++) {
-    if (attempt) await new Promise(z => setTimeout(z, 1500 * attempt));
-    try {
-      const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: p }] }], generationConfig: { temperature: 0.4, maxOutputTokens: 700, thinkingConfig: { thinkingBudget: 0 } } }), signal: AbortSignal.timeout(30000) });
-      if (r.status === 503 || r.status === 429) { lastErr = new Error('gemini HTTP ' + r.status); continue; }
-      if (!r.ok) throw new Error('gemini HTTP ' + r.status + ' ' + (await r.text()).slice(0, 160));
-      const t = (await r.json()).candidates?.[0]?.content?.parts?.[0]?.text;
-      if (!t) throw new Error('gemini empty response');
-      return t.trim();
-    } catch (e) { lastErr = e; }
+  for (const model of models) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      if (attempt) await new Promise(z => setTimeout(z, 1200));
+      try {
+        const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, signal: AbortSignal.timeout(30000) });
+        if (r.status === 503 || r.status === 429) { lastErr = new Error(model + ' HTTP ' + r.status); continue; }       // retry same model, then next
+        if (!r.ok) { lastErr = new Error(model + ' HTTP ' + r.status + ' ' + (await r.text()).slice(0, 100)); break; }  // try next model
+        const t = (await r.json()).candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!t) { lastErr = new Error(model + ' empty response'); break; }
+        return t.trim();
+      } catch (e) { lastErr = e; }
+    }
   }
   throw lastErr || new Error('gemini failed');
 }
