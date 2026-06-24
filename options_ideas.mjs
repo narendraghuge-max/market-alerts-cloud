@@ -95,11 +95,13 @@ function pickTier(chain, type, nowMs, target, score, targetDTE) {
   let desired, side, tgtUsed;
   if (type === 'C') {
     tgtUsed = (target && target > price) ? target : price + EM;
+    tgtUsed = Math.min(tgtUsed, price + 1.5 * EM);   // cap to a reachable target (kills far-OTM lottery contracts)
     desired = Math.max(price - 0.4 * EM, Math.min(price + cf * (tgtUsed - price), tgtUsed));
     side = chain2.filter(o => o.strike <= tgtUsed && o.strike >= price - 0.6 * EM);
     if (!side.length) side = chain2.filter(o => o.strike <= tgtUsed);
   } else {
     tgtUsed = (target && target > 0 && target < price) ? target : price - EM;
+    tgtUsed = Math.max(tgtUsed, price - 1.5 * EM);
     desired = Math.min(price + 0.4 * EM, Math.max(price - cf * (price - tgtUsed), tgtUsed));
     side = chain2.filter(o => o.strike >= tgtUsed && o.strike <= price + 0.6 * EM);
     if (!side.length) side = chain2.filter(o => o.strike >= tgtUsed);
@@ -109,7 +111,9 @@ function pickTier(chain, type, nowMs, target, score, targetDTE) {
   const quoted = side.filter(o => o.ask > 0 || o.bid > 0);
   const pool = liquid.length ? liquid : (quoted.length ? quoted : side);
   pool.sort((a, b) => Math.abs(a.strike - desired) - Math.abs(b.strike - desired));
-  const top = pool[0];
+  // delta floor: delta ~ probability of finishing ITM; skip lottery strikes (<0.22) -
+  // take the nearest-to-desired strike that still has a realistic delta.
+  const top = pool.find(o => o.delta == null || Math.abs(o.delta) >= 0.22) || pool[0];
   if (!top) return null;
   const mid = (top.bid > 0 && top.ask > 0) ? (top.bid + top.ask) / 2 : (top.ask || top.bid || 0);
   // Projected SELL premium if the underlying tags `target`. Assume the target prints
@@ -211,7 +215,7 @@ export function renderOptionsHtml(optIdeas) {
       contract = '$' + c.strike + ' <span style="color:var(--muted)">(' + c.otmPct + '% OTM)</span> &middot; ' + c.expiry + ' &middot; ' + c.dte + 'd' + (c.iv ? ' &middot; IV' + c.iv + '%' : '');
       buy = '$' + c.premium;
       sell = '<b style="color:#16a34a">$' + c.exitPrem + '</b> <span style="color:#16a34a">(' + c.exitMult + 'x)</span>';
-      greeks = '&Delta;' + (c.delta != null ? c.delta : '-') + (c.theta != null ? ' &middot; &theta;' + c.theta : '');
+      greeks = '&Delta;' + (c.delta != null ? c.delta + ' <span style="color:var(--muted)">(~' + Math.round(c.delta * 100) + '% ITM)</span>' : '-') + (c.theta != null ? ' &middot; &theta;' + c.theta : '');
     } else {
       // The option's decay would eat the move — point at the leveraged ETF (Alt column).
       contract = '<span style="color:var(--muted)">move too small for the option &mdash; <b>use the ETF</b> (Alt col) for this horizon</span>';
@@ -231,7 +235,7 @@ export function renderOptionsHtml(optIdeas) {
   const callBlocks = oi.calls.map(c => tierRows(c, true)).join('');
   const putBlocks = oi.puts.map(p => tierRows(p, false)).join('');
   if (callBlocks || putBlocks) {
-    html += '<div class="sub"><b>How to read this:</b> each name shows 3 holding lengths &mdash; <b>Day</b> (~days), <b>Swing</b> (~2 weeks), <b>Runner</b> (~1 month+). For each: <b>Buy ~</b> = the option mid you pay to open, <b>Sell ~</b> = the estimated mid to close when price reaches the target (the <b>x</b> is your gain &mdash; set your limit-sell there). Only <b>profitable</b> options are shown; when the move is too small to beat time-decay, the row says <b>use the ETF</b> instead (the Alt column &mdash; no expiry, no decay). <b>Stop</b> = the underlying price that kills the idea. &Delta;/&theta; = how much the option moves with the stock / loses per day. High-risk; confirm live pricing; not advice.</div>';
+    html += '<div class="sub"><b>How to read this:</b> each name shows 3 holding lengths &mdash; <b>Day</b> (~days), <b>Swing</b> (~2 weeks), <b>Runner</b> (~1 month+). For each: <b>Buy ~</b> = the option mid you pay to open, <b>Sell ~</b> = the estimated mid to close when price reaches the target (the <b>x</b> is your gain &mdash; set your limit-sell there). Only <b>profitable</b> options are shown; when the move is too small to beat time-decay, the row says <b>use the ETF</b> instead (the Alt column &mdash; no expiry, no decay). <b>Stop</b> = the underlying price that kills the idea. &Delta; (delta) &asymp; the rough odds the option finishes in-the-money; &theta; = $ lost to time-decay per day. <b style="color:#dc2626">Premiums are CBOE-delayed (~15 min, and stale outside market hours) and mid-price &mdash; ALWAYS verify the live quote in your broker before trading.</b> Not advice.</div>';
     html += '<table><thead><tr><th>Symbol</th><th>Alt (lev. ETF)</th><th>Horizon &rarr; target</th><th>Suggested contract</th><th class="r">Buy ~</th><th class="r">Sell ~</th><th>Greeks</th><th>Stop</th></tr></thead><tbody>';
     if (oi.calls.length) html += '<tr><td colspan="8" style="font-weight:600;color:#16a34a;background:rgba(22,163,74,0.06)">CALLS &mdash; bullish setups</td></tr>' + callBlocks;
     if (oi.puts.length) html += '<tr><td colspan="8" style="font-weight:600;color:#dc2626;background:rgba(220,38,38,0.06)">PUTS &mdash; bearish (downtrend) names</td></tr>' + putBlocks;
