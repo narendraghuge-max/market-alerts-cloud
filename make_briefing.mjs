@@ -64,6 +64,20 @@ async function gemini(p) {
   throw lastErr || new Error('gemini failed');
 }
 
+let CLAUDE_MODEL = '';
+async function claude(p) {
+  const key = process.env.ANTHROPIC_API_KEY;
+  if (!key) throw new Error('no ANTHROPIC_API_KEY');
+  const model = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6';
+  const r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' }, body: JSON.stringify({ model, max_tokens: 700, messages: [{ role: 'user', content: p }] }), signal: AbortSignal.timeout(45000) });
+  if (!r.ok) throw new Error('claude HTTP ' + r.status + ' ' + (await r.text()).slice(0, 150));
+  const t = ((await r.json()).content || []).filter(c => c.type === 'text').map(c => c.text).join('').trim();
+  if (!t) throw new Error('claude empty response');
+  CLAUDE_MODEL = model;
+  console.error('briefing model: ' + model);
+  return t;
+}
+
 // templated fallback so the briefing is never blank/stale if the model is unavailable
 function fallback() {
   const att = holdings.filter(h => h.status === 'SELL' || h.status === 'TRIM');
@@ -74,9 +88,16 @@ function fallback() {
   ].join('\n');
 }
 
-let text, src = 'auto-summary';
-try { text = await gemini(prompt); src = BRIEF_MODEL || 'Gemini'; }
-catch (e) { console.error('briefing AI failed, using fallback:', e.message); text = fallback(); }
+// Provider order: Claude (if key) -> Gemini (if key) -> templated auto-summary.
+let text = '', src = 'auto-summary';
+const providers = [];
+if (process.env.ANTHROPIC_API_KEY) providers.push(['Claude', claude, () => CLAUDE_MODEL]);
+if (process.env.GEMINI_API_KEY) providers.push(['Gemini', gemini, () => BRIEF_MODEL]);
+for (const [name, fn, tag] of providers) {
+  try { text = await fn(prompt); src = tag() || name; break; }
+  catch (e) { console.error(name + ' briefing failed:', e.message); }
+}
+if (!text) { text = fallback(); src = 'auto-summary'; }
 
 writeFileSync(join(dir, 'briefing.json'), JSON.stringify({ ts: fmtET(Date.now()) + ' (' + src + ')', text }, null, 2));
 console.error('briefing.json written via ' + src + ' (' + text.length + ' chars)');
