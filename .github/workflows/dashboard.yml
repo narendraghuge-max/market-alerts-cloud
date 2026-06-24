@@ -28,8 +28,9 @@ jobs:
           HOLDINGS_JSON: ${{ secrets.HOLDINGS_JSON }}
         run: node scan_exits.mjs --json > exits.json
 
-      - name: AI briefing (free, Google Gemini)
+      - name: AI briefing (Claude, Gemini fallback)
         env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: node make_briefing.mjs
 
