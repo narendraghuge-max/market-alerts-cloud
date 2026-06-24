@@ -17,14 +17,30 @@ const HOLDINGS = new Set(Object.keys(EXIT_HOLDINGS)); // derived from holdings s
 const LEVERAGED = new Set(['SOXL','SOXS','NVDU','NVDD','TECL','TECS','WEBL','WEBS','TQQQ','SQQQ','SPXL','SPXS','TNA','TZA','ERX','ERY','GUSH','DRIP','AAPU','MSFU','AMZU','GGLL','METU','SPCH','SSPC']);
 
 const UNIVERSE = {
-  Semiconductors: ['NVDA','AVGO','AMD','TSM','MU','AMAT','LRCX','SMCI','SMH','ARM','MRVL','ASML','SOXL','SOXS','NVDU','NVDD'],
-  'AI / Big tech': ['PLTR','MSFT','GOOGL','META','AMZN','SNOW','CRWD','TSLA','AAPL','NFLX','ORCL','ANET','TECL','TECS','WEBL','WEBS','AAPU','MSFU','AMZU','GGLL','METU'],
+  Semiconductors: ['NVDA','AVGO','AMD','TSM','MU','AMAT','LRCX','KLAC','SMCI','SMH','ARM','MRVL','ASML','TXN','QCOM','ADI','ON','MCHP','CRDO','ALAB','SOXL','SOXS','NVDU','NVDD'],
+  'AI / Big tech': ['PLTR','MSFT','GOOGL','META','AMZN','SNOW','CRWD','TSLA','AAPL','NFLX','ORCL','ANET','NOW','PANW','NET','ZS','DDOG','CRM','TECL','TECS','WEBL','WEBS','AAPU','MSFU','AMZU','GGLL','METU'],
   'Tech broad': ['QQQ','XLK','TQQQ','SQQQ'],
+  Space: ['SPCX','SPCH','SSPC','RKLB','ASTS','LUNR','RDW'],
+  'Nuclear / Uranium': ['CCJ','CEG','VST','OKLO','SMR','LEU','URA'],
+  Quantum: ['IONQ','RGTI','QBTS'],
+  'Crypto equities': ['COIN','MSTR','HOOD','MARA'],
+  'Defense / Drones': ['AVAV','KTOS','LMT','RTX'],
+  'Rare earths / Minerals': ['MP','ALB','LAC'],
   Energy: ['XOM','CVX','OXY','SLB','COP','XLE','ERX','ERY','GUSH','DRIP'],
   'Index / regime': ['SPY','IWM','SPXL','SPXS','TNA','TZA'],
   Diversifiers: ['XLF','XLV','GLD','GDX'],
-  Space: ['SPCX','SPCH','SSPC'],
 };
+
+// Liquidity gate (LOOSE per user): price >= $3 and >= $15M average daily dollar-volume.
+// Disciplined safety net - a curated universe should already pass, but this auto-drops
+// anything thin/penny from the BUY candidates regardless of how it got onto the list.
+const MIN_PRICE = 3;
+const MIN_ADV_USD = 15e6;
+function liquidityOf(daily, price) {
+  const last = daily.slice(-20);
+  const advUsd = last.length ? last.reduce((s, b) => s + b.c * (b.v || 0), 0) / last.length : 0;
+  return { advUsd: Math.round(advUsd), illiquid: price < MIN_PRICE || advUsd < MIN_ADV_USD };
+}
 
 const argv = process.argv.slice(2);
 const asJson = argv.includes('--json');
@@ -141,6 +157,11 @@ function anchorFor(sym) {
   if (UNIVERSE.Energy.includes(sym)) return sym === 'XLE' ? 'SPY' : 'XLE';
   if (UNIVERSE['Index / regime'].includes(sym)) return sym === 'SPY' ? 'QQQ' : 'SPY';
   if (UNIVERSE.Space.includes(sym)) return 'QQQ';
+  if (UNIVERSE['Nuclear / Uranium'].includes(sym)) return 'XLE';        // power/utility cohort vs energy
+  if (UNIVERSE.Quantum.includes(sym)) return 'QQQ';                     // high-beta tech vs Nasdaq
+  if (UNIVERSE['Crypto equities'].includes(sym)) return 'QQQ';          // risk-on proxy vs Nasdaq
+  if (UNIVERSE['Defense / Drones'].includes(sym)) return 'SPY';         // industrials vs broad market
+  if (UNIVERSE['Rare earths / Minerals'].includes(sym)) return 'XLE';   // materials cohort vs energy/commodity
   return 'SPY';
 }
 
@@ -432,6 +453,7 @@ function analyze(symbol, daily, h4, h1, m15, anchors) {
 
   return {
     symbol, price: +price.toFixed(2), score, action, basis, grade, direction: dir, trend, vp,
+    advUsd: liquidityOf(daily, price).advUsd, illiquid: liquidityOf(daily, price).illiquid,
     leveraged: LEVERAGED.has(symbol), holding: HOLDINGS.has(symbol),
     bias: trendOk ? (dir === 'long' ? 'bull' : 'bear') : 'weak',
     zone: goodLocation ? (dir === 'long' ? 'discount' : 'premium') : (dir === 'long' ? 'premium' : 'discount'),
@@ -611,8 +633,12 @@ async function main() {
   // light throttle to be gentle on Yahoo
   for (const s of symbols) { results.push(await scanOne(s, anchors)); await new Promise(r => setTimeout(r, 120)); }
 
-  const ok = results.filter(r => !r.error).sort((a, b) => b.score - a.score);
+  const scanned = results.filter(r => !r.error);
+  // Drop illiquid/penny names from BUY candidates (keep my own holdings regardless).
+  const dropped = scanned.filter(r => r.illiquid && !r.holding);
+  const ok = scanned.filter(r => !r.illiquid || r.holding).sort((a, b) => b.score - a.score);
   const errs = results.filter(r => r.error);
+  if (dropped.length) console.error('liquidity gate dropped: ' + dropped.map(r => r.symbol).join(', '));
 
   // holdings exit-watch rows for the dashboard
   const exitRows = [];
