@@ -490,7 +490,7 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     if (existsSync(bf)) {
       const b = JSON.parse(readFileSync(bf, 'utf8'));
       brHtml = '<h2 style="font-size:16px;font-weight:600;margin:14px 0 6px">Today\'s briefing</h2>'
-        + '<div style="border:1px solid var(--line);border-radius:10px;padding:12px 16px;line-height:1.65;font-size:14px">'
+        + '<div style="border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:13px 16px;line-height:1.65;font-size:14px;background:var(--card)">'
         + esc(b.text).replace(/\n/g, '<br>')
         + '<div class="sub" style="margin:8px 0 0">' + esc(b.ts) + ' ET</div></div>';
     }
@@ -565,10 +565,10 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     + '<meta http-equiv="refresh" content="300"><title>Investment Navigator</title>'
     + '<link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><meta name="apple-mobile-web-app-title" content="Investment Navigator"><meta name="theme-color" content="#0f1115"><link rel="manifest" href="/manifest.webmanifest"><link rel="icon" href="/icon-192.png">'
     + '<style>'
-    + ':root{--bg:#fff;--fg:#1a1a1a;--muted:#6b7280;--line:#e5e7eb}'
-    + '@media(prefers-color-scheme:dark){:root{--bg:#0f1115;--fg:#e8e8e8;--muted:#9aa0aa;--line:#272b32}}'
+    + ':root{--bg:#fff;--fg:#1a1a1a;--muted:#6b7280;--line:#e5e7eb;--card:#f6f7f9;--accent:#2563eb}'
+    + '@media(prefers-color-scheme:dark){:root{--bg:#0f1115;--fg:#e8e8e8;--muted:#9aa0aa;--line:#272b32;--card:#161922;--accent:#3b82f6}}'
     + 'body{margin:0;background:var(--bg);color:var(--fg);font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;padding:20px}'
-    + 'h1{font-size:20px;font-weight:600;margin:0 0 2px}.sub{color:var(--muted);font-size:13px;margin-bottom:16px}'
+    + '.hdr{display:flex;align-items:center;gap:12px;margin:0 0 6px}.logo{width:40px;height:40px;flex:none;border-radius:11px;background:linear-gradient(160deg,#11223f,#2563eb);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;font-size:16px;letter-spacing:.5px;box-shadow:0 2px 10px rgba(37,99,235,.3)}h1{font-size:21px;font-weight:700;margin:0;letter-spacing:-.2px}.tagline{color:var(--fg);opacity:.82;font-size:13px;margin:0 0 14px}.sub{color:var(--muted);font-size:13px;margin-bottom:16px}'
     + '.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}'
     + 'select{padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);font-size:13px}'
     + 'label{font-size:13px;display:flex;align-items:center;gap:5px}#count{font-size:13px;color:var(--muted);margin-bottom:8px}'
@@ -576,11 +576,11 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     + 'td{padding:8px 6px;border-bottom:1px solid var(--line)}.r{text-align:right;font-variant-numeric:tabular-nums}'
     + '.pill{border:1px solid currentColor;padding:2px 8px;border-radius:6px;font-weight:600;font-size:12px;white-space:nowrap}'
     + '.tag{font-size:11px;padding:1px 5px;border-radius:5px;margin-left:4px;border:1px solid}footer{margin-top:16px;color:var(--muted);font-size:12px}'
-    + '.tbl{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;margin-bottom:4px}'
+    + '.tbl{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;margin-bottom:4px}.tbl th:first-child,.tbl td:first-child{position:sticky;left:0;background:var(--bg);box-shadow:1px 0 0 var(--line)}'
     + '@media(max-width:680px){body{padding:12px}h1{font-size:18px}.sub{font-size:12px}table{font-size:12px}th,td{padding:7px 6px}.controls{gap:6px}select{flex:1 1 auto}}'
-    + '.sec{border-top:1px solid var(--line)}.sec>summary{cursor:pointer;list-style:none;font-size:16px;font-weight:600;padding:13px 2px;display:flex;align-items:center;gap:8px;-webkit-user-select:none;user-select:none}.sec>summary::-webkit-details-marker{display:none}.sec>summary::before{content:"\\25B8";color:var(--muted);font-weight:400}.sec[open]>summary::before{content:"\\25BE"}.sec>summary span{font-weight:400}.sec[open]{padding-bottom:10px}'
+    + '.sec{border-top:1px solid var(--line)}.sec>summary{cursor:pointer;list-style:none;font-size:16px;font-weight:650;padding:15px 2px;display:flex;align-items:center;gap:9px;-webkit-user-select:none;user-select:none}.sec>summary::-webkit-details-marker{display:none}.sec>summary::before{content:"\\25B8";color:var(--accent);font-weight:700}.sec[open]>summary::before{content:"\\25BE"}.sec>summary span{font-weight:400;color:var(--muted)}.sec[open]{padding-bottom:12px}'
     + '</style></head><body>'
-    + '<h1>Investment Navigator</h1><div class="sub" style="margin:0 0 8px;font-size:13px;color:var(--fg)">Always watching your money &mdash; like a fund manager who never logs off.</div><div class="sub">Generated ' + ts + ' ET &middot; ' + rows.length + ' scanned' + skipped + ' &middot; auto-reloads every 5 min &middot; not financial advice</div>'
+    + '<div class="hdr"><div class="logo">IN</div><h1>Investment Navigator</h1></div><div class="tagline">Always watching your money &mdash; like a fund manager who never logs off.</div><div class="sub">Generated ' + ts + ' ET &middot; ' + rows.length + ' scanned' + skipped + ' &middot; auto-reloads every 5 min &middot; not financial advice</div>'
     + sec(brHtml, true)
     + sec(evHtml, false)
     + sec(hlHtml, false)
