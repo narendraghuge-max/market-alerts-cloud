@@ -13,6 +13,8 @@ concurrency:
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # lets the AI briefing/events be committed back so they persist between runs
     steps:
       - uses: actions/checkout@v4
 
@@ -28,11 +30,23 @@ jobs:
           HOLDINGS_JSON: ${{ secrets.HOLDINGS_JSON }}
         run: node scan_exits.mjs --json > exits.json
 
-      - name: AI briefing (Claude, Gemini fallback)
+      - name: AI briefing + analyzed events (Claude, Gemini fallback; gated to ~30 min)
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: node make_briefing.mjs
+
+      - name: Persist briefing + events between runs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add briefing.json events.json
+          if git diff --cached --quiet; then
+            echo "no AI change to persist"
+          else
+            git commit -m "AI briefing + events refresh [skip ci]"
+            git push
+          fi
 
       - name: Generate dashboard (report.html)
         env:
