@@ -540,8 +540,9 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     const totPnl = exitRows.reduce((s, r) => s + (r.pnl || 0), 0);
     exHtml = '<h2 style="font-size:16px;font-weight:600;margin:18px 0 6px">Holdings &mdash; exit watch</h2>'
       + '<div class="sub">' + exitRows.length + ' holdings &middot; total value ' + money(totEq) + ' &middot; total gain/loss <span style="color:' + (totPnl >= 0 ? '#16a34a' : '#dc2626') + '">' + (totPnl >= 0 ? '+' : '-') + money(totPnl) + '</span></div>'
+      + '<div class="controls" style="margin:8px 0"><select id="h-sym" title="jump to one holding"><option value="">All holdings</option>' + exitRows.map(r => '<option>' + r.sym + '</option>').join('') + '</select></div>'
       + '<table><thead><tr><th>Signal</th><th title="Trend health across Daily/4H/1H. A=all up (healthy), C=broken">Grade</th><th title="overall trend Daily/4H/1H">Trend</th><th>Holding</th><th class="r">Price now</th><th class="r">Your cost</th><th class="r">Gain/loss</th><th class="r">Safety price</th><th class="r">Take-profit (day&middot;swing&middot;run)</th><th class="r" title="Point of Control + value area from the last 30 days of volume-by-price">Volume 30d (POC&middot;val)</th><th class="r">Avg price</th><th>What to do (plan)</th><th>Basis (why)</th></tr></thead><tbody>'
-      + exitRows.map(r => '<tr><td><span class="pill" style="color:' + exCol(r.status) + '">' + r.status + '</span></td>'
+      + exitRows.map(r => '<tr data-sym="' + r.sym + '"><td><span class="pill" style="color:' + exCol(r.status) + '">' + r.status + '</span></td>'
         + '<td style="font-weight:600;color:' + (r.grade === 'A' ? '#16a34a' : r.grade === 'B' ? '#d97706' : '#6b7280') + '">' + (r.grade || '-') + '</td>'
         + '<td style="font-weight:600;color:' + (r.trend === 'up' ? '#16a34a' : r.trend === 'down' ? '#dc2626' : '#6b7280') + '">' + (r.trend === 'up' ? 'UP' : r.trend === 'down' ? 'DOWN' : 'flat') + '</td>'
         + '<td><b>' + r.sym + '</b>' + (r.lev ? ' <span class="tag" style="color:#d97706;border-color:#d97706">LEV</span>' : '') + (r.winner ? ' <span class="tag" style="color:#16a34a;border-color:#16a34a">WIN</span>' : '') + '</td>'
@@ -585,6 +586,7 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     + sec(optHtml, false)
     + '<details class="sec"><summary>Buy scan</summary>'
     + '<div class="controls">'
+    + '<select id="f-sym" title="jump to one ticker"><option value="">All tickers</option></select>'
     + '<select id="f-score"><option value="7">Actionable (score &ge; 7)</option><option value="9">Strong only (&ge; 9)</option><option value="5">Watch &amp; up (&ge; 5)</option><option value="0">All</option></select>'
     + '<select id="f-sort"><option value="score">Sort: score</option><option value="rr">Sort: reward/risk</option><option value="price">Sort: price</option><option value="sym">Sort: symbol</option></select>'
     + '<label><input type="checkbox" id="f-rr">R &ge; 2</label><label><input type="checkbox" id="f-hold">My holdings</label><label><input type="checkbox" id="f-lev">Hide leveraged</label>'
@@ -598,8 +600,8 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     + 'function ac(a){return a==="BUY"?"#16a34a":a==="ACCUMULATE"?"#2563eb":a==="SHORT"?"#dc2626":a==="SHORT-SCALE"?"#d97706":a==="WATCH"?"#6b7280":"#6b7280"}'
     + 'function al(a){return a==="BUY"?"BUY":a==="ACCUMULATE"?"ACCUM":a==="SHORT"?"SHORT":a==="SHORT-SCALE"?"SHORT+":a==="WATCH"?"WATCH":"AVOID"}'
     + 'function gcol(g){return g==="A"?"#16a34a":g==="B"?"#d97706":"#6b7280"}'
-    + 'function render(){var mS=+$("f-score").value,so=$("f-sort").value,q2=$("f-rr").checked,ho=$("f-hold").checked,hl=$("f-lev").checked;'
-    + 'var rows=DATA.filter(function(r){return r.score>=mS});if(q2)rows=rows.filter(function(r){return r.rr>=2});if(ho)rows=rows.filter(function(r){return r.hold});if(hl)rows=rows.filter(function(r){return !r.lev});'
+    + 'function render(){var mS=+$("f-score").value,so=$("f-sort").value,q2=$("f-rr").checked,ho=$("f-hold").checked,hl=$("f-lev").checked,sy=$("f-sym").value;'
+    + 'var rows;if(sy){rows=DATA.filter(function(r){return r.sym===sy})}else{rows=DATA.filter(function(r){return r.score>=mS});if(q2)rows=rows.filter(function(r){return r.rr>=2});if(ho)rows=rows.filter(function(r){return r.hold});if(hl)rows=rows.filter(function(r){return !r.lev})}'
     + 'rows.sort(function(a,b){return so==="sym"?a.sym.localeCompare(b.sym):so==="price"?b.price-a.price:(b[so]-a[so])||(b.score-a.score)});'
     + '$("count").textContent="Showing "+rows.length+" of "+DATA.length+" \\u2014 "+rows.filter(function(r){return r.score>=7}).length+" actionable";'
     + 'var h="";for(var i=0;i<rows.length;i++){var r=rows[i];'
@@ -618,7 +620,9 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     + '+"<td class=r style=\\"color:"+rc+";font-weight:600\\">"+r.rr.toFixed(1)+"R</td>"'
     + '+"<td style=\\"font-size:11px;color:var(--muted);max-width:360px;line-height:1.45\\">"+(r.basis||"")+"</td></tr>"}'
     + 'if(!rows.length)h="<tr><td colspan=12 style=\\"padding:16px;text-align:center;color:var(--muted)\\">No setups match these filters.</td></tr>";$("tb").innerHTML=h}'
-    + '["f-score","f-sort","f-rr","f-hold","f-lev"].forEach(function(id){$(id).addEventListener("input",render)});render();'
+    + '["f-sym","f-score","f-sort","f-rr","f-hold","f-lev"].forEach(function(id){$(id).addEventListener("input",render)});'
+    + '(function(){var sl=$("f-sym"),sy=DATA.map(function(r){return r.sym}).sort();for(var i=0;i<sy.length;i++){var o=document.createElement("option");o.value=o.textContent=sy[i];sl.appendChild(o)}})();'
+    + 'var hs=$("h-sym");if(hs){hs.addEventListener("input",function(){var v=hs.value,tr=document.querySelectorAll("tr[data-sym]");for(var j=0;j<tr.length;j++){tr[j].style.display=(!v||tr[j].getAttribute("data-sym")===v)?"":"none"}})}render();'
     + '</scr' + 'ipt></body></html>';
   // Wrap every table in a horizontal-scroll container so wide tables swipe cleanly on phones.
   return __out.replace(/<table>/g, '<div class="tbl"><table>').replace(/<\/table>/g, '</table></div>');
