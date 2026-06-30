@@ -27,8 +27,9 @@ function parseItems(xml, src) {
     const title = strip((it.match(/<title>([\s\S]*?)<\/title>/i) || [])[1]);
     const desc = strip((it.match(/<description>([\s\S]*?)<\/description>/i) || [])[1]);
     const pub = strip((it.match(/<pubDate>([\s\S]*?)<\/pubDate>/i) || [])[1]);
+    const link = strip((it.match(/<link>([\s\S]*?)<\/link>/i) || [])[1]);
     const epoch = Date.parse(pub) || null;
-    if (title && epoch) out.push({ src, title, desc, epoch });
+    if (title && epoch) out.push({ src, title, desc, epoch, link });
   }
   return out;
 }
@@ -56,7 +57,9 @@ const events = all
     ts: fmtET(e.epoch),
     epoch: e.epoch,
     headline: e.title,
-    detail: `Source: ${e.src}.` + (e.desc ? ` ${e.desc.slice(0, 280)}` : '') + ' (headline feed — not analyzed; decision-support only)',
+    src: e.src,
+    url: e.link || '',
+    desc: e.desc ? e.desc.slice(0, 180) : '',
   }));
 
 writeFileSync(join(__dir, 'headlines.json'), JSON.stringify(events, null, 2));

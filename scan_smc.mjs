@@ -489,10 +489,11 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     const bf = join(__reportDir, 'briefing.json');
     if (existsSync(bf)) {
       const b = JSON.parse(readFileSync(bf, 'utf8'));
+      const brBody = esc(b.text).replace(/\n/g, '<br>').replace(/(^|<br>)\s*([A-Z][A-Za-z ]{2,40}:)/g, '$1<b style="color:var(--fg)">$2</b>');
       brHtml = '<h2 style="font-size:16px;font-weight:600;margin:14px 0 6px">Today\'s briefing</h2>'
         + '<div style="border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:13px 16px;line-height:1.65;font-size:14px;background:var(--card)">'
-        + esc(b.text).replace(/\n/g, '<br>')
-        + '<div class="sub" style="margin:8px 0 0">' + esc(b.ts) + ' ET</div></div>';
+        + brBody
+        + '<div class="sub" style="margin:9px 0 0"><span class="rel" data-epoch="' + (b.epoch || '') + '">' + esc(b.ts) + ' ET</span></div></div>';
     }
   } catch (e) {}
   let events = [];
@@ -506,11 +507,11 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     .slice(0, 8); // newest 8 only
   let evHtml = '<h2 style="font-size:16px;font-weight:600;margin:18px 0 6px">Market events <span style="font-size:12px;font-weight:400;color:var(--muted)">(last 36h, newest 8)</span></h2>';
   if (events.length) {
-    evHtml += '<table><thead><tr><th style="width:130px">Time (ET)</th><th>Event</th><th>Triggers</th></tr></thead><tbody>'
-      + events.map(e => '<tr><td style="color:var(--muted);font-size:12px">' + esc(e.ts) + '</td>'
-        + '<td>' + esc(e.headline) + '</td>'
-        + '<td style="font-size:12px;color:var(--muted)">' + esc(e.detail || '') + '</td></tr>').join('')
-      + '</tbody></table>';
+    evHtml += '<div class="feed">'
+      + events.map(e => '<div class="fi"><div class="fh">' + esc(e.headline) + '</div>'
+        + (e.detail ? '<div class="fa">' + esc(e.detail) + '</div>' : '')
+        + '<div class="fm">' + esc(e.ts) + ' ET</div></div>').join('')
+      + '</div>';
   } else {
     evHtml += '<div class="sub">No material market events in the last 36 hours.</div>';
   }
@@ -524,11 +525,12 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
         .sort((a, b) => b._t - a._t).slice(0, 8);
       if (hl.length) {
         hlHtml = '<h2 style="font-size:16px;font-weight:600;margin:18px 0 6px">Latest headlines <span style="font-size:12px;font-weight:400;color:var(--muted)">(live feed — not analyzed)</span></h2>'
-          + '<table><thead><tr><th style="width:130px">Time (ET)</th><th>Headline</th><th>Source</th></tr></thead><tbody>'
-          + hl.map(e => '<tr><td style="color:var(--muted);font-size:12px">' + esc(e.ts) + '</td>'
-            + '<td>' + esc(e.headline) + '</td>'
-            + '<td style="font-size:12px;color:var(--muted)">' + esc(e.detail || '') + '</td></tr>').join('')
-          + '</tbody></table>';
+          + '<div class="feed">'
+          + hl.map(e => '<div class="fi"><div class="fh">' + (e.url ? '<a href="' + esc(e.url) + '" target="_blank" rel="noopener">' + esc(e.headline) + '</a>' : esc(e.headline)) + '</div>'
+            + '<div class="fm">' + (e.src ? '<b>' + esc(e.src) + '</b> &middot; ' : '') + esc(e.ts) + ' ET</div>'
+            + (e.desc ? '<div class="fa" style="margin-top:3px">' + esc(e.desc) + '</div>' : '')
+            + '</div>').join('')
+          + '</div>';
       }
     }
   } catch (e) {}
@@ -577,6 +579,7 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     + '.pill{border:1px solid currentColor;padding:2px 8px;border-radius:6px;font-weight:600;font-size:12px;white-space:nowrap}'
     + '.tag{font-size:11px;padding:1px 5px;border-radius:5px;margin-left:4px;border:1px solid}footer{margin-top:16px;color:var(--muted);font-size:12px}'
     + '.tbl{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;margin-bottom:4px}.tbl th:first-child,.tbl td:first-child{position:sticky;left:0;background:var(--bg);box-shadow:1px 0 0 var(--line)}'
+    + '.feed{margin-top:2px}.fi{padding:11px 2px;border-bottom:1px solid var(--line)}.fi:last-child{border-bottom:none}.fh{font-weight:600;font-size:14px;line-height:1.4}.fh a{color:var(--fg);text-decoration:none}.fh a:active,.fh a:hover{color:var(--accent)}.fa{font-size:13px;color:var(--muted);margin-top:4px;line-height:1.5}.fm{font-size:11.5px;color:var(--muted);margin-top:4px}.fm b{color:var(--fg);font-weight:600}'
     + '@media(max-width:680px){body{padding:12px}h1{font-size:18px}.sub{font-size:12px}table{font-size:12px}th,td{padding:7px 6px}.controls{gap:6px}select{flex:1 1 auto}}'
     + '.sec{border-top:1px solid var(--line)}.sec>summary{cursor:pointer;list-style:none;font-size:16px;font-weight:650;padding:15px 2px;display:flex;align-items:center;gap:9px;-webkit-user-select:none;user-select:none}.sec>summary::-webkit-details-marker{display:none}.sec>summary::before{content:"\\25B8";color:var(--accent);font-weight:700}.sec[open]>summary::before{content:"\\25BE"}.sec>summary span{font-weight:400;color:var(--muted)}.sec[open]{padding-bottom:12px}'
     + 'td.basis .bd>summary{list-style:none;cursor:pointer;color:var(--accent);font-weight:600;font-size:12px;padding:3px 0;display:inline-flex;align-items:center;gap:5px}td.basis .bd>summary::-webkit-details-marker{display:none}td.basis .bd>summary::after{content:"\\25BE";color:var(--muted);font-size:10px}td.basis .bd[open]>summary::after{content:"\\25B4"}td.basis .bt{margin-top:5px;line-height:1.45;max-width:480px}'
@@ -628,6 +631,7 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     + '["f-sym","f-score","f-sort","f-rr","f-hold","f-lev"].forEach(function(id){$(id).addEventListener("input",render)});'
     + '(function(){var sl=$("symlist"),sy=DATA.map(function(r){return r.sym}).sort();for(var i=0;i<sy.length;i++){var o=document.createElement("option");o.value=sy[i];sl.appendChild(o)}})();'
     + 'var hs=$("h-sym");if(hs){hs.addEventListener("input",function(){var v=hs.value,tr=document.querySelectorAll("tr[data-sym]");for(var j=0;j<tr.length;j++){tr[j].style.display=(!v||tr[j].getAttribute("data-sym")===v)?"":"none"}})}render();'
+    + '(function(){var el=document.querySelector(".rel[data-epoch]");if(el){var ep=+el.getAttribute("data-epoch");if(ep){var m=Math.max(0,Math.round((Date.now()-ep)/60000));el.textContent=m<1?"updated just now":m<60?"updated "+m+"m ago":"updated "+Math.round(m/60)+"h ago"}}})();'
     + '</scr' + 'ipt></body></html>';
   // Wrap every table in a horizontal-scroll container so wide tables swipe cleanly on phones.
   return __out.replace(/<table>/g, '<div class="tbl"><table>').replace(/<\/table>/g, '</table></div>');
