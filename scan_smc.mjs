@@ -489,11 +489,18 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     const bf = join(__reportDir, 'briefing.json');
     if (existsSync(bf)) {
       const b = JSON.parse(readFileSync(bf, 'utf8'));
-      const brBody = esc(b.text).replace(/\n/g, '<br>').replace(/(^|<br>)\s*([A-Z][A-Za-z ]{2,40}:)/g, '$1<b style="color:var(--fg)">$2</b>');
+      const secs = b.text.split(/\n+/).map(s => s.trim()).filter(Boolean).map(line => {
+        const m = line.match(/^([A-Z][A-Za-z ]{2,40}?):\s*([\s\S]+)$/);
+        return m ? { title: m[1], body: m[2] } : { title: '', body: line };
+      });
+      const brCards = secs.length >= 2
+        ? secs.map(s => '<div class="ncard">'
+            + (s.title ? '<div class="nl" style="color:var(--accent);font-size:11px">' + esc(s.title) + '</div>' : '')
+            + '<div class="nv" style="font-size:13.5px;margin-top:' + (s.title ? '4px' : '0') + '">' + esc(s.body) + '</div></div>').join('')
+        : '<div class="ncard"><div class="nv" style="font-size:13.5px">' + esc(b.text).replace(/\n/g, '<br>') + '</div></div>';
       brHtml = '<h2 style="font-size:16px;font-weight:600;margin:14px 0 6px">Today\'s briefing</h2>'
-        + '<div style="border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;padding:13px 16px;line-height:1.65;font-size:14px;background:var(--card)">'
-        + brBody
-        + '<div class="sub" style="margin:9px 0 0"><span class="rel" data-epoch="' + (b.epoch || '') + '">' + esc(b.ts) + ' ET</span></div></div>';
+        + brCards
+        + '<div class="sub" style="margin:2px 0 0"><span class="rel" data-epoch="' + (b.epoch || '') + '">' + esc(b.ts) + ' ET</span></div>';
     }
   } catch (e) {}
   let events = [];
@@ -507,11 +514,9 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     .slice(0, 8); // newest 8 only
   let evHtml = '<h2 style="font-size:16px;font-weight:600;margin:18px 0 6px">Market events <span style="font-size:12px;font-weight:400;color:var(--muted)">(last 36h, newest 8)</span></h2>';
   if (events.length) {
-    evHtml += '<div class="feed">'
-      + events.map(e => '<div class="fi"><div class="fh">' + esc(e.headline) + '</div>'
-        + (e.detail ? '<div class="fa">' + esc(e.detail) + '</div>' : '')
-        + '<div class="fm">' + esc(e.ts) + ' ET</div></div>').join('')
-      + '</div>';
+    evHtml += events.map(e => '<div class="ncard"><div class="nh">' + esc(e.headline) + '</div>'
+      + (e.detail ? '<div class="impact"><div class="nl">How it affects you</div><div class="nv">' + esc(e.detail) + '</div></div>' : '')
+      + '<div class="ntime">' + esc(e.ts) + ' ET</div></div>').join('');
   } else {
     evHtml += '<div class="sub">No material market events in the last 36 hours.</div>';
   }
@@ -525,12 +530,9 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
         .sort((a, b) => b._t - a._t).slice(0, 8);
       if (hl.length) {
         hlHtml = '<h2 style="font-size:16px;font-weight:600;margin:18px 0 6px">Latest headlines <span style="font-size:12px;font-weight:400;color:var(--muted)">(live feed — not analyzed)</span></h2>'
-          + '<div class="feed">'
-          + hl.map(e => '<div class="fi"><div class="fh">' + (e.url ? '<a href="' + esc(e.url) + '" target="_blank" rel="noopener">' + esc(e.headline) + '</a>' : esc(e.headline)) + '</div>'
-            + '<div class="fm">' + (e.src ? '<b>' + esc(e.src) + '</b> &middot; ' : '') + esc(e.ts) + ' ET</div>'
-            + (e.desc ? '<div class="fa" style="margin-top:3px">' + esc(e.desc) + '</div>' : '')
-            + '</div>').join('')
-          + '</div>';
+          + hl.map(e => '<div class="ncard"><div class="nh">' + (e.url ? '<a href="' + esc(e.url) + '" target="_blank" rel="noopener">' + esc(e.headline) + '</a>' : esc(e.headline)) + '</div>'
+            + (e.desc ? '<div class="nrow"><div class="nl">Details</div><div class="nv">' + esc(e.desc) + '</div></div>' : '')
+            + '<div class="ntime">' + (e.src ? '<b>' + esc(e.src) + '</b> &middot; ' : '') + esc(e.ts) + ' ET</div></div>').join('');
       }
     }
   } catch (e) {}
@@ -579,7 +581,7 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     + '.pill{border:1px solid currentColor;padding:2px 8px;border-radius:6px;font-weight:600;font-size:12px;white-space:nowrap}'
     + '.tag{font-size:11px;padding:1px 5px;border-radius:5px;margin-left:4px;border:1px solid}footer{margin-top:16px;color:var(--muted);font-size:12px}'
     + '.tbl{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;margin-bottom:4px}.tbl th:first-child,.tbl td:first-child{position:sticky;left:0;background:var(--bg);box-shadow:1px 0 0 var(--line)}'
-    + '.feed{margin-top:2px}.fi{padding:11px 2px;border-bottom:1px solid var(--line)}.fi:last-child{border-bottom:none}.fh{font-weight:600;font-size:14px;line-height:1.4}.fh a{color:var(--fg);text-decoration:none}.fh a:active,.fh a:hover{color:var(--accent)}.fa{font-size:13px;color:var(--muted);margin-top:4px;line-height:1.5}.fm{font-size:11.5px;color:var(--muted);margin-top:4px}.fm b{color:var(--fg);font-weight:600}'
+    + '.ncard{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0;background:var(--card)}.ncard .nh{font-weight:700;font-size:14.5px;line-height:1.4}.ncard .nh a{color:var(--fg);text-decoration:none}.ncard .nh a:active,.ncard .nh a:hover{color:var(--accent)}.ncard .nrow{margin-top:9px}.ncard .nl{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:600;margin-bottom:3px}.ncard .nv{font-size:13px;line-height:1.5;color:var(--fg)}.ncard .impact{border-left:3px solid var(--accent);padding-left:11px;margin-top:10px}.ncard .impact .nl{color:var(--accent)}.ncard .ntime{font-size:11px;color:var(--muted);margin-top:9px}.ncard .ntime b{color:var(--fg);font-weight:600}'
     + '@media(max-width:680px){body{padding:12px}h1{font-size:18px}.sub{font-size:12px}table{font-size:12px}th,td{padding:7px 6px}.controls{gap:6px}select{flex:1 1 auto}}'
     + '.sec{border-top:1px solid var(--line)}.sec>summary{cursor:pointer;list-style:none;font-size:16px;font-weight:650;padding:15px 2px;display:flex;align-items:center;gap:9px;-webkit-user-select:none;user-select:none}.sec>summary::-webkit-details-marker{display:none}.sec>summary::before{content:"\\25B8";color:var(--accent);font-weight:700}.sec[open]>summary::before{content:"\\25BE"}.sec>summary span{font-weight:400;color:var(--muted)}.sec[open]{padding-bottom:12px}'
     + 'td.basis .bd>summary{list-style:none;cursor:pointer;color:var(--accent);font-weight:600;font-size:12px;padding:3px 0;display:inline-flex;align-items:center;gap:5px}td.basis .bd>summary::-webkit-details-marker{display:none}td.basis .bd>summary::after{content:"\\25BE";color:var(--muted);font-size:10px}td.basis .bd[open]>summary::after{content:"\\25B4"}td.basis .bt{margin-top:5px;line-height:1.45;max-width:480px}'
