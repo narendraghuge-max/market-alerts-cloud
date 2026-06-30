@@ -15,7 +15,7 @@ const GATE_MS = 28 * 60 * 1000;
 // --- refresh gate: keep the existing briefing if it's still fresh ---
 const prev = read('briefing.json');
 const prevEvents = read('events.json') || [];
-const haveSchema = prev?.v === 3 && Array.isArray(prev?.plays) && (prevEvents.length === 0 || ('rec' in prevEvents[0])); // force one regen when the briefing/events schema or prompt version changes
+const haveSchema = prev?.v === 4 && Array.isArray(prev?.plays) && (prevEvents.length === 0 || ('rec' in prevEvents[0])); // force one regen when the briefing/events schema or prompt version changes
 if (prev && prev.epoch && (now - prev.epoch) < GATE_MS && haveSchema) {
   console.error('briefing ' + Math.round((now - prev.epoch) / 60000) + ' min old - still fresh, skipping regen');
   process.exit(0);
@@ -139,8 +139,8 @@ for (const [name, fn, tag] of providers) {
 }
 if (!obj) { obj = fallbackObj(); src = 'auto-summary'; }
 
-const plays = Array.isArray(obj.plays) ? obj.plays.slice(0, 3).map(p => String(p).slice(0, 200)).filter(Boolean) : [];
-writeFileSync(join(dir, 'briefing.json'), JSON.stringify({ ts: fmtET(now) + ' (' + src + ')', epoch: now, text: obj.briefing, plays, v: 3 }, null, 2));
+const plays = Array.isArray(obj.plays) ? obj.plays.slice(0, 3).map(p => String(p).slice(0, 400)).filter(Boolean) : [];
+writeFileSync(join(dir, 'briefing.json'), JSON.stringify({ ts: fmtET(now) + ' (' + src + ')', epoch: now, text: obj.briefing, plays, v: 4 }, null, 2));
 const events = (obj.events || []).slice(0, 6).map(e => ({ ts: fmtET(now), epoch: now, headline: String(e.headline || '').slice(0, 200), detail: String(e.detail || '').slice(0, 600), signal: String(e.signal || '').slice(0, 24), rec: String(e.rec || '').slice(0, 400) }));
 writeFileSync(join(dir, 'events.json'), JSON.stringify(events, null, 2));
 console.error('wrote briefing + ' + events.length + ' analyzed events via ' + src);
