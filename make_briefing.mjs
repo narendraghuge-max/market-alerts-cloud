@@ -15,7 +15,7 @@ const GATE_MS = 28 * 60 * 1000;
 // --- refresh gate: keep the existing briefing if it's still fresh ---
 const prev = read('briefing.json');
 const prevEvents = read('events.json') || [];
-const haveSchema = prev?.v === 4 && Array.isArray(prev?.plays) && (prevEvents.length === 0 || ('rec' in prevEvents[0])); // force one regen when the briefing/events schema or prompt version changes
+const haveSchema = prev?.v === 5 && Array.isArray(prev?.plays) && (prevEvents.length === 0 || ('rec' in prevEvents[0])); // force one regen when the briefing/events schema or prompt version changes
 if (prev && prev.epoch && (now - prev.epoch) < GATE_MS && haveSchema) {
   console.error('briefing ' + Math.round((now - prev.epoch) / 60000) + ' min old - still fresh, skipping regen');
   process.exit(0);
@@ -61,7 +61,7 @@ Your holdings: the 1-3 positions needing attention (name + gain/loss % + the spe
 Watch: 1-2 concrete things to watch next.
 Bottom line: one sharp sentence on what to focus on.
 
-plays = the 1-3 things genuinely worth my attention today, prioritized by CONVICTION (a real catalyst/reason), not by filling a quota. Lead with what actually matters - often that's managing a holding (a stop to respect, a position that's moved). Recommend a NEW BUY only when there's a real reason to act now AND a scanner long setup above backs it up (then name the ticker + its scanner entry/stop, even if I don't own it). If nothing is compelling, it is BETTER to say "No new buys today - hold and watch" than to force a trade. Concrete but hedged - ideas to consider, NOT advice, never guaranteed.
+plays = 1-3 TIGHT actionable bullets, each 1-2 short sentences UNDER ~35 words (ticker + the move + the level/condition; NO filler, no pep-talk, no metaphors). Prioritized by CONVICTION (a real catalyst/reason), not by filling a quota. Lead with what actually matters - often that's managing a holding (a stop to respect, a position that's moved). Recommend a NEW BUY only when there's a real reason to act now AND a scanner long setup above backs it up (then name the ticker + its scanner entry/stop, even if I don't own it). If nothing is compelling, it is BETTER to say "No new buys today - hold and watch" than to force a trade. Concrete but hedged - ideas to consider, NOT advice, never guaranteed.
 
 events = the 2-4 MOST MATERIAL headlines for MY portfolio (skip personal-finance/fluff). For each:
 - headline = short clean title
@@ -139,8 +139,9 @@ for (const [name, fn, tag] of providers) {
 }
 if (!obj) { obj = fallbackObj(); src = 'auto-summary'; }
 
-const plays = Array.isArray(obj.plays) ? obj.plays.slice(0, 3).map(p => String(p).slice(0, 400)).filter(Boolean) : [];
-writeFileSync(join(dir, 'briefing.json'), JSON.stringify({ ts: fmtET(now) + ' (' + src + ')', epoch: now, text: obj.briefing, plays, v: 4 }, null, 2));
+const trimSent = (s, max) => { s = String(s).trim(); if (s.length <= max) return s; const cut = s.slice(0, max); const lp = cut.lastIndexOf('. '); return lp > max * 0.5 ? cut.slice(0, lp + 1) : cut.replace(/\s+\S*$/, '') + '…'; };
+const plays = Array.isArray(obj.plays) ? obj.plays.slice(0, 3).map(p => trimSent(p, 360)).filter(Boolean) : [];
+writeFileSync(join(dir, 'briefing.json'), JSON.stringify({ ts: fmtET(now) + ' (' + src + ')', epoch: now, text: obj.briefing, plays, v: 5 }, null, 2));
 const events = (obj.events || []).slice(0, 6).map(e => ({ ts: fmtET(now), epoch: now, headline: String(e.headline || '').slice(0, 200), detail: String(e.detail || '').slice(0, 600), signal: String(e.signal || '').slice(0, 24), rec: String(e.rec || '').slice(0, 400) }));
 writeFileSync(join(dir, 'events.json'), JSON.stringify(events, null, 2));
 console.error('wrote briefing + ' + events.length + ' analyzed events via ' + src);
