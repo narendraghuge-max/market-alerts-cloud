@@ -14,7 +14,9 @@ const GATE_MS = 28 * 60 * 1000;
 
 // --- refresh gate: keep the existing briefing if it's still fresh ---
 const prev = read('briefing.json');
-if (prev && prev.epoch && (now - prev.epoch) < GATE_MS) {
+const prevEvents = read('events.json') || [];
+const haveRec = prevEvents.length === 0 || ('rec' in prevEvents[0]); // force a regen once when the events schema changes
+if (prev && prev.epoch && (now - prev.epoch) < GATE_MS && haveRec) {
   console.error('briefing ' + Math.round((now - prev.epoch) / 60000) + ' min old - still fresh, skipping regen');
   process.exit(0);
 }
@@ -33,7 +35,7 @@ TODAY'S HEADLINES:
 ${news.join('\n') || '(none)'}
 
 Return ONLY valid JSON (no markdown, no code fences), exactly this shape:
-{"briefing":"...","events":[{"headline":"...","detail":"..."}]}
+{"briefing":"...","events":[{"headline":"...","detail":"...","signal":"...","rec":"..."}]}
 
 briefing = 4 labeled parts separated by blank lines, under 180 words total:
 Market today: the mood + the real driver, tied to what moves MY kind of names.
@@ -41,8 +43,13 @@ Your holdings: the 1-3 positions needing attention (name + gain/loss % + the spe
 Watch: 1-2 concrete things to watch next.
 Bottom line: one sharp sentence on what to focus on.
 
-events = the 2-4 MOST MATERIAL headlines for MY portfolio (skip personal-finance/fluff). Each: headline = short clean title; detail = 2-3 sentences on what it means for the market AND specifically for my holdings/sectors. If nothing is material, use [].
-Decision-support only, not financial advice.`;
+events = the 2-4 MOST MATERIAL headlines for MY portfolio (skip personal-finance/fluff). For each:
+- headline = short clean title
+- detail = 2-3 sentences on what it means for the market AND specifically for my holdings/sectors
+- signal = ONE of: "New buy","Add","Watch","Trim","Avoid","No action" - the forward-looking trade stance this event suggests for me
+- rec = 1-2 sentences: IF there's a potential new buy or add, name a specific LIQUID ticker (one of my holdings, or a liquid tech/chip/AI/space name) plus the condition or level to consider it; otherwise say plainly why there's no new action. Be concrete but hedge - these are ideas to consider, never promises, never guaranteed.
+If nothing is material, use [].
+Decision-support / educational only, NOT financial advice. Never guarantee returns.`;
 
 let BRIEF_MODEL = '';
 async function gemini(p) {
@@ -113,6 +120,6 @@ for (const [name, fn, tag] of providers) {
 if (!obj) { obj = fallbackObj(); src = 'auto-summary'; }
 
 writeFileSync(join(dir, 'briefing.json'), JSON.stringify({ ts: fmtET(now) + ' (' + src + ')', epoch: now, text: obj.briefing }, null, 2));
-const events = (obj.events || []).slice(0, 6).map(e => ({ ts: fmtET(now), epoch: now, headline: String(e.headline || '').slice(0, 200), detail: String(e.detail || '').slice(0, 600) }));
+const events = (obj.events || []).slice(0, 6).map(e => ({ ts: fmtET(now), epoch: now, headline: String(e.headline || '').slice(0, 200), detail: String(e.detail || '').slice(0, 600), signal: String(e.signal || '').slice(0, 24), rec: String(e.rec || '').slice(0, 400) }));
 writeFileSync(join(dir, 'events.json'), JSON.stringify(events, null, 2));
 console.error('wrote briefing + ' + events.length + ' analyzed events via ' + src);
