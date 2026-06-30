@@ -15,7 +15,7 @@ const GATE_MS = 28 * 60 * 1000;
 // --- refresh gate: keep the existing briefing if it's still fresh ---
 const prev = read('briefing.json');
 const prevEvents = read('events.json') || [];
-const haveSchema = prev?.v === 2 && Array.isArray(prev?.plays) && (prevEvents.length === 0 || ('rec' in prevEvents[0])); // force one regen when the briefing/events schema or prompt version changes
+const haveSchema = prev?.v === 3 && Array.isArray(prev?.plays) && (prevEvents.length === 0 || ('rec' in prevEvents[0])); // force one regen when the briefing/events schema or prompt version changes
 if (prev && prev.epoch && (now - prev.epoch) < GATE_MS && haveSchema) {
   console.error('briefing ' + Math.round((now - prev.epoch) / 60000) + ' min old - still fresh, skipping regen');
   process.exit(0);
@@ -34,9 +34,9 @@ try {
   const raw = execFileSync('node', ['scan_smc.mjs', '--json'], { cwd: dir, env: process.env, timeout: 90000, maxBuffer: 48 * 1024 * 1024 }).toString();
   const scan = JSON.parse(raw.slice(raw.indexOf('{'), raw.lastIndexOf('}') + 1));
   const setups = (scan.results || [])
-    .filter(r => r.score != null && !r.illiquid)
-    .sort((a, b) => b.score - a.score).slice(0, 12)
-    .map(r => `${r.symbol}: ${r.action} score ${r.score}/12 ${r.direction}; price ${r.price}, entry ${r.levels?.entry1}-${r.levels?.entry2}, stop ${r.levels?.stop}, targets ${r.levels?.tp1}/${r.levels?.tp2}/${r.levels?.tp3}, R ${r.levels?.rr}`);
+    .filter(r => r.score != null && !r.illiquid && r.direction !== 'short' && !/short|avoid/i.test(r.action))
+    .sort((a, b) => b.score - a.score).slice(0, 10)
+    .map(r => `${r.symbol}: ${r.action} ${r.score}/12; entry ${r.levels?.entry1}-${r.levels?.entry2}, stop ${r.levels?.stop}, tp ${r.levels?.tp1}/${r.levels?.tp2}/${r.levels?.tp3}, R ${r.levels?.rr}. Why: ${(r.basis || '').replace(/\s+/g, ' ').slice(0, 160)}`);
   if (setups.length) setupsText = setups.join('\n');
   console.error(`scan snapshot: ${setups.length} setups for the briefing`);
 } catch (e) { console.error('scan snapshot failed (briefing falls back to news+holdings):', e.message); }
@@ -49,7 +49,7 @@ ${JSON.stringify(holdings)}
 TODAY'S HEADLINES:
 ${news.join('\n') || '(none)'}
 
-MY SCANNER'S BEST SETUPS RIGHT NOW (mechanical SMC scan across ~100 liquid tech/chip/AI/space/energy names; score out of 12, higher = stronger; this is your MAIN source for NEW-BUY ideas beyond what I already own):
+MY SCANNER'S LONG SETUPS TO CROSS-CHECK (mechanical SMC patterns across ~100 liquid names; score /12 = how cleanly the pattern fits, NOT conviction; "Why" = the mechanical reason). Treat this as a WATCHLIST to validate ideas against - NOT a buy list. Only raise one if it ALSO has a real reason to act now:
 ${setupsText}
 
 Return ONLY valid JSON (no markdown, no code fences), exactly this shape:
@@ -61,13 +61,13 @@ Your holdings: the 1-3 positions needing attention (name + gain/loss % + the spe
 Watch: 1-2 concrete things to watch next.
 Bottom line: one sharp sentence on what to focus on.
 
-plays = 1-3 concrete, prioritized trade ideas for ME today, each a short actionable sentence. For new buys, PREFER the highest-scoring names from MY SCANNER'S BEST SETUPS above (these can be tickers I do NOT own - that's good; use their scanner entry/stop). Also fine: a trim/stop to respect on a holding, or "No new trades - hold and watch." Concrete but hedged - ideas to consider, NOT advice, never guaranteed.
+plays = the 1-3 things genuinely worth my attention today, prioritized by CONVICTION (a real catalyst/reason), not by filling a quota. Lead with what actually matters - often that's managing a holding (a stop to respect, a position that's moved). Recommend a NEW BUY only when there's a real reason to act now AND a scanner long setup above backs it up (then name the ticker + its scanner entry/stop, even if I don't own it). If nothing is compelling, it is BETTER to say "No new buys today - hold and watch" than to force a trade. Concrete but hedged - ideas to consider, NOT advice, never guaranteed.
 
 events = the 2-4 MOST MATERIAL headlines for MY portfolio (skip personal-finance/fluff). For each:
 - headline = short clean title
 - detail = 2-3 sentences on what it means for the market AND specifically for my holdings/sectors
 - signal = ONE of: "New buy","Add","Watch","Trim","Avoid","No action" - the forward-looking trade stance this event suggests for me
-- rec = 1-2 sentences: IF this event points to a potential new buy or add, prefer a high-scoring name from MY SCANNER'S BEST SETUPS above (or a holding) and give the ticker + its entry/stop level; otherwise say plainly why there's no new action. Be concrete but hedge - ideas to consider, never promises, never guaranteed.
+- rec = 1-2 sentences: ONLY if THIS specific headline gives a real reason to act, name a trade (a holding to add/trim, or a new buy that a scanner long setup above also supports - give ticker + entry/stop). If the headline doesn't truly warrant a move, set signal "No action" and say plainly why. Never manufacture a trade. Hedge - ideas to consider, never promises.
 If nothing is material, use [].
 Decision-support / educational only, NOT financial advice. Never guarantee returns.`;
 
@@ -140,7 +140,7 @@ for (const [name, fn, tag] of providers) {
 if (!obj) { obj = fallbackObj(); src = 'auto-summary'; }
 
 const plays = Array.isArray(obj.plays) ? obj.plays.slice(0, 3).map(p => String(p).slice(0, 200)).filter(Boolean) : [];
-writeFileSync(join(dir, 'briefing.json'), JSON.stringify({ ts: fmtET(now) + ' (' + src + ')', epoch: now, text: obj.briefing, plays, v: 2 }, null, 2));
+writeFileSync(join(dir, 'briefing.json'), JSON.stringify({ ts: fmtET(now) + ' (' + src + ')', epoch: now, text: obj.briefing, plays, v: 3 }, null, 2));
 const events = (obj.events || []).slice(0, 6).map(e => ({ ts: fmtET(now), epoch: now, headline: String(e.headline || '').slice(0, 200), detail: String(e.detail || '').slice(0, 600), signal: String(e.signal || '').slice(0, 24), rec: String(e.rec || '').slice(0, 400) }));
 writeFileSync(join(dir, 'events.json'), JSON.stringify(events, null, 2));
 console.error('wrote briefing + ' + events.length + ' analyzed events via ' + src);
