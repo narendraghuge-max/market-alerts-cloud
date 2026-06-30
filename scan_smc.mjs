@@ -481,7 +481,7 @@ async function scanOne(symbol, anchors) {
 
 function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: [] }) {
   const ts = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
-  const data = JSON.stringify(rows.map(r => ({ sym: r.symbol, score: r.score, action: r.action, grade: r.grade, dir: r.trend, price: r.price, bias: r.bias, zone: r.zone, hold: r.holding ? 1 : 0, lev: r.leveraged ? 1 : 0, basis: r.basis, vp: r.vp, ...r.levels })));
+  const data = JSON.stringify(rows.map(r => ({ sym: r.symbol, score: r.score, action: r.action, grade: r.grade, dir: r.trend, price: r.price, bias: r.bias, zone: r.zone, hold: r.holding ? 1 : 0, lev: r.leveraged ? 1 : 0, isNew: r.isNew ? 1 : 0, basis: r.basis, vp: r.vp, ...r.levels })));
   const skipped = errs.length ? ' &middot; skipped: ' + errs.map(e => e.symbol).join(', ') : '';
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   let brHtml = '';
@@ -605,11 +605,12 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     + 'function al(a){return a==="BUY"?"BUY":a==="ACCUMULATE"?"ACCUM":a==="SHORT"?"SHORT":a==="SHORT-SCALE"?"SHORT+":a==="WATCH"?"WATCH":"AVOID"}'
     + 'function gcol(g){return g==="A"?"#16a34a":g==="B"?"#d97706":"#6b7280"}'
     + 'function render(){var mS=+$("f-score").value,so=$("f-sort").value,q2=$("f-rr").checked,ho=$("f-hold").checked,hl=$("f-lev").checked,sy=$("f-sym").value;'
-    + 'var rows;if(sy){rows=DATA.filter(function(r){return r.sym===sy})}else{rows=DATA.filter(function(r){return r.score>=mS});if(q2)rows=rows.filter(function(r){return r.rr>=2});if(ho)rows=rows.filter(function(r){return r.hold});if(hl)rows=rows.filter(function(r){return !r.lev})}'
+    + 'var rows;if(sy){rows=DATA.filter(function(r){return r.sym===sy})}else{rows=DATA.filter(function(r){return r.isNew||r.score>=mS});if(q2)rows=rows.filter(function(r){return r.isNew||r.rr>=2});if(ho)rows=rows.filter(function(r){return r.hold});if(hl)rows=rows.filter(function(r){return !r.lev})}'
     + 'rows.sort(function(a,b){return so==="sym"?a.sym.localeCompare(b.sym):so==="price"?b.price-a.price:(b[so]-a[so])||(b.score-a.score)});'
     + '$("count").textContent="Showing "+rows.length+" of "+DATA.length+" \\u2014 "+rows.filter(function(r){return r.score>=7}).length+" actionable";'
     + 'var h="";for(var i=0;i<rows.length;i++){var r=rows[i];'
     + 'var tg=(r.hold?"<span class=tag style=\\"color:#2563eb;border-color:#2563eb\\">HOLD</span>":"")+(r.lev?"<span class=tag style=\\"color:#d97706;border-color:#d97706\\">LEV</span>":"");'
+    + 'if(r.isNew){h+="<tr><td data-label=\'Symbol\'><b>"+r.sym+"</b>"+tg+"</td><td data-label=\'Score\'>\\u2014</td><td data-label=\'Grade\'>\\u2014</td><td data-label=\'Trend\'>\\u2014</td><td data-label=\'Action\'><span class=pill style=\\"color:#9aa0aa;border-color:#9aa0aa\\">NEW</span></td><td data-label=\'Price\' class=r>\\u2014</td><td data-label=\'Entry zone\' class=r>\\u2014</td><td data-label=\'Stop\' class=r>\\u2014</td><td data-label=\'Take-profit\' class=r>\\u2014</td><td data-label=\'Volume 30d\' class=r>\\u2014</td><td data-label=\'R\' class=r>\\u2014</td><td data-label=\'Basis\' class=basis style=\\"font-size:11px;color:var(--muted);line-height:1.45\\"><details class=bd><summary>Basis &mdash; why</summary><div class=bt>"+(r.basis||"")+"</div></details></td></tr>";continue}'
     + 'var zc=r.zone==="discount"?"#16a34a":"#d97706";var rc=r.rr>=2?"#16a34a":"var(--muted)";var sc=r.score>=9?"#16a34a":r.score>=7?"#2563eb":r.score>=5?"var(--muted)":"#dc2626";'
     + 'h+="<tr><td data-label=\'Symbol\'><b>"+r.sym+"</b>"+tg+"</td>"'
     + '+"<td data-label=\'Score\' style=\\"color:"+sc+";font-weight:600\\">"+r.score+"/12</td>"'
@@ -647,6 +648,13 @@ async function main() {
   const ok = scanned.filter(r => !r.illiquid || r.holding).sort((a, b) => b.score - a.score);
   const errs = results.filter(r => r.error);
   if (dropped.length) console.error('liquidity gate dropped: ' + dropped.map(r => r.symbol).join(', '));
+  // Surface too-new tickers (not enough history to score) as visible NEW rows in the buy scan,
+  // so the universe transparently includes them instead of silently dropping them.
+  const newRows = errs.filter(e => /insufficient/i.test(e.error || '')).map(e => ({
+    symbol: e.symbol, isNew: true, score: 0, action: 'NEW', trend: 'flat',
+    holding: HOLDINGS.has(e.symbol), leveraged: LEVERAGED.has(e.symbol), vp: null,
+    basis: 'Too new to score — the structure tools need ~200 trading days of price history. It is in your universe and tracked; it will show full levels once it has enough data.',
+  }));
 
   // holdings exit-watch rows for the dashboard
   const exitRows = [];
@@ -661,7 +669,7 @@ async function main() {
   let optIdeas = { calls: [], puts: [] };
   try { optIdeas = await buildOptionsIdeas(ok, Date.now()); } catch (e) { console.error('options ideas failed:', e.message); }
 
-  try { writeFileSync(join(__reportDir, 'report.html'), buildReport(ok, errs, exitRows, optIdeas)); console.error('report -> ' + join(__reportDir, 'report.html')); } catch (e) { console.error('report write failed:', e.message); }
+  try { writeFileSync(join(__reportDir, 'report.html'), buildReport([...ok, ...newRows], errs, exitRows, optIdeas)); console.error('report -> ' + join(__reportDir, 'report.html')); } catch (e) { console.error('report write failed:', e.message); }
 
   if (reportOnly) { console.error('report-only: report.html regenerated, alert state untouched'); return; }
 
