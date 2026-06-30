@@ -15,8 +15,8 @@ const GATE_MS = 28 * 60 * 1000;
 // --- refresh gate: keep the existing briefing if it's still fresh ---
 const prev = read('briefing.json');
 const prevEvents = read('events.json') || [];
-const haveRec = prevEvents.length === 0 || ('rec' in prevEvents[0]); // force a regen once when the events schema changes
-if (prev && prev.epoch && (now - prev.epoch) < GATE_MS && haveRec) {
+const haveSchema = Array.isArray(prev?.plays) && (prevEvents.length === 0 || ('rec' in prevEvents[0])); // force one regen when the briefing/events schema changes
+if (prev && prev.epoch && (now - prev.epoch) < GATE_MS && haveSchema) {
   console.error('briefing ' + Math.round((now - prev.epoch) / 60000) + ' min old - still fresh, skipping regen');
   process.exit(0);
 }
@@ -35,13 +35,15 @@ TODAY'S HEADLINES:
 ${news.join('\n') || '(none)'}
 
 Return ONLY valid JSON (no markdown, no code fences), exactly this shape:
-{"briefing":"...","events":[{"headline":"...","detail":"...","signal":"...","rec":"..."}]}
+{"briefing":"...","plays":["...","..."],"events":[{"headline":"...","detail":"...","signal":"...","rec":"..."}]}
 
 briefing = 4 labeled parts separated by blank lines, under 180 words total:
 Market today: the mood + the real driver, tied to what moves MY kind of names.
 Your holdings: the 1-3 positions needing attention (name + gain/loss % + the specific concern), or "all look fine today." Call SPCX a brand-new, very volatile IPO; note margin amplifies drops.
 Watch: 1-2 concrete things to watch next.
 Bottom line: one sharp sentence on what to focus on.
+
+plays = 1-3 concrete, prioritized trade ideas for ME today, each a short actionable sentence: a specific new-buy or add candidate (name a LIQUID ticker + the level/condition to consider it), a trim or stop to respect, or "No new trades - hold and watch." Concrete but hedged - ideas to consider, NOT advice, never guaranteed.
 
 events = the 2-4 MOST MATERIAL headlines for MY portfolio (skip personal-finance/fluff). For each:
 - headline = short clean title
@@ -119,7 +121,8 @@ for (const [name, fn, tag] of providers) {
 }
 if (!obj) { obj = fallbackObj(); src = 'auto-summary'; }
 
-writeFileSync(join(dir, 'briefing.json'), JSON.stringify({ ts: fmtET(now) + ' (' + src + ')', epoch: now, text: obj.briefing }, null, 2));
+const plays = Array.isArray(obj.plays) ? obj.plays.slice(0, 3).map(p => String(p).slice(0, 200)).filter(Boolean) : [];
+writeFileSync(join(dir, 'briefing.json'), JSON.stringify({ ts: fmtET(now) + ' (' + src + ')', epoch: now, text: obj.briefing, plays }, null, 2));
 const events = (obj.events || []).slice(0, 6).map(e => ({ ts: fmtET(now), epoch: now, headline: String(e.headline || '').slice(0, 200), detail: String(e.detail || '').slice(0, 600), signal: String(e.signal || '').slice(0, 24), rec: String(e.rec || '').slice(0, 400) }));
 writeFileSync(join(dir, 'events.json'), JSON.stringify(events, null, 2));
 console.error('wrote briefing + ' + events.length + ' analyzed events via ' + src);

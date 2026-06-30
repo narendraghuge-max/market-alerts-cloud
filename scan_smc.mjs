@@ -498,7 +498,11 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
             + (s.title ? '<div class="nl" style="color:var(--accent);font-size:11px">' + esc(s.title) + '</div>' : '')
             + '<div class="nv" style="font-size:13.5px;margin-top:' + (s.title ? '4px' : '0') + '">' + esc(s.body) + '</div></div>').join('')
         : '<div class="ncard"><div class="nv" style="font-size:13.5px">' + esc(b.text).replace(/\n/g, '<br>') + '</div></div>';
+      const playsHtml = (Array.isArray(b.plays) && b.plays.length)
+        ? '<div class="ncard" style="border-left:3px solid var(--up)"><div class="nl" style="color:var(--up);font-size:11px">Today\'s plays</div><ul style="margin:7px 0 0;padding-left:18px;font-size:13.5px;line-height:1.65">' + b.plays.map(p => '<li style="margin-bottom:4px">' + esc(p) + '</li>').join('') + '</ul></div>'
+        : '';
       brHtml = '<h2 style="font-size:16px;font-weight:600;margin:14px 0 6px">Today\'s briefing</h2>'
+        + playsHtml
         + brCards
         + '<div class="sub" style="margin:2px 0 0"><span class="rel" data-epoch="' + (b.epoch || '') + '">' + esc(b.ts) + ' ET</span></div>';
     }
