@@ -14,13 +14,13 @@ import { analyzeExit as analyzeExitH, HOLDINGS as EXIT_HOLDINGS, RANK as EXIT_RA
 import { buildOptionsIdeas, renderOptionsHtml } from './options_ideas.mjs';
 
 const HOLDINGS = new Set(Object.keys(EXIT_HOLDINGS)); // derived from holdings secret (single source of truth)
-const LEVERAGED = new Set(['SOXL','SOXS','NVDU','NVDD','TECL','TECS','WEBL','WEBS','TQQQ','SQQQ','SPXL','SPXS','TNA','TZA','ERX','ERY','GUSH','DRIP','AAPU','MSFU','AMZU','GGLL','METU','SPCH','SSPC']);
+const LEVERAGED = new Set(['SOXL','SOXS','NVDU','NVDD','TECL','TECS','WEBL','WEBS','TQQQ','SQQQ','SPXL','SPXS','TNA','TZA','ERX','ERY','GUSH','DRIP','AAPU','MSFU','AMZU','GGLL','METU','SPCH','SSPC','SPAL']);
 
 const UNIVERSE = {
   Semiconductors: ['NVDA','AVGO','AMD','TSM','MU','AMAT','LRCX','KLAC','SMCI','SMH','ARM','MRVL','ASML','TXN','QCOM','ADI','ON','MCHP','CRDO','ALAB','SOXL','SOXS','NVDU','NVDD'],
   'AI / Big tech': ['PLTR','MSFT','GOOGL','META','AMZN','SNOW','CRWD','TSLA','AAPL','NFLX','ORCL','ANET','NOW','PANW','NET','ZS','DDOG','CRM','TECL','TECS','WEBL','WEBS','AAPU','MSFU','AMZU','GGLL','METU'],
-  'Tech broad': ['QQQ','XLK','TQQQ','SQQQ'],
-  Space: ['SPCX','SPCH','SSPC','RKLB','ASTS','LUNR','RDW'],
+  'Tech broad': ['QQQ','QQQI','XLK','TQQQ','SQQQ'],
+  Space: ['SPCX','SPAL','SPCH','SSPC','RKLB','ASTS','LUNR','RDW'],
   'Nuclear / Uranium': ['CCJ','CEG','VST','OKLO','SMR','LEU','URA'],
   Quantum: ['IONQ','RGTI','QBTS'],
   'Crypto equities': ['COIN','MSTR','HOOD','MARA'],
@@ -633,7 +633,7 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
 }
 
 async function main() {
-  let symbols = subset.length ? subset : [...new Set(Object.values(UNIVERSE).flat())];
+  let symbols = subset.length ? subset : [...new Set([...Object.values(UNIVERSE).flat(), ...Object.keys(EXIT_HOLDINGS)])];
   const results = [];
   // pre-fetch SMT anchor 15m candles ONCE (sector/index correlates), reused for every name
   const anchors = {};
