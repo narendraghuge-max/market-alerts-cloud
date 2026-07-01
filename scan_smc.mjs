@@ -18,12 +18,13 @@ const LEVERAGED = new Set(['SOXL','SOXS','NVDU','NVDD','TECL','TECS','WEBL','WEB
 
 const UNIVERSE = {
   Semiconductors: ['NVDA','AVGO','AMD','TSM','MU','AMAT','LRCX','KLAC','SMCI','SMH','ARM','MRVL','ASML','TXN','QCOM','ADI','ON','MCHP','CRDO','ALAB','SOXL','SOXS','NVDU','NVDD'],
-  'AI / Big tech': ['PLTR','MSFT','GOOGL','META','AMZN','SNOW','CRWD','TSLA','AAPL','NFLX','ORCL','ANET','NOW','PANW','NET','ZS','DDOG','CRM','TECL','TECS','WEBL','WEBS','AAPU','MSFU','AMZU','GGLL','METU'],
+  'AI / Big tech': ['PLTR','MSFT','GOOGL','META','AMZN','SNOW','CRWD','TSLA','AAPL','NFLX','ORCL','ANET','NOW','PANW','NET','ZS','DDOG','CRM','APP','RDDT','TECL','TECS','WEBL','WEBS','AAPU','MSFU','AMZU','GGLL','METU'],
+  'AI infrastructure': ['CRWV','NBIS','VRT','GEV'],
   'Tech broad': ['QQQ','QQQI','XLK','TQQQ','SQQQ'],
   Space: ['SPCX','SPAL','SPCH','SSPC','RKLB','ASTS','LUNR','RDW'],
   'Nuclear / Uranium': ['CCJ','CEG','VST','OKLO','SMR','LEU','URA'],
   Quantum: ['IONQ','RGTI','QBTS'],
-  'Crypto equities': ['COIN','MSTR','HOOD','MARA'],
+  'Crypto equities': ['COIN','MSTR','HOOD','MARA','CRCL'],
   'Defense / Drones': ['AVAV','KTOS','LMT','RTX'],
   'Rare earths / Minerals': ['MP','ALB','LAC'],
   Energy: ['XOM','CVX','OXY','SLB','COP','XLE','ERX','ERY','GUSH','DRIP'],
@@ -159,6 +160,7 @@ function anchorFor(sym) {
   if (UNIVERSE.Space.includes(sym)) return 'QQQ';
   if (UNIVERSE['Nuclear / Uranium'].includes(sym)) return 'XLE';        // power/utility cohort vs energy
   if (UNIVERSE.Quantum.includes(sym)) return 'QQQ';                     // high-beta tech vs Nasdaq
+  if (UNIVERSE['AI infrastructure'].includes(sym)) return 'SMH';        // AI capex/data-center cohort vs semis
   if (UNIVERSE['Crypto equities'].includes(sym)) return 'QQQ';          // risk-on proxy vs Nasdaq
   if (UNIVERSE['Defense / Drones'].includes(sym)) return 'SPY';         // industrials vs broad market
   if (UNIVERSE['Rare earths / Minerals'].includes(sym)) return 'XLE';   // materials cohort vs energy/commodity
