@@ -9,7 +9,7 @@ import { dirname, join } from 'node:path';
 const dir = dirname(fileURLToPath(import.meta.url));
 const now = Date.now();
 const GATE_MS = 28 * 60 * 1000;
-const V = 2;                                   // engine prompt/schema version (bump to force one regen)
+const V = 3;                                   // engine prompt/schema version (bump to force one regen)
 const TARGET = +(process.env.TARGET_MONTHLY || 2.5);   // realistic monthly return target, %
 const read = f => { try { return JSON.parse(readFileSync(join(dir, f), 'utf8')); } catch { return null; } };
 const r2 = n => Math.round(n * 100) / 100;
@@ -106,8 +106,9 @@ RISK NOW: true leverage ~${X.xray.trueLev}x vs equity; expected ~1-month swing Â
 HOLDINGS FLAGGED BY MY EXIT-SCANNER: ${attention.join(', ') || 'none - all holding up'}
 SCANNER'S BEST RISK/REWARD LONG SETUPS RIGHT NOW: ${setups.join(' | ') || '(none strong)'}
 
-Return ONLY valid JSON (no markdown): {"plan":["...","..."],"read":"..."}
-plan = 4-6 concrete, prioritized, RISK-FIRST steps to move toward the target WHILE protecting capital. Each 1-2 tight sentences (name tickers + levels + a suggested size as % of the book): e.g. a specific trim/sell to cut concentration or leverage, a specific add from the scanner's setups (ticker + entry/stop), a cash buffer to hold, or a hedge. Discipline over heroics; it is fine to say "hold and tighten stops."
+Return ONLY valid JSON (no markdown): {"moves":[{"sym":"...","action":"Sell|Trim|Add|Buy|Watch","targetPct":<number>,"note":"<=7 words why"}],"plan":["...","..."],"read":"..."}
+moves = 3-7 concrete portfolio moves behind the plan (skip pure no-change holds). action = Sell (exit fully), Trim (reduce a holding), Add (increase a holding), Buy (start a NEW position), Watch (conditional add only if it triggers). targetPct = the % of my book this name should be AFTER the move (0 to fully exit; for Buy/Watch = the intended position size %, usually 3-6). ONLY use tickers from my holdings or the scanner setups above. Be RISK-FIRST: cut leverage/concentration before adding, and keep total adds <= total trims + a cash buffer.
+plan = the SAME moves as 4-6 short plain-English sentences (the "why"), prioritized, risk-first.
 read = 2-3 sentences: an HONEST read on whether ~${TARGET}%/month is realistic for THIS book and what would have to change (usually less concentration/leverage + consistency). Never promise a return.
 Decision-support / educational only. Never guarantee outcomes.`;
 
@@ -129,19 +130,19 @@ async function gemini(p) {
   }
   throw new Error('gemini failed');
 }
-function parseAI(raw) { const s = raw.indexOf('{'), e = raw.lastIndexOf('}'); const o = JSON.parse(raw.slice(s, e + 1)); if (!Array.isArray(o.plan)) o.plan = []; return o; }
+function parseAI(raw) { const s = raw.indexOf('{'), e = raw.lastIndexOf('}'); const o = JSON.parse(raw.slice(s, e + 1)); if (!Array.isArray(o.plan)) o.plan = []; if (!Array.isArray(o.moves)) o.moves = []; return o; }
 const trimSent = (s, max) => { s = String(s).trim(); if (s.length <= max) return s; const cut = s.slice(0, max); const lp = cut.lastIndexOf('. '); return lp > max * 0.5 ? cut.slice(0, lp + 1) : cut.replace(/\s+\S*$/, '') + 'â€¦'; };
 
 // templated fallback so the engine is never blank
 function fallback() {
-  const plan = [];
-  if (X.risk.flags.some(f => /Concentration/.test(f))) plan.push(`Trim ${X.xray.top1.sym} (${X.xray.top1.w}% of the book) back toward ~20-25% to cut single-name risk.`);
+  const plan = [], moves = [];
   const levPos = X.xray.positions.find(p => p.lev >= 2);
-  if (levPos) plan.push(`Keep leveraged ${levPos.sym} (${levPos.lev}x) small and on a tight stop - it decays and amplifies drawdowns.`);
-  if (setups[0]) plan.push(`Best fresh setup: ${setups[0]}. Consider a starter position (~5% of book) only if it triggers.`);
+  if (levPos) { moves.push({ sym: levPos.sym, action: 'Trim', targetPct: Math.min(levPos.w, 3), note: 'cut leverage/decay' }); plan.push(`Keep leveraged ${levPos.sym} (${levPos.lev}x) small and on a tight stop - it decays and amplifies drawdowns.`); }
+  if (X.xray.top1.w > 30) { moves.push({ sym: X.xray.top1.sym, action: 'Trim', targetPct: 25, note: 'reduce concentration' }); plan.push(`Trim ${X.xray.top1.sym} (${X.xray.top1.w}%) back toward ~25% to cut single-name risk.`); }
+  if (setups[0]) { moves.push({ sym: setups[0].split(':')[0], action: 'Buy', targetPct: 4, note: 'scanner top setup' }); plan.push(`Best fresh setup: ${setups[0]}. Consider a starter (~4% of book) only if it triggers.`); }
   plan.push('Hold a cash buffer (~10%) so you can act on setups without forced selling.');
   plan.push('Respect every stop - capping losers is what lets winners compound toward the target.');
-  return { plan, read: `A ~${TARGET}%/month target is aggressive but not impossible in a strong tape; for this book it hinges on cutting concentration/leverage and staying consistent - expect losing months, and size so a bad one (~-${X.risk.badMonthPct}%) doesn't force your hand.` };
+  return { moves, plan, read: `A ~${TARGET}%/month target is aggressive but not impossible in a strong tape; for this book it hinges on cutting concentration/leverage and staying consistent - expect losing months, and size so a bad one (~-${X.risk.badMonthPct}%) doesn't force your hand.` };
 }
 
 let out, src = 'auto';
@@ -152,6 +153,18 @@ for (const [name, fn] of [['Claude', claude], ['Gemini', gemini]]) {
 if (!out) out = fallback();
 
 const plan = (out.plan || []).slice(0, 6).map(p => trimSent(String(p).replace(/^\s*\d+[.):]\s*/, ''), 340)).filter(Boolean);   // strip any leading "1." the model adds (the <ol> numbers it)
-writeFileSync(join(dir, 'engine.json'), JSON.stringify({ ts: new Date(now).toLocaleString('en-US', { timeZone: 'America/New_York' }) + ' (' + src + ')', epoch: now, v: V, target: TARGET, xray: X.xray, risk: X.risk, goal: X.goal, plan, read: trimSent(out.read || '', 480) }, null, 2));
-console.error(`engine written: ${plan.length} steps via ${src}`);
+// ---- concrete share + $ sizing per move (target weight -> shares to buy/sell + dollar amount) ----
+const hMap = {}; holdings.forEach(h => hMap[h.sym] = { shares: h.shares, price: h.price, value: h.shares * h.price });
+const sPrice = {}; (scan?.results || []).forEach(s => { if (s.price > 0) sPrice[s.symbol] = s.price; });
+const moves = (out.moves || []).slice(0, 8).map(m => {
+  const sym = String(m.sym || '').toUpperCase();
+  const cur = hMap[sym] || { shares: 0, value: 0, price: sPrice[sym] || 0 };
+  const price = cur.price || sPrice[sym] || 0;
+  const tPct = Math.max(0, +m.targetPct || 0);
+  const deltaVal = (tPct / 100 * gross) - cur.value;
+  const deltaSh = price ? Math.round(deltaVal / price) : 0;
+  return { sym, action: String(m.action || '').replace(/[^A-Za-z]/g, '').slice(0, 6) || 'Adj', targetPct: r2(tPct), deltaShares: deltaSh, deltaUsd: Math.round(deltaVal), curShares: r2(cur.shares), note: trimSent(String(m.note || ''), 48) };
+}).filter(m => m.sym && (Math.abs(m.deltaShares) >= 1 || /watch/i.test(m.action)));
+writeFileSync(join(dir, 'engine.json'), JSON.stringify({ ts: new Date(now).toLocaleString('en-US', { timeZone: 'America/New_York' }) + ' (' + src + ')', epoch: now, v: V, target: TARGET, xray: X.xray, risk: X.risk, goal: X.goal, moves, plan, read: trimSent(out.read || '', 480) }, null, 2));
+console.error(`engine written: ${moves.length} moves, ${plan.length} steps via ${src}`);
 
