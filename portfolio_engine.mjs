@@ -9,7 +9,7 @@ import { dirname, join } from 'node:path';
 const dir = dirname(fileURLToPath(import.meta.url));
 const now = Date.now();
 const GATE_MS = 28 * 60 * 1000;
-const V = 6;                                   // engine prompt/schema version (bump to force one regen)
+const V = 7;                                   // engine prompt/schema version (bump to force one regen)
 const TARGET = +(process.env.TARGET_MONTHLY || 2.5);   // realistic monthly return target, %
 const read = f => { try { return JSON.parse(readFileSync(join(dir, f), 'utf8')); } catch { return null; } };
 const r2 = n => Math.round(n * 100) / 100;
@@ -78,6 +78,8 @@ const MODES = [
     posture: 'RISK-FIRST GROWTH. Trim leverage to small (<=5%) and reduce concentration toward ~25%. Blend broad index + quality tech + a little leverage. Cash buffer ~10%. Keep total adds <= total trims + buffer.' },
   { key: 'aggressive', label: 'Aggressive Growth', target: +(process.env.TARGET_AGGRESSIVE || 4), betaMult: 1.5, volMult: 1.7,
     posture: 'STRETCH GROWTH - you MAY use and even ADD leveraged ETFs (3x SOXL, 2x SPAL, TQQQ) and concentrate in the highest-scoring scanner setups; smaller cash buffer (~5%); wider but STRICT stops. This raises BOTH upside AND drawdown, leveraged ETFs decay/rebalance daily, and it can lose a lot fast - only with strict stop discipline.' },
+  { key: 'income', label: 'Income', target: +(process.env.TARGET_INCOME || 1), betaMult: 0.8, volMult: 0.45,
+    posture: 'PARK CASH FOR YIELD. Rotate into income / covered-call ETFs (QQQI, JEPQ, JEPI, SPYI) + some broad index for steady MONTHLY DISTRIBUTIONS; cut leverage and high-beta single names to near zero. Keep a cash buffer. Prioritize low drawdown + reliable income over growth. Note: distributions are variable (not guaranteed) and NAV can still fall in a selloff - this is cash-like income, not a savings account.' },
 ];
 const modeGoal = (t, volMult) => { const moVol = portMoVol * volMult; return { monthly: t, annual: Math.round((Math.pow(1 + t / 100, 12) - 1) * 100), moVolPct: r2(moVol * 100), moSharpe: r2((t / 100) / (moVol || 0.001)) }; };
 const modeProj = (betaMult, volMult) => { const ba = r2(BASE_ANNUAL * betaMult), av = r2(annualVolPct * volMult); return { baseAnnual: ba, baseMonthly: r2((Math.pow(1 + ba / 100, 1 / 12) - 1) * 100), annualVol: av, goodYr: Math.round(ba + av), badYr: Math.round(ba - av) }; };
@@ -145,7 +147,7 @@ THE THREE MODES (make the plans genuinely DIFFERENT - conservative de-risks hard
 ${modeSpec}
 
 Return ONLY valid JSON (no markdown), EXACTLY this shape (all three keys required):
-{"conservative":{"moves":[{"sym":"...","action":"Sell|Trim|Add|Buy|Watch","targetPct":<number>,"note":"<=7 words why"}],"plan":["...","..."],"read":"..."},"balanced":{"moves":[...],"plan":[...],"read":"..."},"aggressive":{"moves":[...],"plan":[...],"read":"..."}}
+{"conservative":{"moves":[{"sym":"...","action":"Sell|Trim|Add|Buy|Watch","targetPct":<number>,"note":"<=7 words why"}],"plan":["...","..."],"read":"..."},"balanced":{"moves":[...],"plan":[...],"read":"..."},"aggressive":{"moves":[...],"plan":[...],"read":"..."},"income":{"moves":[...],"plan":[...],"read":"..."}}
 For EACH mode:
 - moves = 3-7 concrete moves matching THAT mode's posture. action = Sell (exit fully), Trim (reduce), Add (increase), Buy (start NEW), Watch (conditional add only if it triggers). targetPct = % of my book this name should be AFTER the move (0 to exit; Buy/Watch = intended size %). ONLY use tickers from my holdings or the scanner setups above.
 - plan = the SAME moves as 4-6 short plain-English sentences (the "why"), appropriate to the mode.
@@ -196,7 +198,16 @@ function fallbackAll() {
   if (!lev.length && setups[1]) aggressive.moves.push({ sym: setups[1].split(':')[0], action: 'Buy', targetPct: 5, note: 'second setup' });
   aggressive.plan = [lev.length ? `Lean into leveraged ETFs (${lev.map(p => p.sym).join(', ')}) toward ~6% each - but hold a STRICT stop; they decay and can drop hard fast.` : 'Consider a small leveraged sleeve (SOXL/TQQQ) with a strict stop for extra beta.', setupSym ? `Press the strongest scanner setup: ${setups[0]} (~6%).` : 'Concentrate in the highest-scoring setups as they appear.', 'Run a small (~5%) cash buffer - stay invested for the upside.', 'Wider but STRICT stops. This mode can lose a lot fast - discipline is everything.'];
   aggressive.read = `A ~${MODES[2].target}%/mo stretch target needs leverage + a strong tape + tight discipline; the same leverage means a bad month can run past -${Math.round(X.risk.badMonthPct * MODES[2].volMult)}%. Higher upside AND higher risk of a deep drawdown - not a promise.`;
-  return { conservative, balanced, aggressive };
+  // income: park cash in covered-call / distribution ETFs for steady monthly yield
+  const income = { moves: [], plan: [], read: '' };
+  const isInc = s => /^(QQQI|JEPQ|JEPI|SPYI)$/.test(s);
+  lev.forEach(p => income.moves.push({ sym: p.sym, action: 'Sell', targetPct: 0, note: 'too volatile to park' }));
+  const inc = X.xray.positions.find(p => isInc(p.sym));
+  if (inc) income.moves.push({ sym: inc.sym, action: 'Add', targetPct: Math.max(inc.w, 30), note: 'income anchor' });
+  if (top1.w > 25 && !isInc(top1.sym)) income.moves.push({ sym: top1.sym, action: 'Trim', targetPct: 20, note: 'cut single-name risk' });
+  income.plan = [lev.length ? `Exit leveraged ETFs (${lev.map(p => p.sym).join(', ')}) - too volatile for parked cash.` : 'No leverage to cut.', inc ? `Build ${inc.sym} toward ~30% as your monthly-distribution anchor.` : 'Rotate into covered-call income ETFs (QQQI/JEPQ/JEPI) for steady monthly distributions.', 'Keep the rest in broad index + a cash buffer; the distributions pay you monthly.', 'Low-drawdown income park - but NAV can still dip and distributions vary (not a savings account).'];
+  income.read = `Covered-call ETFs (QQQI/JEPQ/JEPI/SPYI) can distribute ~${MODES[3].target}%/mo (~${Math.round((Math.pow(1 + MODES[3].target / 100, 12) - 1) * 100)}%/yr) as steady income, but they cap upside and NAV can fall in a selloff. Good for parking cash for yield, not for growth; distributions are variable, not guaranteed.`;
+  return { conservative, balanced, aggressive, income };
 }
 
 // ---- AI decisions PER MODE: gated ~30 min, cached in engine_ai.json (raw), reused & re-priced between regens ----
