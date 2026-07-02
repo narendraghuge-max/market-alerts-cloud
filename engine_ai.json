@@ -1,8 +1,8 @@
 {
-  "aiTs": "7/2/2026, 8:31:26 AM (Claude)",
-  "aiEpoch": 1782995486739,
+  "aiTs": "7/2/2026, 9:01:38 AM (auto)",
+  "aiEpoch": 1782997298070,
   "v": 7,
-  "src": "Claude",
+  "src": "auto",
   "modes": {
     "conservative": {
       "moves": [
@@ -10,53 +10,28 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "3x decay kills capital in chop"
+          "note": "no leverage"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "2x space spec, tiny book, cut first"
-        },
-        {
-          "sym": "SMH",
-          "action": "Trim",
-          "targetPct": 7,
-          "note": "Chips flagged weak, reduce sector risk"
-        },
-        {
-          "sym": "CRWD",
-          "action": "Trim",
-          "targetPct": 7,
-          "note": "Cap single-name below 20% rule"
-        },
-        {
-          "sym": "QQQI",
-          "action": "Add",
-          "targetPct": 24,
-          "note": "Income buffer, smooths monthly returns"
+          "note": "no leverage"
         },
         {
           "sym": "SPY",
-          "action": "Add",
-          "targetPct": 32,
-          "note": "Broadest hedge, keep under 45% cap"
-        },
-        {
-          "sym": "QQQ",
           "action": "Trim",
-          "targetPct": 15,
-          "note": "Slight trim, free cash for buffer"
+          "targetPct": 20,
+          "note": "cap single name"
         }
       ],
       "plan": [
-        "Sell SOXL and SPAL immediately — both leveraged ETFs are down double-digits and daily decay compounds losses in sideways markets.",
-        "Trim SMH from 13% to 7% to bring total semiconductor exposure down from 19% to roughly 10%, well within the 45% sector cap.",
-        "Trim CRWD from 12% to 7% to honor the single-name 20% ceiling and lock in some of that +7.4% gain.",
-        "Rotate freed capital into QQQI (up to 24%) for steady income and SPY (up to 32%) for broad, lower-volatility exposure.",
-        "Remaining freed cash sits as a 15%+ buffer — do not redeploy until a clear confirmed setup appears on the scanner."
+        "Exit leveraged ETFs (SOXL, SPAL) - they decay and can gap against you.",
+        "Trim SPY (30%) to ~20% to cap single-name risk.",
+        "Lean on income (QQQI) + broad index; hold a 15-20% cash buffer.",
+        "Use tight stops - the goal is small, steady gains and shallow drawdowns."
       ],
-      "read": "This posture targets modest single-digit monthly participation with a meaningfully lower drawdown profile — the bad-month swing shrinks because leveraged ETFs and concentrated chip exposure are gone. The honest trade-off is that a strong tech rally will leave this book behind; income and broad index rarely match a hot sector move. Capital is protected, not compounded aggressively."
+      "read": "A ~1.5%/mo steady target is realistic for a de-risked book; expect calmer swings but you give up some upside in strong tapes. Preservation first."
     },
     "balanced": {
       "moves": [
@@ -64,107 +39,57 @@
           "sym": "SOXL",
           "action": "Trim",
           "targetPct": 3,
-          "note": "Keep tiny leverage slug, strict stop"
+          "note": "cut leverage/decay"
         },
         {
           "sym": "SPAL",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Space spec too small to matter, exit"
-        },
-        {
-          "sym": "SMH",
           "action": "Trim",
-          "targetPct": 9,
-          "note": "Reduce chips toward 25% sector target"
-        },
-        {
-          "sym": "CRWD",
-          "action": "Trim",
-          "targetPct": 9,
-          "note": "Trim winner, rebalance concentration"
-        },
-        {
-          "sym": "QQQI",
-          "action": "Add",
-          "targetPct": 20,
-          "note": "Income anchor, offsets vol elsewhere"
+          "targetPct": 2,
+          "note": "cut leverage/decay"
         },
         {
           "sym": "PANW",
-          "action": "Watch",
-          "targetPct": 5,
-          "note": "Top scanner score, AI/software quality"
-        },
-        {
-          "sym": "TSM",
-          "action": "Watch",
+          "action": "Buy",
           "targetPct": 4,
-          "note": "Chip quality name, diversifies SMH"
+          "note": "scanner top setup"
         }
       ],
       "plan": [
-        "Sell SPAL outright — at 2% it barely moves the needle and the -13.72% print says momentum is broken.",
-        "Trim SOXL to 3% max, keeping a small leveraged chip position but with a strict stop near current scanner levels so downside is capped.",
-        "Trim SMH to 9% and CRWD to 9% so no single sector exceeds roughly 25-30% and no single name dominates.",
-        "Add to QQQI up to 20% as the income anchor; this partially offsets the vol from the remaining leveraged and tech positions.",
-        "Place conditional Watch orders on PANW (5%) and TSM (4%) — only enter if scanner entry levels trigger; combined adds do not exceed the capital freed from trims."
+        "Keep leveraged ETFs small (<=3%) and on tight stops - they decay and amplify drawdowns.",
+        "Hold single names near ~25% max.",
+        "Best fresh setup: PANW: ACCUMULATE 9/12, entry 351.69-351.34, stop 350.62, targets 358.09/359.29/360.67, R 6.01. A starter (~4%) only if it triggers.",
+        "Hold a ~10% cash buffer and respect every stop."
       ],
-      "read": "Balanced mode aims for meaningful participation in tech upside while keeping the bad-month scenario materially less painful than the current -17.91% figure. Adding quality names like PANW only on confirmed entry keeps discipline intact. This is not a guarantee of 2.5%/month — a chip sector reversal or broad market drawdown will still hurt, just less than the current concentrated book."
+      "read": "A ~2.5%/mo target is aggressive but not impossible in a strong tape; hinges on cutting concentration/leverage + consistency. Expect losing months - size so a bad one (~-17.91%) doesn't force your hand."
     },
     "aggressive": {
       "moves": [
         {
-          "sym": "SPAL",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Weakest setup, no scanner support"
-        },
-        {
           "sym": "SOXL",
           "action": "Add",
-          "targetPct": 9,
-          "note": "Lean into chip leverage with strict…"
+          "targetPct": 6,
+          "note": "lean into momentum"
         },
         {
-          "sym": "SMH",
+          "sym": "SPAL",
           "action": "Add",
-          "targetPct": 15,
-          "note": "Chips oversold, scanner shows TSM…"
-        },
-        {
-          "sym": "CRWD",
-          "action": "Add",
-          "targetPct": 14,
-          "note": "Highest recent performer, scanner…"
-        },
-        {
-          "sym": "ARM",
-          "action": "Watch",
-          "targetPct": 5,
-          "note": "Top R score 9.46, ACCUMULATE rated"
+          "targetPct": 6,
+          "note": "lean into momentum"
         },
         {
           "sym": "PANW",
-          "action": "Watch",
-          "targetPct": 5,
-          "note": "Score 9/12, tight stop, high target"
-        },
-        {
-          "sym": "QQQ",
-          "action": "Trim",
-          "targetPct": 12,
-          "note": "Free capital for higher-conviction…"
+          "action": "Buy",
+          "targetPct": 6,
+          "note": "high-conviction setup"
         }
       ],
       "plan": [
-        "Sell SPAL — even in aggressive mode, a broken 2x ETF with no scanner setup is dead weight; redeploy that capital where the edge is clearer.",
-        "Add SOXL to 9% and SMH to 15%, leaning into the semiconductor thesis with the understanding that SOXL loses value daily through decay even if the sector goes sideways — strict stops are non-negotiable.",
-        "Add CRWD to 14%, the strongest recent performer in the book, aligned with the AI/software scanner theme.",
-        "Place Watch entries on ARM (R=9.46, top scanner score) and PANW (R=6.01, ACCUMULATE) at scanner entry levels only — do not chase above those levels.",
-        "Trim QQQ slightly to 12% to fund adds without blowing past current margin levels; total leverage stays monitored and stops on all leveraged positions are set before the trade is placed."
+        "Lean into leveraged ETFs (SOXL, SPAL) toward ~6% each - but hold a STRICT stop; they decay and can drop hard fast.",
+        "Press the strongest scanner setup: PANW: ACCUMULATE 9/12, entry 351.69-351.34, stop 350.62, targets 358.09/359.29/360.67, R 6.01 (~6%).",
+        "Run a small (~5%) cash buffer - stay invested for the upside.",
+        "Wider but STRICT stops. This mode can lose a lot fast - discipline is everything."
       ],
-      "read": "Aggressive mode explicitly accepts that a bad month could exceed the current -17.91% estimate — adding to SOXL and concentrating further in chips means a sector leg down hits harder and faster. SOXL decays daily; it is not a buy-and-hold instrument and requires active stop management. The upside in a chip/AI rally is real, but so is the risk of losing a significant portion of equity quickly if stops are not honored."
+      "read": "A ~4%/mo stretch target needs leverage + a strong tape + tight discipline; the same leverage means a bad month can run past -30%. Higher upside AND higher risk of a deep drawdown - not a promise."
     },
     "income": {
       "moves": [
@@ -172,53 +97,34 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Leveraged ETF contradicts income…"
+          "note": "too volatile to park"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Speculative, zero income, exit fully"
-        },
-        {
-          "sym": "SMH",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "High-beta sector, no distributions"
-        },
-        {
-          "sym": "CRWD",
-          "action": "Trim",
-          "targetPct": 4,
-          "note": "Keep tiny growth stub, trim most"
+          "note": "too volatile to park"
         },
         {
           "sym": "QQQI",
           "action": "Add",
-          "targetPct": 35,
-          "note": "Core income ETF, covered-call yield"
+          "targetPct": 30,
+          "note": "income anchor"
         },
         {
           "sym": "SPY",
           "action": "Trim",
-          "targetPct": 25,
-          "note": "Keep broad base, trim to fund income"
-        },
-        {
-          "sym": "QQQ",
-          "action": "Trim",
-          "targetPct": 10,
-          "note": "Reduce growth, redirect to income ETFs"
+          "targetPct": 20,
+          "note": "cut single-name risk"
         }
       ],
       "plan": [
-        "Sell SOXL, SPAL, and SMH entirely — all three are high-beta, distribution-free positions that work against a low-drawdown income objective.",
-        "Trim CRWD to 4% to keep a small growth stub but free the majority of capital for income rotation.",
-        "Build QQQI to 35% as the core holding — it is already in the book, familiar, and provides monthly covered-call distributions from the Nasdaq-100 universe.",
-        "Trim QQQ to 10% and SPY to 25%; broad index stays as a NAV stabilizer and mild growth participation but no longer dominates the book.",
-        "Remaining freed capital (~16%) sits as a cash buffer — distributions are variable and NAV can fall in a selloff, so the buffer absorbs shocks without forcing you to sell income positions at a loss."
+        "Exit leveraged ETFs (SOXL, SPAL) - too volatile for parked cash.",
+        "Build QQQI toward ~30% as your monthly-distribution anchor.",
+        "Keep the rest in broad index + a cash buffer; the distributions pay you monthly.",
+        "Low-drawdown income park - but NAV can still dip and distributions vary (not a savings account)."
       ],
-      "read": "Income mode targets reliable monthly distributions rather than price appreciation — QQQI's covered-call structure generates income but caps upside in strong rallies, and NAV can still fall meaningfully in a broad selloff. A 1%/month distribution target is plausible in normal markets but is never guaranteed; covered-call ETF payouts vary with volatility and market conditions. This posture trades growth potential for stability and cash flow."
+      "read": "Covered-call ETFs (QQQI/JEPQ/JEPI/SPYI) can distribute ~1%/mo (~13%/yr) as steady income, but they cap upside and NAV can fall in a selloff. Good for parking cash for yield, not for growth; distributions are variable, not guaranteed."
     }
   }
 }
