@@ -9,7 +9,7 @@ import { dirname, join } from 'node:path';
 const dir = dirname(fileURLToPath(import.meta.url));
 const now = Date.now();
 const GATE_MS = 28 * 60 * 1000;
-const V = 1;                                   // engine prompt/schema version (bump to force one regen)
+const V = 2;                                   // engine prompt/schema version (bump to force one regen)
 const TARGET = +(process.env.TARGET_MONTHLY || 2.5);   // realistic monthly return target, %
 const read = f => { try { return JSON.parse(readFileSync(join(dir, f), 'utf8')); } catch { return null; } };
 const r2 = n => Math.round(n * 100) / 100;
@@ -151,7 +151,7 @@ for (const [name, fn] of [['Claude', claude], ['Gemini', gemini]]) {
 }
 if (!out) out = fallback();
 
-const plan = (out.plan || []).slice(0, 6).map(p => trimSent(p, 320)).filter(Boolean);
-writeFileSync(join(dir, 'engine.json'), JSON.stringify({ ts: new Date(now).toLocaleString('en-US', { timeZone: 'America/New_York' }) + ' (' + src + ')', epoch: now, v: V, target: TARGET, xray: X.xray, risk: X.risk, goal: X.goal, plan, read: trimSent(out.read || '', 360) }, null, 2));
+const plan = (out.plan || []).slice(0, 6).map(p => trimSent(String(p).replace(/^\s*\d+[.):]\s*/, ''), 340)).filter(Boolean);   // strip any leading "1." the model adds (the <ol> numbers it)
+writeFileSync(join(dir, 'engine.json'), JSON.stringify({ ts: new Date(now).toLocaleString('en-US', { timeZone: 'America/New_York' }) + ' (' + src + ')', epoch: now, v: V, target: TARGET, xray: X.xray, risk: X.risk, goal: X.goal, plan, read: trimSent(out.read || '', 480) }, null, 2));
 console.error(`engine written: ${plan.length} steps via ${src}`);
 
