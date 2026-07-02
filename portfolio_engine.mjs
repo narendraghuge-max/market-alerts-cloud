@@ -15,11 +15,9 @@ const read = f => { try { return JSON.parse(readFileSync(join(dir, f), 'utf8'));
 const r2 = n => Math.round(n * 100) / 100;
 const money = n => '$' + Math.round(n).toLocaleString('en-US');
 
-// ---- refresh gate ----
-const prevE = read('engine.json');
-if (prevE && prevE.epoch && (now - prevE.epoch) < GATE_MS && prevE.v === V) {
-  console.error('engine ' + Math.round((now - prevE.epoch) / 60000) + ' min old - fresh, skip'); process.exit(0);
-}
+// ---- refresh cadence: quant + $/share/price sizing recompute EVERY run (~15 min);
+// the AI plan/decisions are gated (~30 min) and cached in engine_ai.json, then re-priced on fresh data each run ----
+const prevAI = read('engine_ai.json');
 
 const exits = read('exits.json');
 const scan = read('scan.json');
@@ -150,19 +148,30 @@ function fallback() {
   return { moves, plan, read: `A ~${TARGET}%/month target is aggressive but not impossible in a strong tape; for this book it hinges on cutting concentration/leverage and staying consistent - expect losing months, and size so a bad one (~-${X.risk.badMonthPct}%) doesn't force your hand.` };
 }
 
-let out, src = 'auto';
-for (const [name, fn] of [['Claude', claude], ['Gemini', gemini]]) {
-  if ((name === 'Claude' && !process.env.ANTHROPIC_API_KEY) || (name === 'Gemini' && !process.env.GEMINI_API_KEY)) continue;
-  try { out = parseAI(await fn(prompt)); src = name; break; } catch (e) { console.error(name + ' engine failed:', e.message); }
+// ---- AI decisions (which tickers to move + the written plan): gated ~30 min, cached in engine_ai.json, reused between regens ----
+let aiMoves, plan, read_, aiEpoch, aiSrc;
+if (prevAI && prevAI.aiEpoch && (now - prevAI.aiEpoch) < GATE_MS && prevAI.v === V && Array.isArray(prevAI.moves) && Array.isArray(prevAI.plan)) {
+  aiMoves = prevAI.moves; plan = prevAI.plan; read_ = prevAI.read || ''; aiEpoch = prevAI.aiEpoch;
+  aiSrc = (prevAI.src || 'AI').replace(/ · cached.*$/, '') + ' · cached ' + Math.round((now - prevAI.aiEpoch) / 60000) + 'm';
+  console.error('engine AI ' + Math.round((now - prevAI.aiEpoch) / 60000) + ' min old - reusing decisions, re-pricing on fresh data');
+} else {
+  let out, src = 'auto';
+  for (const [name, fn] of [['Claude', claude], ['Gemini', gemini]]) {
+    if ((name === 'Claude' && !process.env.ANTHROPIC_API_KEY) || (name === 'Gemini' && !process.env.GEMINI_API_KEY)) continue;
+    try { out = parseAI(await fn(prompt)); src = name; break; } catch (e) { console.error(name + ' engine failed:', e.message); }
+  }
+  if (!out) { out = fallback(); src = 'auto'; }
+  aiMoves = (out.moves || []).slice(0, 8).map(m => ({ sym: String(m.sym || '').toUpperCase(), action: String(m.action || '').replace(/[^A-Za-z]/g, '').slice(0, 6) || 'Adj', targetPct: r2(Math.max(0, +m.targetPct || 0)), note: trimSent(String(m.note || ''), 38) }));
+  plan = (out.plan || []).slice(0, 6).map(p => trimSent(String(p).replace(/^\s*\d+[.):]\s*/, ''), 340)).filter(Boolean);   // strip any leading "1." the model adds (the <ol> numbers it)
+  read_ = trimSent(out.read || '', 480); aiEpoch = now; aiSrc = src;
+  writeFileSync(join(dir, 'engine_ai.json'), JSON.stringify({ aiTs: new Date(now).toLocaleString('en-US', { timeZone: 'America/New_York' }) + ' (' + src + ')', aiEpoch, v: V, target: TARGET, src, moves: aiMoves, plan, read: read_ }, null, 2));
+  console.error('engine AI regenerated via ' + src);
 }
-if (!out) out = fallback();
-
-const plan = (out.plan || []).slice(0, 6).map(p => trimSent(String(p).replace(/^\s*\d+[.):]\s*/, ''), 340)).filter(Boolean);   // strip any leading "1." the model adds (the <ol> numbers it)
 // ---- concrete share + $ sizing per move (target weight -> shares to buy/sell + dollar amount) ----
 const hMap = {}; holdings.forEach(h => hMap[h.sym] = { shares: h.shares, price: h.price, value: h.shares * h.price });
 const sPrice = {}, scanLvl = {}; (scan?.results || []).forEach(s => { if (s.price > 0) sPrice[s.symbol] = s.price; if (s.levels) scanLvl[s.symbol] = s.levels; });
 const holdLvl = {}; holdings.forEach(h => holdLvl[h.sym] = { price: h.price, stop: h.stop, tps: [h.tp1, h.tp2, h.tp3].filter(v => v != null) });
-const moves = (out.moves || []).slice(0, 8).map(m => {
+const moves = aiMoves.map(m => {
   const sym = String(m.sym || '').toUpperCase();
   const cur = hMap[sym] || { shares: 0, value: 0, price: sPrice[sym] || 0 };
   const price = cur.price || sPrice[sym] || 0;
@@ -175,6 +184,6 @@ const moves = (out.moves || []).slice(0, 8).map(m => {
   const tps = buying ? (sl ? [sl.tp1, sl.tp2, sl.tp3].filter(v => v != null) : (hl?.tps || [])) : [];
   return { sym, action: String(m.action || '').replace(/[^A-Za-z]/g, '').slice(0, 6) || 'Adj', targetPct: r2(tPct), deltaShares: deltaSh, deltaUsd: Math.round(deltaVal), curShares: r2(cur.shares), at: at ? r2(at) : null, stop: stop != null ? r2(stop) : null, tps: tps.slice(0, 3).map(r2), note: trimSent(String(m.note || ''), 38) };
 }).filter(m => m.sym && (Math.abs(m.deltaShares) >= 1 || /watch/i.test(m.action)));
-writeFileSync(join(dir, 'engine.json'), JSON.stringify({ ts: new Date(now).toLocaleString('en-US', { timeZone: 'America/New_York' }) + ' (' + src + ')', epoch: now, v: V, target: TARGET, xray: X.xray, risk: X.risk, goal: X.goal, proj, moves, plan, read: trimSent(out.read || '', 480) }, null, 2));
-console.error(`engine written: ${moves.length} moves, ${plan.length} steps via ${src}`);
+writeFileSync(join(dir, 'engine.json'), JSON.stringify({ ts: new Date(now).toLocaleString('en-US', { timeZone: 'America/New_York' }) + ' (' + aiSrc + ')', epoch: now, aiEpoch, v: V, target: TARGET, xray: X.xray, risk: X.risk, goal: X.goal, proj, moves, plan, read: read_ }, null, 2));
+console.error(`engine written: ${moves.length} moves, ${plan.length} steps (${aiSrc})`);
 
