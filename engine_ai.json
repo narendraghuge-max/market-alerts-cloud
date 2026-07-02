@@ -1,8 +1,8 @@
 {
-  "aiTs": "7/2/2026, 1:43:49 AM (Claude)",
-  "aiEpoch": 1782971029186,
-  "v": 6,
-  "src": "Claude",
+  "aiTs": "7/2/2026, 2:00:53 AM (Gemini)",
+  "aiEpoch": 1782972053338,
+  "v": 7,
+  "src": "Gemini",
   "modes": {
     "conservative": {
       "moves": [
@@ -10,54 +10,47 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "3x leverage, -14.5%, cut decay risk"
+          "note": "Eliminate 3x leveraged ETF"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "2x leverage, -13.7%, smallest position"
+          "note": "Eliminate 2x leveraged ETF"
         },
         {
-          "sym": "SMH",
+          "sym": "CRWD",
           "action": "Trim",
-          "targetPct": 7,
-          "note": "Reduce chip concentration, keep small"
-        },
-        {
-          "sym": "QQQI",
-          "action": "Add",
-          "targetPct": 23,
-          "note": "Income cushions drawdown, steady yield"
+          "targetPct": 10,
+          "note": "Reduce concentration, still tech…"
         },
         {
           "sym": "SPY",
           "action": "Add",
-          "targetPct": 35,
-          "note": "Broad index anchor, cap under 35%"
+          "targetPct": 20,
+          "note": "Increase broad index for stability"
         },
         {
-          "sym": "QQQ",
-          "action": "Trim",
-          "targetPct": 12,
-          "note": "Slight trim, broad index stays present"
+          "sym": "QQQI",
+          "action": "Add",
+          "targetPct": 20,
+          "note": "Increase income focus"
         },
         {
           "sym": "PANW",
-          "action": "Watch",
-          "targetPct": 3,
-          "note": "Top scanner score, quality…"
+          "action": "Buy",
+          "targetPct": 5,
+          "note": "Add top quality name"
         }
       ],
       "plan": [
-        "Sell both leveraged ETFs immediately — SOXL and SPAL are both deep in the red and daily decay compounds losses on margin; freeing that ~8% of book plus SMH trim proceeds funds the cash buffer.",
-        "Trim SMH from 13% to 7% to bring semiconductors sector below 15% of book, reducing the biggest concentration risk flagged in your data.",
-        "Increase QQQI to 23% and hold SPY at 35% — together these two income/broad-index positions form a 58% defensive core that dampens portfolio swings significantly.",
-        "Trim QQQ slightly to 12% since SPY already covers broad index exposure; combined broad index stays near 47%, just under the 45% single-sector cap when counted separately.",
-        "Raise cash buffer to roughly 18-20% from trimmed and sold proceeds — this directly reduces your true leverage below 1.0x and cuts the 2-sigma bad-month figure well below the current -17.91%.",
-        "PANW is a conditional Watch only at scanner entry 351.34-351.69 with stop 350.62 — only open if cash buffer is fully established first and position stays at 3% maximum."
+        "Sell all leveraged ETFs (SOXL, SPAL) to reduce volatility.",
+        "Significantly reduce concentration in CRWD.",
+        "Increase holdings in broad index SPY and income ETF QQQI.",
+        "Add a top-rated, lower-beta name like PANW.",
+        "This plan prioritizes capital preservation and steady income."
       ],
-      "read": "This posture targets modest positive return in the range of 1-2% per month in calm markets, mainly from QQQI income and broad-index drift, with CRWD retained as the sole high-growth name. The tradeoff is real: you sacrifice the explosive upside of SOXL and chip concentration in exchange for a dramatically smaller bad-month scenario, but you still carry margin and tech risk, so a broad tech selloff will still hurt."
+      "read": "This plan aims for lower, steadier returns around 1.5% per month with significantly reduced drawdown risk. It focuses on capital preservation by cutting leverage and increasing stable assets."
     },
     "balanced": {
       "moves": [
@@ -65,54 +58,47 @@
           "sym": "SOXL",
           "action": "Trim",
           "targetPct": 3,
-          "note": "Keep tiny; cap 3x exposure strictly"
+          "note": "Reduce 3x leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Weakest score, smallest size, exit…"
-        },
-        {
-          "sym": "SMH",
           "action": "Trim",
-          "targetPct": 9,
-          "note": "Reduce chips toward sector balance"
+          "targetPct": 1,
+          "note": "Reduce 2x leveraged ETF exposure"
         },
         {
-          "sym": "QQQI",
-          "action": "Add",
-          "targetPct": 20,
-          "note": "Income buffer blends growth and…"
+          "sym": "CRWD",
+          "action": "Trim",
+          "targetPct": 8,
+          "note": "Reduce concentration, maintain tech…"
         },
         {
           "sym": "SPY",
-          "action": "Hold",
-          "targetPct": 30,
-          "note": "Core anchor unchanged, concentration…"
+          "action": "Add",
+          "targetPct": 25,
+          "note": "Increase broad index for…"
         },
         {
-          "sym": "PANW",
+          "sym": "ARM",
           "action": "Buy",
           "targetPct": 5,
-          "note": "ACCUMULATE 9/12, best scanner R/R"
+          "note": "Add high R-value tech name"
         },
         {
           "sym": "TSM",
-          "action": "Watch",
-          "targetPct": 4,
-          "note": "Chip quality name, diversifies away…"
+          "action": "Add",
+          "targetPct": 5,
+          "note": "Add quality semiconductor name"
         }
       ],
       "plan": [
-        "Sell SPAL entirely — at 2% of book it moves the needle least but carries 2x decay and is already down -13.72%; proceeds go toward higher-quality adds.",
-        "Trim SOXL to 3% rather than zero — this keeps a small leveraged chip kicker if semis recover, but limits the drag and caps leveraged exposure well under the 5% balanced ceiling.",
-        "Trim SMH from 13% to 9% — semiconductors sector drops from 19% to roughly 12% of book, meaningfully reducing concentration while keeping direct chip exposure.",
-        "Add QQQI to 20% — the income layer moderates month-to-month swings and partially offsets margin cost, fitting the risk-first growth posture.",
-        "Open PANW at the scanner entry zone (351.34-351.69) with a hard stop at 350.62 as instructed — the 9/12 ACCUMULATE score and R of 6.01 make it the strongest setup in your data.",
-        "TSM is a Watch at 443.34-443.79 stop 442.47 — adds semiconductor quality without triple-leverage decay; only enter if the entry triggers and total book leverage stays under 1.1x after the add."
+        "Reduce exposure to leveraged ETFs SOXL and SPAL.",
+        "Trim concentration in CRWD while keeping some tech exposure.",
+        "Increase allocation to the broad index SPY.",
+        "Add new, high-potential tech names like ARM and TSM.",
+        "This blend balances growth with risk management."
       ],
-      "read": "This balanced reshaping targets something in the 2-3% monthly range in favorable tape conditions, with the PANW add and retained CRWD providing growth while the income layer and broad indexes dampen swings. Your bad-month scenario improves modestly from the current -17.91% but you still run margin and meaningful tech concentration, so a sharp chip or broad-tech sell-off remains the key risk to watch."
+      "read": "This balanced approach targets approximately 2.5% monthly growth by blending index funds, quality tech, and reduced leverage. It aims for risk-first growth with a moderate buffer against larger downturns."
     },
     "aggressive": {
       "moves": [
@@ -120,54 +106,95 @@
           "sym": "SOXL",
           "action": "Add",
           "targetPct": 10,
-          "note": "Lean into 3x chips if thesis intact"
+          "note": "Increase 3x leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
-          "action": "Hold",
-          "targetPct": 2,
-          "note": "Tiny space kicker, keep with strict…"
-        },
-        {
-          "sym": "SMH",
           "action": "Add",
-          "targetPct": 16,
-          "note": "Increase chip sector on scanner…"
+          "targetPct": 5,
+          "note": "Increase 2x leveraged ETF exposure"
         },
         {
           "sym": "CRWD",
           "action": "Add",
           "targetPct": 15,
-          "note": "Best performer in book, +7.4% momentum"
+          "note": "Concentrate in high conviction tech"
         },
         {
           "sym": "ARM",
-          "action": "Buy",
-          "targetPct": 5,
-          "note": "ACCUMULATE 7/12, R 9.46, highest…"
+          "action": "Add",
+          "targetPct": 10,
+          "note": "Add highest R-value tech name"
         },
         {
           "sym": "PANW",
-          "action": "Buy",
-          "targetPct": 5,
-          "note": "ACCUMULATE 9/12, top scanner…"
+          "action": "Add",
+          "targetPct": 10,
+          "note": "Add strong risk/reward name"
         },
         {
-          "sym": "QQQ",
-          "action": "Trim",
-          "targetPct": 10,
-          "note": "Redeploy into higher-conviction names"
+          "sym": "ZS",
+          "action": "Add",
+          "targetPct": 5,
+          "note": "Add another quality tech name"
         }
       ],
       "plan": [
-        "Double SOXL from 6% to 10% — this is the aggressive chip bet; the 3x structure means a 5% SMH rally translates to roughly 15% on this sleeve, but a 5% SMH drop hits you roughly -15% on the same position, so a pre-set stop is non-negotiable.",
-        "Add to SMH from 13% to 16% to pair the leveraged chip exposure with a direct, non-decaying semiconductor position — combined chip complex becomes roughly 26% of book.",
-        "Add CRWD to 15% — it is already up +7.4% and is the only position in your current book showing clear positive momentum; this leans into what is working.",
-        "Open ARM at scanner entry 336.80-337.13 with hard stop at 336.18 — the R of 9.46 is the highest available in your data and the ACCUMULATE 7/12 score supports it; position at 5% keeps it sized but meaningful.",
-        "Open PANW at scanner entry 351.34-351.69 stop 350.62 — ACCUMULATE 9/12 is the strongest conviction signal in your dataset; paired with ARM this gives two quality AI/software longs alongside the chip complex.",
-        "Trim QQQ to 10% to fund the above adds without blowing through cash buffer — SPY at 30% keeps broad index coverage so cutting QQQ is the cleanest source of capital here."
+        "Increase exposure to leveraged ETFs SOXL and SPAL.",
+        "Further concentrate the book in high-conviction tech like CRWD.",
+        "Add aggressively to top scanner setups like ARM and PANW.",
+        "Include ZS for additional tech exposure.",
+        "This plan maximizes potential upside through leverage and concentration."
       ],
-      "read": "This plan meaningfully raises true leverage above the current 1.14x and pushes the semiconductor-plus-leveraged-ETF complex to roughly 26% of book, which could target 4%+ monthly return if chips and AI names continue rallying — but your 2-sigma bad-month drawdown likely grows well beyond the current -17.91%, and SOXL's daily rebalancing decay erodes value steadily in choppy or sideways markets regardless of direction."
+      "read": "This aggressive plan targets higher growth, potentially around 4% monthly, by leaning into leverage and concentrated tech bets. Be aware that this significantly increases potential drawdown risk and the impact of leveraged ETF decay; strict stop discipline is crucial."
+    },
+    "income": {
+      "moves": [
+        {
+          "sym": "SOXL",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Eliminate leveraged ETF"
+        },
+        {
+          "sym": "SPAL",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Eliminate leveraged ETF"
+        },
+        {
+          "sym": "CRWD",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Eliminate high-beta single name"
+        },
+        {
+          "sym": "QQQI",
+          "action": "Add",
+          "targetPct": 40,
+          "note": "Maximize income focus"
+        },
+        {
+          "sym": "SPY",
+          "action": "Add",
+          "targetPct": 30,
+          "note": "Add broad index for stability"
+        },
+        {
+          "sym": "QQQ",
+          "action": "Add",
+          "targetPct": 20,
+          "note": "Add broad index for stability"
+        }
+      ],
+      "plan": [
+        "Sell all leveraged ETFs and high-beta single stocks.",
+        "Maximize allocation to income-focused QQQI.",
+        "Increase holdings in broad index ETFs SPY and QQQ.",
+        "This plan prioritizes steady monthly income and capital preservation.",
+        "Focus is on yield generation, not aggressive growth."
+      ],
+      "read": "This income-focused plan targets around 1% monthly in distributions, prioritizing steady cash flow and low drawdown. While aiming for stability, the Net Asset Value can still decline in market downturns."
     }
   }
 }
