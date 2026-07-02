@@ -509,6 +509,24 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
         + '<div class="sub" style="margin:2px 0 0"><span class="rel" data-epoch="' + (b.epoch || '') + '">' + esc(b.ts) + ' ET</span></div>';
     }
   } catch (e) {}
+  // ---- Portfolio Engine section (allocation X-ray + risk + AI action plan + goal check) ----
+  let engHtml = '';
+  try {
+    const gf = join(__reportDir, 'engine.json');
+    if (existsSync(gf)) {
+      const E = JSON.parse(readFileSync(gf, 'utf8')); const x = E.xray, rk = E.risk, g = E.goal;
+      const secColor = { 'Semiconductors': '#2563eb', 'AI / Software': '#7c3aed', 'Broad index': '#6b7280', 'Income': '#16a34a', 'Space': '#0891b2', 'Other': '#9aa0aa' };
+      const bars = x.sectors.map(s => '<div style="display:flex;align-items:center;gap:8px;margin:4px 0"><div style="width:72px;font-size:11px;color:var(--muted)">' + esc(s.sector) + '</div><div style="flex:1;background:var(--line);border-radius:5px;height:9px;overflow:hidden"><div style="width:' + s.w + '%;height:100%;background:' + (secColor[s.sector] || '#9aa0aa') + '"></div></div><div style="width:32px;text-align:right;font-size:11px;font-weight:600">' + s.w + '%</div></div>').join('');
+      const stat = (v, l, c) => '<div class="estat"><div class="ev"' + (c ? ' style="color:' + c + '"' : '') + '>' + v + '</div><div class="el">' + l + '</div></div>';
+      engHtml = '<h2 style="font-size:16px;font-weight:600;margin:14px 0 6px">&#9881; Portfolio Engine <span style="font-size:12px;font-weight:400;color:var(--muted)">&middot; aiming for a realistic ' + E.target + '%/mo</span></h2>'
+        + '<div class="egrid">' + stat('&plusmn;' + rk.moSwingPct + '%', 'typical month') + stat('&minus;' + rk.badMonthPct + '%', 'rough bad month', '#dc2626') + stat(x.trueLev + '&times;', 'true leverage', x.trueLev > 1.5 ? '#d97706' : null) + stat('&minus;' + rk.allStopsPct + '%', 'if all stops hit') + '</div>'
+        + '<div class="ncard"><div class="nl">Where your money is</div>' + bars + '<div class="nv" style="margin-top:6px;color:var(--muted);font-size:12px">Biggest: <b style="color:var(--fg)">' + x.top1.sym + ' ' + x.top1.w + '%</b> &middot; top 3 = ' + x.top3 + '% of the book</div></div>'
+        + (E.plan && E.plan.length ? '<div class="ncard" style="border-left:3px solid var(--up)"><div class="nl" style="color:var(--up)">Action plan</div><ol style="margin:6px 0 0;padding-left:20px;font-size:13.5px;line-height:1.6">' + E.plan.map(p => '<li style="margin-bottom:5px">' + esc(p) + '</li>').join('') + '</ol></div>' : '')
+        + (E.read ? '<div class="ncard" style="border-left:3px solid var(--accent)"><div class="nl" style="color:var(--accent)">Goal check &middot; is ' + E.target + '%/mo realistic?</div><div class="nv">' + esc(E.read) + '</div><div class="nv" style="margin-top:5px;color:var(--muted);font-size:12px">' + E.target + '%/mo &asymp; ' + g.annual + '%/yr &middot; book swings ~' + g.moVolPct + '%/mo &middot; needs a monthly Sharpe of ' + g.moSharpe + ' (elite is ~0.3+)</div></div>' : '')
+        + (rk.flags && rk.flags.length ? '<div class="nv" style="color:#d97706;font-size:12px;margin-top:4px">&#9888; ' + rk.flags.map(esc).join(' &middot; ') + '</div>' : '')
+        + '<div class="sub" style="margin:6px 0 0"><span class="rel" data-epoch="' + (E.epoch || '') + '">' + esc(E.ts) + ' ET</span> &middot; decision-support, not advice, not a guarantee</div>';
+    }
+  } catch (e) {}
   let events = [];
   try { const ef = join(__reportDir, 'events.json'); if (existsSync(ef)) events = JSON.parse(readFileSync(ef, 'utf8')); } catch (e) {}
   const nowMs = Date.now();
@@ -590,6 +608,7 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     + '.tag{font-size:11px;padding:1px 5px;border-radius:5px;margin-left:4px;border:1px solid}footer{margin-top:16px;color:var(--muted);font-size:12px}'
     + '.tbl{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%;margin-bottom:4px}.tbl th:first-child,.tbl td:first-child{position:sticky;left:0;background:var(--bg);box-shadow:1px 0 0 var(--line)}'
     + '.ncard{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0;background:var(--card)}.ncard .nh{font-weight:700;font-size:14.5px;line-height:1.4}.ncard .nh a{color:var(--fg);text-decoration:none}.ncard .nh a:active,.ncard .nh a:hover{color:var(--accent)}.ncard .nrow{margin-top:9px}.ncard .nl{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:600;margin-bottom:3px}.ncard .nv{font-size:13px;line-height:1.5;color:var(--fg)}.ncard .impact{border-left:3px solid var(--accent);padding-left:11px;margin-top:10px}.ncard .impact .nl{color:var(--accent)}.ncard .idea{border-left:3px solid var(--up);padding-left:11px;margin-top:10px}.ncard .ntime{font-size:11px;color:var(--muted);margin-top:9px}.ncard .ntime b{color:var(--fg);font-weight:600}'
+    + '.egrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:6px 0 10px}.estat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 5px;text-align:center}.estat .ev{font-size:16px;font-weight:700}.estat .el{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin-top:2px}@media(max-width:680px){.egrid{grid-template-columns:repeat(2,1fr)}}'
     + '@media(max-width:680px){body{padding:12px}h1{font-size:18px}.sub{font-size:12px}table{font-size:12px}th,td{padding:7px 6px}.controls{gap:6px}select{flex:1 1 auto}}'
     + '.sec{border-top:1px solid var(--line)}.sec>summary{cursor:pointer;list-style:none;font-size:16px;font-weight:650;padding:15px 2px;display:flex;align-items:center;gap:9px;-webkit-user-select:none;user-select:none}.sec>summary::-webkit-details-marker{display:none}.sec>summary::before{content:"\\25B8";color:var(--accent);font-weight:700}.sec[open]>summary::before{content:"\\25BE"}.sec>summary span{font-weight:400;color:var(--muted)}.sec[open]{padding-bottom:12px}'
     + 'td.basis .bd>summary{list-style:none;cursor:pointer;color:var(--accent);font-weight:600;font-size:12px;padding:3px 0;display:inline-flex;align-items:center;gap:5px}td.basis .bd>summary::-webkit-details-marker{display:none}td.basis .bd>summary::after{content:"\\25BE";color:var(--muted);font-size:10px}td.basis .bd[open]>summary::after{content:"\\25B4"}td.basis .bt{margin-top:5px;line-height:1.45;max-width:480px}'
@@ -597,6 +616,7 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     + '</style></head><body>'
     + '<div class="masthead"><div class="hdr"><div class="logo">IN</div><div><h1>Investment Navigator</h1><div class="tagline">Always watching your money &mdash; like a fund manager who never logs off.</div></div></div></div><div class="sub">Generated ' + ts + ' ET &middot; ' + rows.length + ' scanned' + skipped + ' &middot; auto-reloads every 5 min &middot; not financial advice</div>'
     + sec(brHtml, true)
+    + sec(engHtml, true)
     + sec(evHtml, false)
     + sec(hlHtml, false)
     + sec(exHtml, true)

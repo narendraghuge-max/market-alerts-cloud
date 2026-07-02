@@ -25,27 +25,38 @@ jobs:
       - name: Fetch market headlines (free, no AI)
         run: node fetch_news.mjs
 
-      - name: Holdings snapshot (for the briefing)
+      - name: Holdings snapshot (for the briefing + engine)
         env:
           HOLDINGS_JSON: ${{ secrets.HOLDINGS_JSON }}
         run: node scan_exits.mjs --json > exits.json
+
+      - name: Buy-scan snapshot (shared by briefing + engine)
+        env:
+          HOLDINGS_JSON: ${{ secrets.HOLDINGS_JSON }}
+        run: node scan_smc.mjs --json > scan.json
 
       - name: AI briefing + analyzed events (Claude, Gemini fallback; gated to ~30 min)
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          HOLDINGS_JSON: ${{ secrets.HOLDINGS_JSON }}   # lets the briefing pull a universe-wide buy-scan snapshot for trade ideas
         run: node make_briefing.mjs
 
-      - name: Persist briefing + events between runs
+      - name: Portfolio Engine (allocation + risk + action plan; gated to ~30 min)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          TARGET_MONTHLY: '2.5'
+        run: node portfolio_engine.mjs
+
+      - name: Persist briefing + events + engine between runs
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add briefing.json events.json
+          git add briefing.json events.json engine.json
           if git diff --cached --quiet; then
             echo "no AI change to persist"
           else
-            git commit -m "AI briefing + events refresh [skip ci]"
+            git commit -m "AI briefing + events + engine refresh [skip ci]"
             git push
           fi
 

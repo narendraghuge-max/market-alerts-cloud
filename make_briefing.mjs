@@ -30,10 +30,8 @@ const news = headlines.slice(0, 10).map((h, i) => (i + 1) + '. ' + h.headline);
 // so trade ideas can point to the strongest NEW setups across ~100 names, not just my holdings.
 let setupsText = '(scan unavailable)';
 try {
-  const { execFileSync } = await import('node:child_process');
-  const raw = execFileSync('node', ['scan_smc.mjs', '--json'], { cwd: dir, env: process.env, timeout: 90000, maxBuffer: 48 * 1024 * 1024 }).toString();
-  const scan = JSON.parse(raw.slice(raw.indexOf('{'), raw.lastIndexOf('}') + 1));
-  const setups = (scan.results || [])
+  const scan = read('scan.json');   // shared universe snapshot (generated once in the workflow, also used by portfolio_engine)
+  const setups = (scan?.results || [])
     .filter(r => r.score != null && !r.illiquid && r.direction !== 'short' && !/short|avoid/i.test(r.action))
     .sort((a, b) => b.score - a.score).slice(0, 10)
     .map(r => `${r.symbol}: ${r.action} ${r.score}/12; entry ${r.levels?.entry1}-${r.levels?.entry2}, stop ${r.levels?.stop}, tp ${r.levels?.tp1}/${r.levels?.tp2}/${r.levels?.tp3}, R ${r.levels?.rr}. Why: ${(r.basis || '').replace(/\s+/g, ' ').slice(0, 160)}`);
