@@ -1,53 +1,173 @@
 {
-  "aiTs": "7/2/2026, 1:21:42 AM (Claude)",
-  "aiEpoch": 1782969702723,
-  "v": 5,
-  "target": 2.5,
+  "aiTs": "7/2/2026, 1:43:49 AM (Claude)",
+  "aiEpoch": 1782971029186,
+  "v": 6,
   "src": "Claude",
-  "moves": [
-    {
-      "sym": "SOXL",
-      "action": "Sell",
-      "targetPct": 0,
-      "note": "3x levered chip ETF, -14.52%, cuts…"
+  "modes": {
+    "conservative": {
+      "moves": [
+        {
+          "sym": "SOXL",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "3x leverage, -14.5%, cut decay risk"
+        },
+        {
+          "sym": "SPAL",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "2x leverage, -13.7%, smallest position"
+        },
+        {
+          "sym": "SMH",
+          "action": "Trim",
+          "targetPct": 7,
+          "note": "Reduce chip concentration, keep small"
+        },
+        {
+          "sym": "QQQI",
+          "action": "Add",
+          "targetPct": 23,
+          "note": "Income cushions drawdown, steady yield"
+        },
+        {
+          "sym": "SPY",
+          "action": "Add",
+          "targetPct": 35,
+          "note": "Broad index anchor, cap under 35%"
+        },
+        {
+          "sym": "QQQ",
+          "action": "Trim",
+          "targetPct": 12,
+          "note": "Slight trim, broad index stays present"
+        },
+        {
+          "sym": "PANW",
+          "action": "Watch",
+          "targetPct": 3,
+          "note": "Top scanner score, quality…"
+        }
+      ],
+      "plan": [
+        "Sell both leveraged ETFs immediately — SOXL and SPAL are both deep in the red and daily decay compounds losses on margin; freeing that ~8% of book plus SMH trim proceeds funds the cash buffer.",
+        "Trim SMH from 13% to 7% to bring semiconductors sector below 15% of book, reducing the biggest concentration risk flagged in your data.",
+        "Increase QQQI to 23% and hold SPY at 35% — together these two income/broad-index positions form a 58% defensive core that dampens portfolio swings significantly.",
+        "Trim QQQ slightly to 12% since SPY already covers broad index exposure; combined broad index stays near 47%, just under the 45% single-sector cap when counted separately.",
+        "Raise cash buffer to roughly 18-20% from trimmed and sold proceeds — this directly reduces your true leverage below 1.0x and cuts the 2-sigma bad-month figure well below the current -17.91%.",
+        "PANW is a conditional Watch only at scanner entry 351.34-351.69 with stop 350.62 — only open if cash buffer is fully established first and position stays at 3% maximum."
+      ],
+      "read": "This posture targets modest positive return in the range of 1-2% per month in calm markets, mainly from QQQI income and broad-index drift, with CRWD retained as the sole high-growth name. The tradeoff is real: you sacrifice the explosive upside of SOXL and chip concentration in exchange for a dramatically smaller bad-month scenario, but you still carry margin and tech risk, so a broad tech selloff will still hurt."
     },
-    {
-      "sym": "SPAL",
-      "action": "Sell",
-      "targetPct": 0,
-      "note": "2x levered, -13.72%, smallest…"
+    "balanced": {
+      "moves": [
+        {
+          "sym": "SOXL",
+          "action": "Trim",
+          "targetPct": 3,
+          "note": "Keep tiny; cap 3x exposure strictly"
+        },
+        {
+          "sym": "SPAL",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Weakest score, smallest size, exit…"
+        },
+        {
+          "sym": "SMH",
+          "action": "Trim",
+          "targetPct": 9,
+          "note": "Reduce chips toward sector balance"
+        },
+        {
+          "sym": "QQQI",
+          "action": "Add",
+          "targetPct": 20,
+          "note": "Income buffer blends growth and…"
+        },
+        {
+          "sym": "SPY",
+          "action": "Hold",
+          "targetPct": 30,
+          "note": "Core anchor unchanged, concentration…"
+        },
+        {
+          "sym": "PANW",
+          "action": "Buy",
+          "targetPct": 5,
+          "note": "ACCUMULATE 9/12, best scanner R/R"
+        },
+        {
+          "sym": "TSM",
+          "action": "Watch",
+          "targetPct": 4,
+          "note": "Chip quality name, diversifies away…"
+        }
+      ],
+      "plan": [
+        "Sell SPAL entirely — at 2% of book it moves the needle least but carries 2x decay and is already down -13.72%; proceeds go toward higher-quality adds.",
+        "Trim SOXL to 3% rather than zero — this keeps a small leveraged chip kicker if semis recover, but limits the drag and caps leveraged exposure well under the 5% balanced ceiling.",
+        "Trim SMH from 13% to 9% — semiconductors sector drops from 19% to roughly 12% of book, meaningfully reducing concentration while keeping direct chip exposure.",
+        "Add QQQI to 20% — the income layer moderates month-to-month swings and partially offsets margin cost, fitting the risk-first growth posture.",
+        "Open PANW at the scanner entry zone (351.34-351.69) with a hard stop at 350.62 as instructed — the 9/12 ACCUMULATE score and R of 6.01 make it the strongest setup in your data.",
+        "TSM is a Watch at 443.34-443.79 stop 442.47 — adds semiconductor quality without triple-leverage decay; only enter if the entry triggers and total book leverage stays under 1.1x after the add."
+      ],
+      "read": "This balanced reshaping targets something in the 2-3% monthly range in favorable tape conditions, with the PANW add and retained CRWD providing growth while the income layer and broad indexes dampen swings. Your bad-month scenario improves modestly from the current -17.91% but you still run margin and meaningful tech concentration, so a sharp chip or broad-tech sell-off remains the key risk to watch."
     },
-    {
-      "sym": "SMH",
-      "action": "Trim",
-      "targetPct": 7,
-      "note": "Halve semi concentration, free margin…"
-    },
-    {
-      "sym": "PANW",
-      "action": "Buy",
-      "targetPct": 5,
-      "note": "Top scanner score 9/12, R 6.01, cyber…"
-    },
-    {
-      "sym": "ARM",
-      "action": "Watch",
-      "targetPct": 4,
-      "note": "Best R/R 9.46, only enter if price…"
-    },
-    {
-      "sym": "TSM",
-      "action": "Watch",
-      "targetPct": 3,
-      "note": "Chip exposure via fundamentals, wait…"
+    "aggressive": {
+      "moves": [
+        {
+          "sym": "SOXL",
+          "action": "Add",
+          "targetPct": 10,
+          "note": "Lean into 3x chips if thesis intact"
+        },
+        {
+          "sym": "SPAL",
+          "action": "Hold",
+          "targetPct": 2,
+          "note": "Tiny space kicker, keep with strict…"
+        },
+        {
+          "sym": "SMH",
+          "action": "Add",
+          "targetPct": 16,
+          "note": "Increase chip sector on scanner…"
+        },
+        {
+          "sym": "CRWD",
+          "action": "Add",
+          "targetPct": 15,
+          "note": "Best performer in book, +7.4% momentum"
+        },
+        {
+          "sym": "ARM",
+          "action": "Buy",
+          "targetPct": 5,
+          "note": "ACCUMULATE 7/12, R 9.46, highest…"
+        },
+        {
+          "sym": "PANW",
+          "action": "Buy",
+          "targetPct": 5,
+          "note": "ACCUMULATE 9/12, top scanner…"
+        },
+        {
+          "sym": "QQQ",
+          "action": "Trim",
+          "targetPct": 10,
+          "note": "Redeploy into higher-conviction names"
+        }
+      ],
+      "plan": [
+        "Double SOXL from 6% to 10% — this is the aggressive chip bet; the 3x structure means a 5% SMH rally translates to roughly 15% on this sleeve, but a 5% SMH drop hits you roughly -15% on the same position, so a pre-set stop is non-negotiable.",
+        "Add to SMH from 13% to 16% to pair the leveraged chip exposure with a direct, non-decaying semiconductor position — combined chip complex becomes roughly 26% of book.",
+        "Add CRWD to 15% — it is already up +7.4% and is the only position in your current book showing clear positive momentum; this leans into what is working.",
+        "Open ARM at scanner entry 336.80-337.13 with hard stop at 336.18 — the R of 9.46 is the highest available in your data and the ACCUMULATE 7/12 score supports it; position at 5% keeps it sized but meaningful.",
+        "Open PANW at scanner entry 351.34-351.69 stop 350.62 — ACCUMULATE 9/12 is the strongest conviction signal in your dataset; paired with ARM this gives two quality AI/software longs alongside the chip complex.",
+        "Trim QQQ to 10% to fund the above adds without blowing through cash buffer — SPY at 30% keeps broad index coverage so cutting QQQ is the cleanest source of capital here."
+      ],
+      "read": "This plan meaningfully raises true leverage above the current 1.14x and pushes the semiconductor-plus-leveraged-ETF complex to roughly 26% of book, which could target 4%+ monthly return if chips and AI names continue rallying — but your 2-sigma bad-month drawdown likely grows well beyond the current -17.91%, and SOXL's daily rebalancing decay erodes value steadily in choppy or sideways markets regardless of direction."
     }
-  ],
-  "plan": [
-    "First priority is risk reduction: sell SOXL and SPAL immediately — both are leveraged, deeply negative, and together represent 8% of the book bleeding daily, and removing them alone cuts your worst-case drawdown meaningfully.",
-    "Trim SMH from 13% to 7% to reduce raw semiconductor concentration, which is currently doubling up with SOXL and CRWD in the same sector theme; the freed capital rebuilds a cash buffer rather than being immediately redeployed.",
-    "With the book cleaner, initiate PANW at 5% only within the scanner's entry range (351.34–351.69) with the hard stop at 350.62 — it carries the highest scanner conviction (9/12), a strong R of 6.01, and adds cybersecurity diversification away from pure chip/semi exposure.",
-    "Place ARM and TSM on conditional watch only — ARM has the best R/R on the board (9.46) but is a higher-priced volatile name, so size it at 4% and only act if price triggers the entry range; TSM at 3% adds quality semi exposure without leverage.",
-    "After all moves: total adds (12% gross) are funded by total trims/sells (14% freed), keeping net leverage flat-to-lower and leaving a small cash buffer to absorb intraday slippage or a gap-down open."
-  ],
-  "read": "A consistent 2.5%/month (~34% annualized) is an aggressive target for any retail book, and this one carries real structural headwinds toward it right now: two leveraged losers (SOXL, SPAL) are actively dragging the average while concentration in a single volatile sector means one bad macro print on chips can erase several good months in days."
+  }
 }
