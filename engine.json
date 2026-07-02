@@ -1,7 +1,7 @@
 {
-  "ts": "7/2/2026, 12:03:18 AM (Claude)",
-  "epoch": 1782964998667,
-  "v": 2,
+  "ts": "7/2/2026, 12:22:24 AM (Claude)",
+  "epoch": 1782966144871,
+  "v": 3,
   "target": 2.5,
   "xray": {
     "gross": 186103.56531,
@@ -110,13 +110,77 @@
     "moVolPct": 8.95,
     "moSharpe": 0.28
   },
-  "plan": [
-    "CUT SOXL first: trim SOXL (currently 6%) to 3% of book — a single bad month already showed -14.52% and 3x leverage amplifies every semiconductor down-move; place a hard stop at the current session low and do not add back until SMH stabilizes above its own entry zone.",
-    "TRIM SPAL to zero or 1%: at -13.72% on a 2x leveraged space name with only 2% weight it contributes noise and tail-risk disproportionate to its size; proceeds go to cash, not a new position.",
-    "ADD PANW as a new position, 4% of book: enter 351.34–351.69, hard stop 350.62 (risk ~0.3% of book at 4% size), targets 358.09 / 359.29 / 360.67 — scanner rates it ACCUMULATE 9/12, highest conviction on the list, and it diversifies you away from pure semiconductor risk into cybersecurity/AI software.",
-    "WATCH ARM for a 3% of book add only if price holds 336.80 on a pullback: stop 336.18 (risk ~0.1% of book at 3% size), targets 346.15 / 356.29 — R 9.46 is the best reward-to-risk on the list, but ARM is volatile so size is deliberately small; do NOT chase above 337.13.",
-    "HOLD SPY, QQQ, QQQI and CRWD with no change: all four are either positive on the month or flagged clear by the exit scanner — CRWD at +7.4% is your best performer and earns its 12% weight; tighten mental stops on QQQ and SPY to roughly -3% from current price to protect the broad-index core that anchors the book.",
-    "KEEP a minimum 5% cash buffer after any new adds: with true leverage at 1.14x on margin, cash is your circuit-breaker — it lets you meet a margin call without force-selling winners, and a 2-sigma month is already modeled at -17.91% of equity which exceeds your stop-loss buffer of 9.53%."
+  "moves": [
+    {
+      "sym": "SOXL",
+      "action": "Sell",
+      "targetPct": 0,
+      "deltaShares": -50,
+      "deltaUsd": -10877,
+      "curShares": 50,
+      "note": "3x semi leverage amplifies downside most"
+    },
+    {
+      "sym": "SPAL",
+      "action": "Sell",
+      "targetPct": 0,
+      "deltaShares": -200,
+      "deltaUsd": -4340,
+      "curShares": 200,
+      "note": "2x space, small size, worst drawdown ratio"
+    },
+    {
+      "sym": "SMH",
+      "action": "Trim",
+      "targetPct": 7,
+      "deltaShares": -19,
+      "deltaUsd": -11791,
+      "curShares": 40,
+      "note": "Cut semi concentration, free margin safely"
+    },
+    {
+      "sym": "PANW",
+      "action": "Buy",
+      "targetPct": 5,
+      "deltaShares": 26,
+      "deltaUsd": 9305,
+      "curShares": 0,
+      "note": "Top scanner score, tight stop, cyber diversifies"
+    },
+    {
+      "sym": "ARM",
+      "action": "Watch",
+      "targetPct": 4,
+      "deltaShares": 22,
+      "deltaUsd": 7444,
+      "curShares": 0,
+      "note": "Best R ratio, only enter on confirmed trigger"
+    },
+    {
+      "sym": "TSM",
+      "action": "Buy",
+      "targetPct": 4,
+      "deltaShares": 17,
+      "deltaUsd": 7444,
+      "curShares": 0,
+      "note": "Semi exposure via fundamentals not leverage"
+    },
+    {
+      "sym": "QQQI",
+      "action": "Trim",
+      "targetPct": 12,
+      "deltaShares": -213,
+      "deltaUsd": -11968,
+      "curShares": 610.44,
+      "note": "Income drag, trim to fund higher-conviction adds"
+    }
   ],
-  "read": "A 2.5%/month target (~30% annualized) is at the outer edge of what this book's risk profile can sustain consistently — it is not impossible in strong trending months (CRWD's +7.4% shows the upside exists), but the -14.52% on SOXL and -13.72% on SPAL this month illustrate how two small leveraged positions can erase several months of gains before the rest of the book moves."
+  "plan": [
+    "RISK FIRST: Exit SOXL and SPAL immediately — together they represent 8% of book but carry the worst loss-to-size ratios on the sheet, and 3x/2x levered names in a margin account stack risk on top of risk you already carry.",
+    "Trim SMH from 13% to 7% and QQQI from 18% to 12% — this frees roughly 12 points of book, reduces your semiconductor concentration from 19% toward ~12%, and lowers the true leverage closer to ~1.05x, pulling the bad-month estimate down meaningfully.",
+    "Deploy proceeds in two steps: initiate PANW at ~5% of book (highest scanner conviction at 9/12, entry 351.34–351.69, hard stop 350.62) and TSM at ~4% (semi exposure backed by fundamentals rather than a leverage wrapper, entry 443.34–443.79, stop 442.47).",
+    "Place ARM on conditional Watch at 4% — the R of 9.46 is the best on the sheet, but the score is 7/12 and the entry range is wide, so only add if price confirms inside 336.80–337.13 with your standard trigger discipline.",
+    "After all moves, total adds (~9%) are covered by total trims + exits (~14%), leaving a small cash/margin buffer — this keeps you from adding gross exposure before you have cut the riskiest names."
+  ],
+  "read": "A 2.5%/month target on a book that is ~90% tech/chip-concentrated on margin is possible in strong trending months but the math works against consistency — your own data shows a bad month can erase three or four winning months in a single drawdown of ~18%, and levered ETFs like SOXL structurally decay over time."
 }
