@@ -1,7 +1,7 @@
 {
-  "ts": "7/2/2026, 12:22:24 AM (Claude)",
-  "epoch": 1782966144871,
-  "v": 3,
+  "ts": "7/2/2026, 12:40:19 AM (Claude)",
+  "epoch": 1782967219176,
+  "v": 4,
   "target": 2.5,
   "xray": {
     "gross": 186103.56531,
@@ -110,6 +110,13 @@
     "moVolPct": 8.95,
     "moSharpe": 0.28
   },
+  "proj": {
+    "baseAnnual": 10,
+    "baseMonthly": 0.8,
+    "annualVol": 31.02,
+    "goodYr": 41,
+    "badYr": -21
+  },
   "moves": [
     {
       "sym": "SOXL",
@@ -118,7 +125,7 @@
       "deltaShares": -50,
       "deltaUsd": -10877,
       "curShares": 50,
-      "note": "3x semi leverage amplifies downside most"
+      "note": "3x semi ETF; worst performer, cuts tail risk"
     },
     {
       "sym": "SPAL",
@@ -127,7 +134,7 @@
       "deltaShares": -200,
       "deltaUsd": -4340,
       "curShares": 200,
-      "note": "2x space, small size, worst drawdown ratio"
+      "note": "2x levered, small size, -13.72% drag"
     },
     {
       "sym": "SMH",
@@ -136,7 +143,7 @@
       "deltaShares": -19,
       "deltaUsd": -11791,
       "curShares": 40,
-      "note": "Cut semi concentration, free margin safely"
+      "note": "Semi overweight; reduces concentration risk"
     },
     {
       "sym": "PANW",
@@ -145,7 +152,7 @@
       "deltaShares": 26,
       "deltaUsd": 9305,
       "curShares": 0,
-      "note": "Top scanner score, tight stop, cyber diversifies"
+      "note": "Top scanner score, strong R/R 6.01"
     },
     {
       "sym": "ARM",
@@ -154,7 +161,7 @@
       "deltaShares": 22,
       "deltaUsd": 7444,
       "curShares": 0,
-      "note": "Best R ratio, only enter on confirmed trigger"
+      "note": "Best R/R 9.46, only if entry triggers"
     },
     {
       "sym": "TSM",
@@ -163,24 +170,25 @@
       "deltaShares": 17,
       "deltaUsd": 7444,
       "curShares": 0,
-      "note": "Semi exposure via fundamentals not leverage"
+      "note": "Semi exposure via quality, not leverage"
     },
     {
-      "sym": "QQQI",
-      "action": "Trim",
-      "targetPct": 12,
-      "deltaShares": -213,
-      "deltaUsd": -11968,
-      "curShares": 610.44,
-      "note": "Income drag, trim to fund higher-conviction adds"
+      "sym": "CRM",
+      "action": "Watch",
+      "targetPct": 3,
+      "deltaShares": 34,
+      "deltaUsd": 5583,
+      "curShares": 0,
+      "note": "Diversifies away from pure chip concentration"
     }
   ],
   "plan": [
-    "RISK FIRST: Exit SOXL and SPAL immediately — together they represent 8% of book but carry the worst loss-to-size ratios on the sheet, and 3x/2x levered names in a margin account stack risk on top of risk you already carry.",
-    "Trim SMH from 13% to 7% and QQQI from 18% to 12% — this frees roughly 12 points of book, reduces your semiconductor concentration from 19% toward ~12%, and lowers the true leverage closer to ~1.05x, pulling the bad-month estimate down meaningfully.",
-    "Deploy proceeds in two steps: initiate PANW at ~5% of book (highest scanner conviction at 9/12, entry 351.34–351.69, hard stop 350.62) and TSM at ~4% (semi exposure backed by fundamentals rather than a leverage wrapper, entry 443.34–443.79, stop 442.47).",
-    "Place ARM on conditional Watch at 4% — the R of 9.46 is the best on the sheet, but the score is 7/12 and the entry range is wide, so only add if price confirms inside 336.80–337.13 with your standard trigger discipline.",
-    "After all moves, total adds (~9%) are covered by total trims + exits (~14%), leaving a small cash/margin buffer — this keeps you from adding gross exposure before you have cut the riskiest names."
+    "RISK FIRST: Exit SOXL and SPAL immediately — together they represent 8% of the book, are down hard (-14.5% and -13.7%), and both use leverage; removing them lowers your worst-case 2-sigma month from -17.91% and cuts true leverage closer to 1.0x.",
+    "Trim SMH from 13% to 7% — semiconductors are already in SPY, QQQ, and the new TSM/ARM ideas, so 13% dedicated semi exposure is redundant concentration that amplifies chip-cycle drawdowns.",
+    "Use the freed capital (~14% of book) to fund new entries: Buy PANW up to 5% at the scanner entry zone (351.34–351.69, hard stop 350.62) — it has the highest conviction score (9/12) and a clean R/R of 6.01.",
+    "Buy TSM up to 4% — this replaces levered SMH with a direct, unlevered best-in-class semiconductor name that diversifies away from US-only ETF overlap.",
+    "Set conditional Watch orders for ARM (4%) and CRM (3%) only if price trades into the scanner entry ranges — ARM's R/R of 9.46 is exceptional but do NOT chase; CRM adds software diversification away from chips.",
+    "After all moves: total adds (~12%) are funded by total trims/sells (~14%), keeping a small cash buffer, true leverage stays near or below 1.0x, and your worst-case single-month loss shrinks meaningfully before you add any new risk."
   ],
-  "read": "A 2.5%/month target on a book that is ~90% tech/chip-concentrated on margin is possible in strong trending months but the math works against consistency — your own data shows a bad month can erase three or four winning months in a single drawdown of ~18%, and levered ETFs like SOXL structurally decay over time."
+  "read": "A consistent 2.5%/month (~34% annualized) is at the aggressive end of realistic for a retail margin book — it is achievable in strong trending months but this portfolio's current -17.91% two-sigma downside means one bad month can erase 7+ months of gains, which mathematically breaks the consistency needed to compound toward that target."
 }
