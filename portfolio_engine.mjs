@@ -9,7 +9,7 @@ import { dirname, join } from 'node:path';
 const dir = dirname(fileURLToPath(import.meta.url));
 const now = Date.now();
 const GATE_MS = 28 * 60 * 1000;
-const V = 3;                                   // engine prompt/schema version (bump to force one regen)
+const V = 4;                                   // engine prompt/schema version (bump to force one regen)
 const TARGET = +(process.env.TARGET_MONTHLY || 2.5);   // realistic monthly return target, %
 const read = f => { try { return JSON.parse(readFileSync(join(dir, f), 'utf8')); } catch { return null; } };
 const r2 = n => Math.round(n * 100) / 100;
@@ -67,6 +67,11 @@ const allStopsLoss = rows.reduce((s, x) => s + (x.price > x.stop ? x.value * (x.
 // ---- Goal -> reality ----
 const annual = (Math.pow(1 + TARGET / 100, 12) - 1) * 100;
 const moSharpe = (TARGET / 100) / (portMoVol || 0.001);               // return/vol per month (elite is ~>0.3-0.5)
+
+// ---- Projected return (INFORMATION ONLY): a long-run market-return assumption + the book's own volatility ----
+const BASE_ANNUAL = +(process.env.BASE_ANNUAL || 10);                 // modeling assumption for expected market return, %/yr
+const annualVolPct = portMoVol * Math.sqrt(12) * 100;
+const proj = { baseAnnual: BASE_ANNUAL, baseMonthly: r2((Math.pow(1 + BASE_ANNUAL / 100, 1 / 12) - 1) * 100), annualVol: r2(annualVolPct), goodYr: Math.round(BASE_ANNUAL + annualVolPct), badYr: Math.round(BASE_ANNUAL - annualVolPct) };
 
 const X = {
   target: TARGET,
@@ -165,6 +170,6 @@ const moves = (out.moves || []).slice(0, 8).map(m => {
   const deltaSh = price ? Math.round(deltaVal / price) : 0;
   return { sym, action: String(m.action || '').replace(/[^A-Za-z]/g, '').slice(0, 6) || 'Adj', targetPct: r2(tPct), deltaShares: deltaSh, deltaUsd: Math.round(deltaVal), curShares: r2(cur.shares), note: trimSent(String(m.note || ''), 48) };
 }).filter(m => m.sym && (Math.abs(m.deltaShares) >= 1 || /watch/i.test(m.action)));
-writeFileSync(join(dir, 'engine.json'), JSON.stringify({ ts: new Date(now).toLocaleString('en-US', { timeZone: 'America/New_York' }) + ' (' + src + ')', epoch: now, v: V, target: TARGET, xray: X.xray, risk: X.risk, goal: X.goal, moves, plan, read: trimSent(out.read || '', 480) }, null, 2));
+writeFileSync(join(dir, 'engine.json'), JSON.stringify({ ts: new Date(now).toLocaleString('en-US', { timeZone: 'America/New_York' }) + ' (' + src + ')', epoch: now, v: V, target: TARGET, xray: X.xray, risk: X.risk, goal: X.goal, proj, moves, plan, read: trimSent(out.read || '', 480) }, null, 2));
 console.error(`engine written: ${moves.length} moves, ${plan.length} steps via ${src}`);
 
