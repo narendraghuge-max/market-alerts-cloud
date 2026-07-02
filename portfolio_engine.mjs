@@ -9,7 +9,7 @@ import { dirname, join } from 'node:path';
 const dir = dirname(fileURLToPath(import.meta.url));
 const now = Date.now();
 const GATE_MS = 28 * 60 * 1000;
-const V = 7;                                   // engine prompt/schema version (bump to force one regen)
+const V = 8;                                   // engine prompt/schema version (bump to force one regen)
 const TARGET = +(process.env.TARGET_MONTHLY || 2.5);   // realistic monthly return target, %
 const read = f => { try { return JSON.parse(readFileSync(join(dir, f), 'utf8')); } catch { return null; } };
 const r2 = n => Math.round(n * 100) / 100;
@@ -23,7 +23,7 @@ const exits = read('exits.json');
 const scan = read('scan.json');
 const holdings = (exits?.results || []).filter(h => h.price > 0 && h.shares > 0);
 if (!holdings.length) { console.error('no holdings data - skipping engine'); process.exit(0); }
-const meta = (read('portfolio.json') || {})._meta || {};    // {equity, marginUsed, totalValue} if captured
+const meta = exits?.meta || (read('portfolio.json') || {})._meta || {};    // real {equity, marginUsed, totalValue} — from HOLDINGS_JSON _meta (cloud) or local portfolio.json
 
 // ---- sector + leverage helpers ----
 const SEMI = ['NVDA','AVGO','AMD','TSM','MU','AMAT','LRCX','KLAC','SMCI','SMH','ARM','MRVL','ASML','TXN','QCOM','ADI','ON','MCHP','CRDO','ALAB','SOXL','SOXS','NVDU','NVDD'];

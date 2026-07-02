@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path';
 const __dir = dirname(fileURLToPath(import.meta.url));
 
 const HOLDINGS = process.env.HOLDINGS_JSON
-  ? Object.keys(JSON.parse(process.env.HOLDINGS_JSON))
+  ? Object.keys(JSON.parse(process.env.HOLDINGS_JSON)).filter(s => !s.startsWith('_'))
   : ['AAPL', 'MSFT', 'NVDA', 'SPY', 'QQQ']; // example fallback; real list comes from the HOLDINGS_JSON secret
 const THRESH = 4; // percent
 

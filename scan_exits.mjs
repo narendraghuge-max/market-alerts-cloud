@@ -26,6 +26,9 @@ if (process.env.HOLDINGS_JSON) {
   try { HOLDINGS = JSON.parse(process.env.HOLDINGS_JSON); }
   catch (e) { console.error('Bad HOLDINGS_JSON, using default:', e.message); }
 }
+// account meta (equity/marginUsed/totalValue) travels under a "_meta" key; pull it out and keep HOLDINGS a clean ticker map
+export const HOLDINGS_META = HOLDINGS._meta || null;
+for (const k of Object.keys(HOLDINGS)) if (k.startsWith('_')) delete HOLDINGS[k];
 
 const asJson = process.argv.includes('--json');
 
@@ -235,7 +238,7 @@ const RANK = { SELL: 3, TRIM: 2, WATCH: 1, HOLD: 0, NEW: 0 };
 
 async function main() {
   const results = [];
-  for (const [sym, cfg] of Object.entries(HOLDINGS)) { results.push(await one(sym, cfg)); await new Promise(r => setTimeout(r, 120)); }
+  for (const [sym, cfg] of Object.entries(HOLDINGS).filter(([s]) => !s.startsWith('_'))) { results.push(await one(sym, cfg)); await new Promise(r => setTimeout(r, 120)); }
   const ok = results.filter(r => !r.error).sort((a, b) => RANK[b.status] - RANK[a.status]);
   const errs = results.filter(r => r.error);
 
@@ -250,7 +253,7 @@ async function main() {
   const alertWorthy = firstRun ? sells.length > 0 : newlyFlagged.length > 0;
   try { writeFileSync(stateFile, JSON.stringify({ flagged, ts: Date.now() })); } catch (e) {}
 
-  if (asJson) { console.log(JSON.stringify({ generated: new Date().toISOString(), results: ok, errors: errs, alertWorthy }, null, 2)); return; }
+  if (asJson) { console.log(JSON.stringify({ generated: new Date().toISOString(), meta: HOLDINGS_META, results: ok, errors: errs, alertWorthy }, null, 2)); return; }
 
   console.log('ALERT: ' + (alertWorthy ? 'yes' : 'no'));
   if (newlyFlagged.length) console.log('CHANGES: newly flagged -> ' + newlyFlagged.join(', '));
