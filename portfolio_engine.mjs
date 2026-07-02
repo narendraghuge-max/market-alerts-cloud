@@ -9,7 +9,7 @@ import { dirname, join } from 'node:path';
 const dir = dirname(fileURLToPath(import.meta.url));
 const now = Date.now();
 const GATE_MS = 28 * 60 * 1000;
-const V = 4;                                   // engine prompt/schema version (bump to force one regen)
+const V = 5;                                   // engine prompt/schema version (bump to force one regen)
 const TARGET = +(process.env.TARGET_MONTHLY || 2.5);   // realistic monthly return target, %
 const read = f => { try { return JSON.parse(readFileSync(join(dir, f), 'utf8')); } catch { return null; } };
 const r2 = n => Math.round(n * 100) / 100;
@@ -160,7 +160,8 @@ if (!out) out = fallback();
 const plan = (out.plan || []).slice(0, 6).map(p => trimSent(String(p).replace(/^\s*\d+[.):]\s*/, ''), 340)).filter(Boolean);   // strip any leading "1." the model adds (the <ol> numbers it)
 // ---- concrete share + $ sizing per move (target weight -> shares to buy/sell + dollar amount) ----
 const hMap = {}; holdings.forEach(h => hMap[h.sym] = { shares: h.shares, price: h.price, value: h.shares * h.price });
-const sPrice = {}; (scan?.results || []).forEach(s => { if (s.price > 0) sPrice[s.symbol] = s.price; });
+const sPrice = {}, scanLvl = {}; (scan?.results || []).forEach(s => { if (s.price > 0) sPrice[s.symbol] = s.price; if (s.levels) scanLvl[s.symbol] = s.levels; });
+const holdLvl = {}; holdings.forEach(h => holdLvl[h.sym] = { price: h.price, stop: h.stop, tps: [h.tp1, h.tp2, h.tp3].filter(v => v != null) });
 const moves = (out.moves || []).slice(0, 8).map(m => {
   const sym = String(m.sym || '').toUpperCase();
   const cur = hMap[sym] || { shares: 0, value: 0, price: sPrice[sym] || 0 };
@@ -168,7 +169,11 @@ const moves = (out.moves || []).slice(0, 8).map(m => {
   const tPct = Math.max(0, +m.targetPct || 0);
   const deltaVal = (tPct / 100 * gross) - cur.value;
   const deltaSh = price ? Math.round(deltaVal / price) : 0;
-  return { sym, action: String(m.action || '').replace(/[^A-Za-z]/g, '').slice(0, 6) || 'Adj', targetPct: r2(tPct), deltaShares: deltaSh, deltaUsd: Math.round(deltaVal), curShares: r2(cur.shares), note: trimSent(String(m.note || ''), 48) };
+  const buying = /add|buy|watch/i.test(m.action), sl = scanLvl[sym], hl = holdLvl[sym];
+  const at = buying ? (sl?.entry1 ?? hl?.price ?? price) : (hl?.price ?? price);
+  const stop = buying ? (sl?.stop ?? hl?.stop ?? null) : (hl?.stop ?? null);
+  const tps = buying ? (sl ? [sl.tp1, sl.tp2, sl.tp3].filter(v => v != null) : (hl?.tps || [])) : [];
+  return { sym, action: String(m.action || '').replace(/[^A-Za-z]/g, '').slice(0, 6) || 'Adj', targetPct: r2(tPct), deltaShares: deltaSh, deltaUsd: Math.round(deltaVal), curShares: r2(cur.shares), at: at ? r2(at) : null, stop: stop != null ? r2(stop) : null, tps: tps.slice(0, 3).map(r2), note: trimSent(String(m.note || ''), 38) };
 }).filter(m => m.sym && (Math.abs(m.deltaShares) >= 1 || /watch/i.test(m.action)));
 writeFileSync(join(dir, 'engine.json'), JSON.stringify({ ts: new Date(now).toLocaleString('en-US', { timeZone: 'America/New_York' }) + ' (' + src + ')', epoch: now, v: V, target: TARGET, xray: X.xray, risk: X.risk, goal: X.goal, proj, moves, plan, read: trimSent(out.read || '', 480) }, null, 2));
 console.error(`engine written: ${moves.length} moves, ${plan.length} steps via ${src}`);
