@@ -1,57 +1,63 @@
 {
-  "aiTs": "7/2/2026, 11:01:40 AM (Gemini)",
-  "aiEpoch": 1783004500729,
+  "aiTs": "7/2/2026, 11:31:30 AM (Gemini)",
+  "aiEpoch": 1783006290590,
   "v": 7,
   "src": "Gemini",
   "modes": {
     "conservative": {
       "moves": [
         {
-          "sym": "SOXL",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Exit leveraged ETF"
-        },
-        {
           "sym": "CRWD",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit flagged position"
+          "note": "Exit flagged underperformer, high loss"
+        },
+        {
+          "sym": "SOXL",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Exit all leveraged ETFs"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit leveraged ETF"
+          "note": "Exit all leveraged ETFs"
         },
         {
           "sym": "SMH",
           "action": "Trim",
-          "targetPct": 8,
-          "note": "Reduce semiconductor concentration"
-        },
-        {
-          "sym": "SPY",
-          "action": "Add",
-          "targetPct": 45,
-          "note": "Increase broad index exposure"
+          "targetPct": 5,
+          "note": "Reduce sector concentration"
         },
         {
           "sym": "QQQI",
           "action": "Add",
-          "targetPct": 25,
-          "note": "Increase income exposure"
+          "targetPct": 30,
+          "note": "Increase income, lower volatility"
+        },
+        {
+          "sym": "XLV",
+          "action": "Buy",
+          "targetPct": 10,
+          "note": "Diversify into healthcare, lower beta"
+        },
+        {
+          "sym": "CASH",
+          "action": "Add",
+          "targetPct": 15,
+          "note": "Build cash buffer"
         }
       ],
       "plan": [
-        "Sell all SOXL, CRWD, and SPAL to eliminate leveraged ETFs and flagged holdings.",
-        "Trim SMH to reduce semiconductor concentration.",
-        "Increase SPY and QQQI to favor broad index and income.",
-        "Maintain a strong cash buffer for capital preservation.",
-        "Focus on low-drawdown, high-quality names.",
-        "Keep single name and sector concentrations within limits."
+        "Sell CRWD and all leveraged ETFs like SOXL and SPAL to eliminate high-risk positions and comply with capital preservation goals.",
+        "Trim SMH to reduce semiconductor concentration and rebalance the portfolio.",
+        "Increase QQQI to boost income generation and lower overall portfolio volatility.",
+        "Buy XLV to diversify into the healthcare sector, which typically has lower beta.",
+        "Increase cash holdings to 15% for a substantial buffer against market downturns.",
+        "Focus on broad index and income ETFs for stability and steady, low-drawdown performance."
       ],
-      "read": "This conservative plan aims for capital preservation, targeting around 1.5% per month. It significantly reduces risk by exiting leveraged positions and high-volatility names. Expect lower potential returns but also much smaller drawdowns."
+      "read": "This conservative plan aims for capital preservation, targeting a potential ~1.5% monthly return. It significantly reduces risk by cutting leveraged ETFs and high-loss single names. Expect lower volatility, but also limited upside potential."
     },
     "balanced": {
       "moves": [
@@ -59,100 +65,118 @@
           "sym": "CRWD",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit flagged position"
+          "note": "Exit flagged underperformer"
         },
         {
           "sym": "SOXL",
           "action": "Trim",
           "targetPct": 3,
-          "note": "Reduce leveraged ETF exposure"
+          "note": "Reduce leveraged exposure"
         },
         {
           "sym": "SPAL",
           "action": "Trim",
           "targetPct": 1,
-          "note": "Reduce leveraged ETF exposure"
+          "note": "Reduce leveraged exposure"
         },
         {
           "sym": "SMH",
           "action": "Trim",
           "targetPct": 10,
-          "note": "Reduce semiconductor concentration"
+          "note": "Reduce sector concentration"
         },
         {
-          "sym": "SPY",
-          "action": "Add",
-          "targetPct": 40,
-          "note": "Increase broad index exposure"
+          "sym": "PANW",
+          "action": "Buy",
+          "targetPct": 8,
+          "note": "Add high-R/R tech setup"
         },
         {
-          "sym": "QQQ",
+          "sym": "ALAB",
+          "action": "Buy",
+          "targetPct": 5,
+          "note": "Add strong tech setup"
+        },
+        {
+          "sym": "CASH",
           "action": "Add",
-          "targetPct": 22,
-          "note": "Increase broad index exposure"
+          "targetPct": 10,
+          "note": "Maintain cash buffer"
         }
       ],
       "plan": [
-        "Sell CRWD to exit the flagged position.",
-        "Trim SOXL and SPAL to keep leveraged exposure small.",
-        "Reduce SMH to lower semiconductor concentration.",
-        "Increase SPY and QQQ for a stronger broad index core.",
-        "Maintain a moderate cash buffer around 10%.",
-        "Blend broad index, quality tech, and small leverage."
+        "Sell CRWD to remove a significant underperformer from the portfolio.",
+        "Trim SOXL and SPAL to reduce overall leveraged exposure while keeping a small allocation.",
+        "Reduce SMH to decrease semiconductor concentration and diversify the portfolio.",
+        "Buy PANW and ALAB to add high-quality tech names with strong risk/reward setups from the scanner.",
+        "Maintain a 10% cash buffer to provide flexibility and manage risk.",
+        "This strategy blends broad index exposure with quality tech and a small amount of leverage for growth."
       ],
-      "read": "This balanced plan focuses on risk-first growth, aiming for approximately 2.5% per month. It trims leverage and concentration while building a solid core of broad index funds. Expect moderate returns with manageable drawdowns."
+      "read": "This balanced plan focuses on risk-first growth, aiming for a potential ~2.5% monthly return. It reduces leverage and concentration while adding quality tech names. Expect moderate volatility and a blend of growth and stability."
     },
     "aggressive": {
       "moves": [
         {
           "sym": "CRWD",
-          "action": "Buy",
-          "targetPct": 8,
-          "note": "Add based on scanner setup"
+          "action": "Trim",
+          "targetPct": 1,
+          "note": "Reduce loss, keep small exposure"
         },
         {
           "sym": "SOXL",
           "action": "Add",
           "targetPct": 10,
-          "note": "Increase leveraged ETF"
+          "note": "Increase leveraged semiconductor…"
         },
         {
-          "sym": "SMH",
-          "action": "Trim",
-          "targetPct": 8,
-          "note": "Shift to leveraged exposure"
+          "sym": "PANW",
+          "action": "Buy",
+          "targetPct": 12,
+          "note": "Concentrate in top R/R setup"
         },
         {
-          "sym": "SPAL",
-          "action": "Add",
-          "targetPct": 5,
-          "note": "Increase leveraged ETF"
+          "sym": "ALAB",
+          "action": "Buy",
+          "targetPct": 10,
+          "note": "Concentrate in strong R/R setup"
         },
         {
-          "sym": "TQQQ",
+          "sym": "RDDT",
           "action": "Buy",
           "targetPct": 7,
-          "note": "Add new leveraged ETF"
+          "note": "Add high R/R setup"
         },
         {
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Reduce broad index for growth"
+          "note": "Reduce broad index for high conviction"
+        },
+        {
+          "sym": "CASH",
+          "action": "Trim",
+          "targetPct": 5,
+          "note": "Reduce cash buffer"
         }
       ],
       "plan": [
-        "Buy CRWD based on the scanner's high-R setup.",
-        "Increase SOXL and SPAL to lean into leveraged ETFs.",
-        "Add TQQQ as a new leveraged ETF position.",
-        "Trim SMH and SPY to fund higher-conviction, higher-beta plays.",
-        "Concentrate in high-scoring scanner setups for aggressive growth.",
-        "Maintain a small cash buffer, using wider but strict stops."
+        "Trim CRWD to reduce the impact of its significant loss while maintaining a small speculative position.",
+        "Increase SOXL to lean into leveraged semiconductor exposure, aligning with aggressive growth.",
+        "Buy PANW, ALAB, and RDDT, concentrating in these high-scoring scanner setups for maximum growth potential.",
+        "Trim SPY to free up capital for higher-conviction, concentrated positions.",
+        "Reduce the cash buffer to 5% to maximize capital deployment into growth opportunities.",
+        "This strategy embraces higher leverage and concentration for aggressive growth, accepting higher risk."
       ],
-      "read": "This aggressive plan targets stretch growth, aiming for around 4% per month. It significantly increases exposure to leveraged ETFs and concentrated high-beta scanner setups. Be aware that this mode carries substantially higher drawdown risk and leveraged ETFs experience daily decay, requiring strict stop discipline to manage potential rapid losses."
+      "read": "This aggressive plan targets stretch growth, aiming for a potential ~4% monthly return. It significantly increases leverage and concentration in high-conviction setups. Be aware that this approach carries substantially higher risk, including larger potential drawdowns and the daily decay/rebalancing effects of leveraged ETFs. Strict stop discipline is critical."
     },
     "income": {
       "moves": [
+        {
+          "sym": "CRWD",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Exit high-beta, high-loss name"
+        },
         {
           "sym": "SOXL",
           "action": "Sell",
@@ -160,12 +184,6 @@
           "note": "Exit all leveraged ETFs"
         },
         {
-          "sym": "CRWD",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Exit high-beta single name"
-        },
-        {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
@@ -173,7 +191,7 @@
         },
         {
           "sym": "SMH",
-          "action": "Sell",
+          "action": "Trim",
           "targetPct": 0,
           "note": "Exit high-beta sector"
         },
@@ -181,24 +199,30 @@
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 40,
-          "note": "Maximize income ETF"
+          "note": "Maximize income generation"
         },
         {
           "sym": "SPY",
           "action": "Add",
-          "targetPct": 45,
+          "targetPct": 40,
           "note": "Increase broad index for stability"
+        },
+        {
+          "sym": "CASH",
+          "action": "Add",
+          "targetPct": 10,
+          "note": "Maintain cash buffer"
         }
       ],
       "plan": [
-        "Sell all SOXL, CRWD, SPAL, and SMH to eliminate leverage and high-beta exposure.",
-        "Maximize QQQI for primary income generation.",
-        "Increase SPY significantly for broad market exposure and stability.",
-        "Prioritize low drawdown and reliable monthly distributions.",
-        "Keep a cash buffer for liquidity.",
-        "Rotate into income/covered-call ETFs."
+        "Sell CRWD, SOXL, SPAL, and SMH to eliminate all high-beta, leveraged, and high-loss positions.",
+        "Significantly increase QQQI holdings to maximize monthly distribution potential.",
+        "Increase SPY to provide broad market exposure and stability alongside income-focused ETFs.",
+        "Maintain a 10% cash buffer for liquidity and to manage market fluctuations.",
+        "This strategy prioritizes steady monthly distributions and low drawdown over growth.",
+        "The goal is to park cash for yield, focusing on reliable income over capital appreciation."
       ],
-      "read": "This income plan aims to park cash for yield, targeting around 1% per month. It focuses on maximizing income and broad index exposure while cutting all leveraged and high-beta positions. While prioritizing low drawdown and distributions, remember that distributions are variable and NAV can still fall in a market selloff."
+      "read": "This income plan aims to park cash for yield, targeting a potential ~1% monthly distribution. It prioritizes low drawdown and reliable income by rotating into income and broad index ETFs. While focused on distributions, NAV can still fall in a selloff, and distributions are variable, not guaranteed."
     }
   }
 }
