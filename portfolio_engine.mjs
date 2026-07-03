@@ -9,7 +9,7 @@ import { dirname, join } from 'node:path';
 const dir = dirname(fileURLToPath(import.meta.url));
 const now = Date.now();
 const GATE_MS = 28 * 60 * 1000;
-const V = 8;                                   // engine prompt/schema version (bump to force one regen)
+const V = 9;                                   // engine prompt/schema version (bump to force one regen)
 const TARGET = +(process.env.TARGET_MONTHLY || 2.5);   // realistic monthly return target, %
 const read = f => { try { return JSON.parse(readFileSync(join(dir, f), 'utf8')); } catch { return null; } };
 const r2 = n => Math.round(n * 100) / 100;
@@ -88,6 +88,13 @@ const modeProj = (betaMult, volMult) => { const ba = r2(BASE_ANNUAL * betaMult),
 const hMap = {}; holdings.forEach(h => hMap[h.sym] = { shares: h.shares, price: h.price, value: h.shares * h.price });
 const sPrice = {}, scanLvl = {}; (scan?.results || []).forEach(s => { if (s.price > 0) sPrice[s.symbol] = s.price; if (s.levels) scanLvl[s.symbol] = s.levels; });
 const holdLvl = {}; holdings.forEach(h => holdLvl[h.sym] = { price: h.price, stop: h.stop, tps: [h.tp1, h.tp2, h.tp3].filter(v => v != null) });
+
+// ---- per-name reads: the SAME analysis the buy-watch (scan) + holdings (exits) show, so moves are grounded + auditable ----
+const scanRead = {}; (scan?.results || []).forEach(s => { if (s.symbol) scanRead[s.symbol] = { dir: s.direction, score: s.score, action: s.action, illiquid: s.illiquid }; });
+const exitRead = {}; holdings.forEach(h => exitRead[h.sym] = { status: h.status, pnlPct: h.pnlPct, price: h.price, stop: h.stop, belowStop: h.stop > 0 && h.price < h.stop });
+// add-to-strength discipline: NEVER add to a name that's below its stop, flagged SELL/TRIM, or reading short/weak
+const addBlock = sym => { const e = exitRead[sym], r = scanRead[sym]; if (e && (e.belowStop || e.status === 'SELL' || e.status === 'TRIM')) return e.belowStop ? 'below stop' : e.status; if (r && r.dir === 'short') return 'downtrend'; if (r && r.score != null && r.score < 5) return 'weak setup ' + r.score + '/12'; return null; };
+const readTag = sym => { const e = exitRead[sym], r = scanRead[sym]; const b = []; if (r?.score != null) b.push(r.score + '/12'); if (r?.dir) b.push(r.dir === 'short' ? 'downtrend' : r.dir === 'long' ? 'uptrend' : 'neutral'); if (e?.belowStop) b.push('below stop'); else if (e?.status && !/HOLD|NEW/.test(e.status)) b.push(String(e.status).toLowerCase()); if (e && e.pnlPct != null) b.push((e.pnlPct >= 0 ? '+' : '') + e.pnlPct + '%'); return b.join(' · '); };
 const sizeMoves = raw => (raw || []).slice(0, 8).map(m => {
   const sym = String(m.sym || '').toUpperCase();
   const cur = hMap[sym] || { shares: 0, value: 0, price: sPrice[sym] || 0 };
@@ -99,7 +106,7 @@ const sizeMoves = raw => (raw || []).slice(0, 8).map(m => {
   const at = buying ? (sl?.entry1 ?? hl?.price ?? price) : (hl?.price ?? price);
   const stop = buying ? (sl?.stop ?? hl?.stop ?? null) : (hl?.stop ?? null);
   const tps = buying ? (sl ? [sl.tp1, sl.tp2, sl.tp3].filter(v => v != null) : (hl?.tps || [])) : [];
-  return { sym, action: String(m.action || '').replace(/[^A-Za-z]/g, '').slice(0, 6) || 'Adj', targetPct: r2(tPct), deltaShares: deltaSh, deltaUsd: Math.round(deltaVal), curShares: r2(cur.shares), at: at ? r2(at) : null, stop: stop != null ? r2(stop) : null, tps: tps.slice(0, 3).map(r2), note: trimSent(String(m.note || ''), 38) };
+  return { sym, action: String(m.action || '').replace(/[^A-Za-z]/g, '').slice(0, 6) || 'Adj', targetPct: r2(tPct), deltaShares: deltaSh, deltaUsd: Math.round(deltaVal), curShares: r2(cur.shares), at: at ? r2(at) : null, stop: stop != null ? r2(stop) : null, tps: tps.slice(0, 3).map(r2), note: trimSent(String(m.note || ''), 38), basis: readTag(sym), warn: buying ? addBlock(sym) : null };
 }).filter(m => m.sym && (Math.abs(m.deltaShares) >= 1 || /watch/i.test(m.action)));
 const cleanRaw = raw => (raw || []).slice(0, 8).map(m => ({ sym: String(m.sym || '').toUpperCase(), action: String(m.action || '').replace(/[^A-Za-z]/g, '').slice(0, 6) || 'Adj', targetPct: r2(Math.max(0, +m.targetPct || 0)), note: trimSent(String(m.note || ''), 38) }));
 const cleanPlan = arr => (arr || []).slice(0, 6).map(p => trimSent(String(p).replace(/^\s*\d+[.):]\s*/, ''), 340)).filter(Boolean);
@@ -125,6 +132,30 @@ const X = {
   goal: { monthly: TARGET, annual: Math.round(annual), moVolPct: r2(portMoVol * 100), moSharpe: r2(moSharpe) },
 };
 
+// ---- INSTITUTIONAL RISK LAYER (deterministic — computed identically every run; the AI only explains it) ----
+// 1) risk contribution: each name's share of portfolio risk (weight x its return-vol) — highly-correlated-book approximation
+const _rd = rows.reduce((s, x) => s + x.w * dstd(x), 0) || 1e-9;
+const contrib = rows.map(x => ({ sym: x.sym, w: Math.round(x.w * 100), riskShare: Math.round(x.w * dstd(x) / _rd * 100), lev: x.lev })).sort((a, b) => b.riskShare - a.riskShare);
+// 2) margin-call distance + stress test (uses marginMaintenance from _meta; else approximates a 29% maintenance rate)
+const maint = +(meta.marginMaintenance || 0);
+const maintRate = maint > 0 && gross > 0 ? maint / gross : 0.29;   // maintenance requirement as % of market value
+const debt = marginUsed;
+const betaOf = x => x.lev * ({ 'Semiconductors': 1.25, 'AI / Software': 1.15, 'Broad index': 1.0, 'Income': 0.55, 'Space': 1.5, 'Other': 1.0 }[x.sector] || 1.0);   // sensitivity to a broad tech/semis shock
+const shockAt = d => { const nMV = rows.reduce((s, x) => s + x.value * (1 - betaOf(x) * d / 100), 0); const nEq = nMV - debt; return { drop: d, equityAfter: Math.round(nEq), ddPct: r2((1 - nEq / equity) * 100), call: nEq < maintRate * nMV }; };
+const stress = [10, 20, 30].map(shockAt);
+let callMovePct = null; for (let d = 1; d <= 90; d++) { const nMV = rows.reduce((s, x) => s + x.value * (1 - betaOf(x) * d / 100), 0); if (nMV - debt < maintRate * nMV) { callMovePct = d; break; } }
+const marginCall = { hasData: maint > 0, maintRate: r2(maintRate * 100), buffer: Math.round(equity - maint), callMovePct };
+// 3) mandate (IPS): your written limits; the engine flags breaches + the deterministic cure
+const IPS = { maxName: +(process.env.IPS_MAXNAME || 25), maxSector: +(process.env.IPS_MAXSECTOR || 45), maxGrossLev: +(process.env.IPS_MAXGROSSLEV || 2.0), maxTrueLev: +(process.env.IPS_MAXTRUELEV || 2.5) };
+const topSec = X.xray.sectors[0];
+const breaches = [
+  top1.w * 100 > IPS.maxName ? { rule: `${top1.sym} concentration`, current: Math.round(top1.w * 100) + '%', limit: IPS.maxName + '%', cure: `Trim ${top1.sym} to ${IPS.maxName}% (~${money((top1.w - IPS.maxName / 100) * gross)})` } : null,
+  topSec && topSec.w > IPS.maxSector ? { rule: `${topSec.sector} sector`, current: topSec.w + '%', limit: IPS.maxSector + '%', cure: `Reduce ${topSec.sector} to ${IPS.maxSector}%` } : null,
+  marginLev > IPS.maxGrossLev ? { rule: 'Gross leverage', current: r2(marginLev) + 'x', limit: IPS.maxGrossLev + 'x', cure: `Cut gross exposure ~${money(gross - IPS.maxGrossLev * equity)} to reach ${IPS.maxGrossLev}x` } : null,
+  trueLev > IPS.maxTrueLev ? { rule: 'True leverage', current: r2(trueLev) + 'x', limit: IPS.maxTrueLev + 'x', cure: 'Reduce leveraged ETFs (SOXL/SPAL)' } : null,
+].filter(Boolean);
+const inst = { contrib: contrib.slice(0, 8), marginCall, stress, mandate: { limits: IPS, breaches, compliant: breaches.length === 0 } };
+
 // ---- best risk/reward LONG setups from the scanner (for the plan) ----
 const setups = (scan?.results || [])
   .filter(s => s.score != null && !s.illiquid && s.direction !== 'short' && !/short|avoid/i.test(s.action) && s.levels?.rr >= 1.5)
@@ -137,11 +168,13 @@ const modeSpec = MODES.map(m => `- "${m.key}" (${m.label}, target ~${m.target}%/
 const prompt = `You are my portfolio risk manager & allocation strategist. Decision-support, NOT advice, NOT a guarantee - plain English, no jargon.
 I'm a retail trader on MARGIN, ~90% tech/chip-concentrated. Give me THREE alternative plans for the SAME current book - one per risk mode below. Use ONLY the data below; never invent numbers.
 
-MY CURRENT ALLOCATION (% of book): ${X.xray.positions.map(p => `${p.sym} ${p.w}% (${p.sector}${p.lev > 1 ? ', ' + p.lev + 'x' : ''}, ${p.pnlPct >= 0 ? '+' : ''}${p.pnlPct}%)`).join('; ')}
+MY CURRENT ALLOCATION (% of book, each with its OWN scanner read = score/12 · trend · exit-status · P&L): ${X.xray.positions.map(p => { const rt = readTag(p.sym); return `${p.sym} ${p.w}% (${p.sector}${p.lev > 1 ? ', ' + p.lev + 'x' : ''}${rt ? '; ' + rt : ''})`; }).join(' | ')}
 SECTOR MIX: ${X.xray.sectors.map(s => `${s.sector} ${s.w}%`).join(', ')}
-RISK NOW: true leverage ~${X.xray.trueLev}x vs equity; expected ~1-month swing ±${X.risk.moSwingPct}%, a bad (2-sigma) month ~-${X.risk.badMonthPct}%; if every stop hit I lose ${money(X.risk.allStopsLoss)} (${X.risk.allStopsPct}% of equity). FLAGS: ${X.risk.flags.join(' | ') || 'none major'}
+RISK NOW: true leverage ~${X.xray.trueLev}x vs equity; expected ~1-month swing ±${X.risk.moSwingPct}%, a bad (2-sigma) month ~-${X.risk.badMonthPct}%; if every stop hit I lose ${money(X.risk.allStopsLoss)} (${X.risk.allStopsPct}% of equity).${marginCall.callMovePct ? ` A ~${marginCall.callMovePct}% broad tech/semis selloff triggers a MARGIN CALL.` : ''} FLAGS: ${X.risk.flags.join(' | ') || 'none major'}
 HOLDINGS FLAGGED BY MY EXIT-SCANNER: ${attention.join(', ') || 'none - all holding up'}
-SCANNER'S BEST RISK/REWARD LONG SETUPS RIGHT NOW: ${setups.join(' | ') || '(none strong)'}
+SCANNER'S BEST RISK/REWARD LONG SETUPS RIGHT NOW (the ONLY names you may propose as new adds/buys): ${setups.join(' | ') || '(none strong)'}
+MY MANDATE (hard limits every plan MUST stay inside): single name <=${IPS.maxName}%, any sector <=${IPS.maxSector}%, gross leverage <=${IPS.maxGrossLev}x (now ${r2(marginLev)}x), true leverage <=${IPS.maxTrueLev}x (now ${r2(trueLev)}x).${breaches.length ? ' CURRENTLY BREACHED: ' + breaches.map(b => b.rule + ' ' + b.current + ' > ' + b.limit).join('; ') + ' — every mode MUST include the trims that cure these.' : ' Currently compliant.'}
+DISCIPLINE (NON-NEGOTIABLE, ALL MODES incl. aggressive): NEVER Add or Buy a name whose read above shows a downtrend/short, is below its stop, or is flagged SELL/TRIM — that is averaging down into weakness, NOT aggression. To ADD exposure use ONLY the strongest LONG setups from the scanner list. Aggressive = press what is WORKING + use leverage there; it is never permission to catch a falling knife.
 
 THE THREE MODES (make the plans genuinely DIFFERENT - conservative de-risks hardest, aggressive leans into leverage/concentration):
 ${modeSpec}
@@ -149,7 +182,7 @@ ${modeSpec}
 Return ONLY valid JSON (no markdown), EXACTLY this shape (all three keys required):
 {"conservative":{"moves":[{"sym":"...","action":"Sell|Trim|Add|Buy|Watch","targetPct":<number>,"note":"<=7 words why"}],"plan":["...","..."],"read":"..."},"balanced":{"moves":[...],"plan":[...],"read":"..."},"aggressive":{"moves":[...],"plan":[...],"read":"..."},"income":{"moves":[...],"plan":[...],"read":"..."}}
 For EACH mode:
-- moves = 3-7 concrete moves matching THAT mode's posture. action = Sell (exit fully), Trim (reduce), Add (increase), Buy (start NEW), Watch (conditional add only if it triggers). targetPct = % of my book this name should be AFTER the move (0 to exit; Buy/Watch = intended size %). ONLY use tickers from my holdings or the scanner setups above.
+- moves = 3-7 concrete moves matching THAT mode's posture. action = Sell (exit fully), Trim (reduce), Add (increase), Buy (start NEW), Watch (conditional add only if it triggers). targetPct = % of my book this name should be AFTER the move (0 to exit; Buy/Watch = intended size %). ONLY use tickers from my holdings or the scanner setups above. Obey the DISCIPLINE + MANDATE above: no Add/Buy on a weak/short/below-stop name, and keep the resulting book within the limits.
 - plan = the SAME moves as 4-6 short plain-English sentences (the "why"), appropriate to the mode.
 - read = 2-3 HONEST sentences on that mode's realistic ~target%/mo outlook AND its risk. For aggressive, stress the bigger drawdown + leverage decay. Never promise a return.
 Decision-support / educational only. Never guarantee outcomes.`;
@@ -241,8 +274,9 @@ if (prevAI && prevAI.aiEpoch && (now - prevAI.aiEpoch) < GATE_MS && prevAI.v ===
 const modes = {};
 for (const m of MODES) {
   const raw = aiModes[m.key];
-  modes[m.key] = { label: m.label, target: m.target, moves: sizeMoves(raw.moves), plan: raw.plan, read: raw.read, goal: modeGoal(m.target, m.volMult), proj: modeProj(m.betaMult, m.volMult) };
+  const sized = sizeMoves(raw.moves);
+  modes[m.key] = { label: m.label, target: m.target, moves: sized.filter(x => !x.warn), blocked: sized.filter(x => x.warn).map(x => ({ sym: x.sym, action: x.action, reason: x.warn, basis: x.basis })), plan: raw.plan, read: raw.read, goal: modeGoal(m.target, m.volMult), proj: modeProj(m.betaMult, m.volMult) };
 }
-writeFileSync(join(dir, 'engine.json'), JSON.stringify({ ts: new Date(now).toLocaleString('en-US', { timeZone: 'America/New_York' }) + ' (' + aiSrc + ')', epoch: now, aiEpoch, v: V, defaultMode: 'balanced', target: MODES[1].target, xray: X.xray, risk: X.risk, modes }, null, 2));
+writeFileSync(join(dir, 'engine.json'), JSON.stringify({ ts: new Date(now).toLocaleString('en-US', { timeZone: 'America/New_York' }) + ' (' + aiSrc + ')', epoch: now, aiEpoch, v: V, defaultMode: 'balanced', target: MODES[1].target, xray: X.xray, risk: X.risk, inst, modes }, null, 2));
 console.error(`engine written: modes [${MODES.map(m => m.key + ':' + modes[m.key].moves.length).join(', ')}] (${aiSrc})`);
 
