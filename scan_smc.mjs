@@ -549,7 +549,7 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
         + '<div class="nv" style="font-size:11px;color:var(--muted);margin-top:6px">A broad drop hits your leveraged names (3x/2x) hardest, so equity falls faster than the market. Estimate on delayed data.</div></div>' : '';
       const md = I.mandate || {};
       const mandateHtml = md.limits ? '<div class="ncard" style="border-left:3px solid ' + (md.compliant ? '#16a34a' : '#d97706') + '"><div class="nl">Mandate check &middot; your rules</div>'
-        + (md.compliant ? '<div class="nv" style="color:#16a34a">&#10003; Within all your limits (name &le;' + md.limits.maxName + '%, sector &le;' + md.limits.maxSector + '%, gross &le;' + md.limits.maxGrossLev + 'x, true &le;' + md.limits.maxTrueLev + 'x).</div>'
+        + (md.compliant ? '<div class="nv" style="color:#16a34a">&#10003; Within all your limits (name &le;' + md.limits.maxName + '%, sector &le;' + md.limits.maxSector + '%, lev-sleeve &le;' + md.limits.maxLev + '%, gross &le;' + md.limits.maxGrossLev + 'x, true &le;' + md.limits.maxTrueLev + 'x).</div>'
           : '<div class="nv" style="margin-bottom:2px">Breaking <b>' + md.breaches.length + '</b> of your rules:</div>' + md.breaches.map(b => '<div class="nv" style="font-size:12.5px;margin-top:3px">&#9888; <b>' + esc(b.rule) + '</b> ' + esc(b.current) + ' vs ' + esc(b.limit) + ' &rarr; <span style="color:var(--muted)">' + esc(b.cure) + '</span></div>').join(''))
         + '</div>' : '';
       engHtml = '<h2 style="font-size:16px;font-weight:600;margin:14px 0 6px">&#9881; Portfolio Engine <span style="font-size:12px;font-weight:400;color:var(--muted)">&middot; pick your risk mode</span></h2>'

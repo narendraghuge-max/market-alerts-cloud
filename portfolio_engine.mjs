@@ -9,7 +9,7 @@ import { dirname, join } from 'node:path';
 const dir = dirname(fileURLToPath(import.meta.url));
 const now = Date.now();
 const GATE_MS = 28 * 60 * 1000;
-const V = 9;                                   // engine prompt/schema version (bump to force one regen)
+const V = 10;                                   // engine prompt/schema version (bump to force one regen)
 const TARGET = +(process.env.TARGET_MONTHLY || 2.5);   // realistic monthly return target, %
 const read = f => { try { return JSON.parse(readFileSync(join(dir, f), 'utf8')); } catch { return null; } };
 const r2 = n => Math.round(n * 100) / 100;
@@ -146,13 +146,15 @@ const stress = [10, 20, 30].map(shockAt);
 let callMovePct = null; for (let d = 1; d <= 90; d++) { const nMV = rows.reduce((s, x) => s + x.value * (1 - betaOf(x) * d / 100), 0); if (nMV - debt < maintRate * nMV) { callMovePct = d; break; } }
 const marginCall = { hasData: maint > 0, maintRate: r2(maintRate * 100), buffer: Math.round(equity - maint), callMovePct };
 // 3) mandate (IPS): your written limits; the engine flags breaches + the deterministic cure
-const IPS = { maxName: +(process.env.IPS_MAXNAME || 25), maxSector: +(process.env.IPS_MAXSECTOR || 45), maxGrossLev: +(process.env.IPS_MAXGROSSLEV || 2.0), maxTrueLev: +(process.env.IPS_MAXTRUELEV || 2.5) };
+const IPS = { maxName: +(process.env.IPS_MAXNAME || 25), maxSector: +(process.env.IPS_MAXSECTOR || 45), maxGrossLev: +(process.env.IPS_MAXGROSSLEV || 2.0), maxTrueLev: +(process.env.IPS_MAXTRUELEV || 2.5), maxLev: +(process.env.IPS_MAXLEV || 15) };
 const topSec = X.xray.sectors[0];
+const levSleeve = rows.filter(x => x.lev >= 2).reduce((s, x) => s + x.value, 0) / gross;   // combined 2x/3x ETF sleeve as % of book
 const breaches = [
   top1.w * 100 > IPS.maxName ? { rule: `${top1.sym} concentration`, current: Math.round(top1.w * 100) + '%', limit: IPS.maxName + '%', cure: `Trim ${top1.sym} to ${IPS.maxName}% (~${money((top1.w - IPS.maxName / 100) * gross)})` } : null,
   topSec && topSec.w > IPS.maxSector ? { rule: `${topSec.sector} sector`, current: topSec.w + '%', limit: IPS.maxSector + '%', cure: `Reduce ${topSec.sector} to ${IPS.maxSector}%` } : null,
   marginLev > IPS.maxGrossLev ? { rule: 'Gross leverage', current: r2(marginLev) + 'x', limit: IPS.maxGrossLev + 'x', cure: `Cut gross exposure ~${money(gross - IPS.maxGrossLev * equity)} to reach ${IPS.maxGrossLev}x` } : null,
   trueLev > IPS.maxTrueLev ? { rule: 'True leverage', current: r2(trueLev) + 'x', limit: IPS.maxTrueLev + 'x', cure: 'Reduce leveraged ETFs (SOXL/SPAL)' } : null,
+  levSleeve * 100 > IPS.maxLev ? { rule: 'Leveraged-ETF sleeve', current: Math.round(levSleeve * 100) + '%', limit: IPS.maxLev + '%', cure: `Trim leveraged ETFs (${rows.filter(x => x.lev >= 2).map(x => x.sym).join('/') || 'none'}) to ${IPS.maxLev}%` } : null,
 ].filter(Boolean);
 const inst = { contrib: contrib.slice(0, 8), marginCall, stress, mandate: { limits: IPS, breaches, compliant: breaches.length === 0 } };
 
@@ -173,7 +175,7 @@ SECTOR MIX: ${X.xray.sectors.map(s => `${s.sector} ${s.w}%`).join(', ')}
 RISK NOW: true leverage ~${X.xray.trueLev}x vs equity; expected ~1-month swing ±${X.risk.moSwingPct}%, a bad (2-sigma) month ~-${X.risk.badMonthPct}%; if every stop hit I lose ${money(X.risk.allStopsLoss)} (${X.risk.allStopsPct}% of equity).${marginCall.callMovePct ? ` A ~${marginCall.callMovePct}% broad tech/semis selloff triggers a MARGIN CALL.` : ''} FLAGS: ${X.risk.flags.join(' | ') || 'none major'}
 HOLDINGS FLAGGED BY MY EXIT-SCANNER: ${attention.join(', ') || 'none - all holding up'}
 SCANNER'S BEST RISK/REWARD LONG SETUPS RIGHT NOW (the ONLY names you may propose as new adds/buys): ${setups.join(' | ') || '(none strong)'}
-MY MANDATE (hard limits every plan MUST stay inside): single name <=${IPS.maxName}%, any sector <=${IPS.maxSector}%, gross leverage <=${IPS.maxGrossLev}x (now ${r2(marginLev)}x), true leverage <=${IPS.maxTrueLev}x (now ${r2(trueLev)}x).${breaches.length ? ' CURRENTLY BREACHED: ' + breaches.map(b => b.rule + ' ' + b.current + ' > ' + b.limit).join('; ') + ' — every mode MUST include the trims that cure these.' : ' Currently compliant.'}
+MY MANDATE (hard limits every plan MUST stay inside): single name <=${IPS.maxName}%, any sector <=${IPS.maxSector}%, leveraged ETFs (SOXL/SPAL/TQQQ) <=${IPS.maxLev}% of book combined (now ${Math.round(levSleeve * 100)}%), gross leverage <=${IPS.maxGrossLev}x (now ${r2(marginLev)}x), true leverage <=${IPS.maxTrueLev}x (now ${r2(trueLev)}x).${breaches.length ? ' CURRENTLY BREACHED: ' + breaches.map(b => b.rule + ' ' + b.current + ' > ' + b.limit).join('; ') + ' — every mode MUST include the trims that cure these.' : ' Currently compliant.'}
 DISCIPLINE (NON-NEGOTIABLE, ALL MODES incl. aggressive): NEVER Add or Buy a name whose read above shows a downtrend/short, is below its stop, or is flagged SELL/TRIM — that is averaging down into weakness, NOT aggression. To ADD exposure use ONLY the strongest LONG setups from the scanner list. Aggressive = press what is WORKING + use leverage there; it is never permission to catch a falling knife.
 
 THE THREE MODES (make the plans genuinely DIFFERENT - conservative de-risks hardest, aggressive leans into leverage/concentration):

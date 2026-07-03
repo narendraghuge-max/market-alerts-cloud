@@ -46,6 +46,11 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TARGET_MONTHLY: '2.5'
+          IPS_MAXNAME: '25'       # mandate: max single position % (disciplined set, 2026-07-03)
+          IPS_MAXSECTOR: '50'     # max one sector %
+          IPS_MAXLEV: '15'        # max combined leveraged-ETF sleeve % (SOXL/SPAL/TQQQ)
+          IPS_MAXGROSSLEV: '2.0'  # max gross leverage (market value / equity) — the ruin line
+          IPS_MAXTRUELEV: '2.5'   # max look-through leverage (incl. 2x/3x ETF internal leverage)
         run: node portfolio_engine.mjs
 
       - name: Persist briefing + events + engine AI cache between runs
