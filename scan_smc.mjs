@@ -453,8 +453,27 @@ function analyze(symbol, daily, h4, h1, m15, anchors) {
   if (vpRead) bp.push('SMC-vol read: entry ' + vpRead);
   const basis = bp.join('; ');
 
+  // ---- (new) HONEST metrics grounded in the SAME structure: before-stop odds per target + confirm trigger + Power-of-3 phase ----
+  // before-stop odds = driftless probability of reaching the target BEFORE the stop = 1/(1+R). A NO-EDGE baseline
+  // (not a guess, not inflated); the setup's confluence/score is what tilts it above this. Also show ATR-distance = physical reach.
+  const entryMid = (entry1 + entry2) / 2;
+  const riskU2 = Math.max(Math.abs(entryMid - stop), 1e-6);
+  const nearVol = tp => !!vp && (Math.abs(tp - vp.poc) < atrDaily * 0.5 || Math.abs(tp - vp.val) < atrDaily * 0.5 || Math.abs(tp - vp.vah) < atrDaily * 0.5);
+  const reachTag = p => p >= 0.45 ? 'even money' : p >= 0.33 ? 'reachable' : p >= 0.2 ? 'a stretch' : 'long shot';
+  const targets = [T1, T2, T3].map(tp => { const R = Math.abs(tp - entryMid) / riskU2; const p = 1 / (1 + R); return { p: Math.round(p * 100), tag: reachTag(p) + (nearVol(tp) ? ' · at a volume magnet' : ''), atrAway: +(Math.abs(tp - entryMid) / (atrDaily || 1)).toFixed(1) }; });
+  const zTop = Math.max(entry1, entry2), zBot = Math.min(entry1, entry2);
+  const trigger = sweep
+    ? `Live — price swept liquidity into the zone; enter on a 15m ${dir === 'long' ? 'bullish' : 'bearish'} shift (MSS/FVG). Invalid on a 1H close ${dir === 'long' ? 'below ' + f2(stop) : 'above ' + f2(stop)}.`
+    : `Pending — wait for a tap of ${f2(zBot)}–${f2(zTop)} then a 15m ${dir === 'long' ? 'bullish' : 'bearish'} shift (MSS) to confirm. Invalid on a 1H close ${dir === 'long' ? 'below ' + f2(stop) : 'above ' + f2(stop)}.`;
+  const phase = sweep && (displaced || bos) ? (dir === 'long' ? 'Accumulation → Markup (swept lows, shifting up)' : 'Distribution → Markdown (swept highs, shifting down)')
+    : sweep ? (dir === 'long' ? 'Accumulation (swept sell-side, basing for upside)' : 'Distribution (swept buy-side, topping for downside)')
+    : (displaced || bos) ? (dir === 'long' ? 'Markup (bullish expansion underway)' : 'Markdown (bearish expansion underway)')
+    : (vp && vp.regime === 'choppy') ? 'Manipulation / consolidation (ranging, hunting liquidity)'
+    : (dir === 'long' ? 'Early accumulation (awaiting a sweep)' : 'Early distribution (awaiting a sweep)');
+
   return {
     symbol, price: +price.toFixed(2), score, action, basis, grade, direction: dir, trend, vp,
+    read: { phase, trigger, targets },
     advUsd: liquidityOf(daily, price).advUsd, illiquid: liquidityOf(daily, price).illiquid,
     leveraged: LEVERAGED.has(symbol), holding: HOLDINGS.has(symbol),
     bias: trendOk ? (dir === 'long' ? 'bull' : 'bear') : 'weak',
@@ -483,7 +502,7 @@ async function scanOne(symbol, anchors) {
 
 function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: [] }) {
   const ts = new Date().toLocaleString('en-US', { timeZone: 'America/New_York' });
-  const data = JSON.stringify(rows.map(r => ({ sym: r.symbol, score: r.score, action: r.action, grade: r.grade, dir: r.trend, price: r.price, bias: r.bias, zone: r.zone, hold: r.holding ? 1 : 0, lev: r.leveraged ? 1 : 0, isNew: r.isNew ? 1 : 0, basis: r.basis, vp: r.vp, ...r.levels })));
+  const data = JSON.stringify(rows.map(r => ({ sym: r.symbol, score: r.score, action: r.action, grade: r.grade, dir: r.trend, price: r.price, bias: r.bias, zone: r.zone, hold: r.holding ? 1 : 0, lev: r.leveraged ? 1 : 0, isNew: r.isNew ? 1 : 0, basis: r.basis, vp: r.vp, read: r.read, ...r.levels })));
   const skipped = errs.length ? ' &middot; skipped: ' + errs.map(e => e.symbol).join(', ') : '';
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   let brHtml = '';
@@ -691,10 +710,10 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
     + '+"<td data-label=\'Price\' class=r>"+fmt(r.price)+"</td>"'
     + '+"<td data-label=\'Entry zone\' class=r>"+fmt(r.entry1)+"\\u2013"+fmt(r.entry2)+"<div style=\\"font-size:11px;color:"+zc+"\\">"+(r.dir==="short"?(r.zone==="premium"?"premium (good short)":"discount (late short)"):(r.zone==="discount"?"discount (good)":"premium (chasing)"))+"</div></td>"'
     + '+"<td data-label=\'Stop\' class=r style=\\"color:#dc2626\\">"+fmt(r.stop)+"</td>"'
-    + '+"<td data-label=\'Take-profit\' class=r style=\\"color:var(--muted)\\">"+fmt(r.tp1)+" \\u00b7 <span style=\\"color:var(--fg)\\">"+fmt(r.tp2)+"</span> \\u00b7 "+fmt(r.tp3)+"</td>"'
+    + '+"<td data-label=\'Take-profit\' class=r style=\\"color:var(--muted)\\">"+fmt(r.tp1)+" \\u00b7 <span style=\\"color:var(--fg)\\">"+fmt(r.tp2)+"</span> \\u00b7 "+fmt(r.tp3)+(r.read&&r.read.targets?"<div style=\\"font-size:10px\\" title=\\"no-edge odds of reaching each target BEFORE the stop = 1/(1+R); your setup edge tilts it higher\\">odds: "+r.read.targets[0].p+"% \\u00b7 "+r.read.targets[1].p+"% \\u00b7 "+r.read.targets[2].p+"%</div>":"")+"</td>"'
     + '+"<td data-label=\'Volume 30d\' class=r style=\\"font-size:11px\\">"+(r.vp?"POC "+r.vp.poc+"<div style=\\"color:var(--muted)\\">VA "+r.vp.val+"\\u2013"+r.vp.vah+(r.vp.regime==="choppy"?" <b style=\\"color:#dc2626\\">choppy</b>":r.vp.regime==="tight"?" tight":"")+"</div>":"\\u2014")+"</td>"'
     + '+"<td data-label=\'R\' class=r style=\\"color:"+rc+";font-weight:600\\">"+r.rr.toFixed(1)+"R</td>"'
-    + '+"<td data-label=\'Basis\' class=basis style=\\"font-size:11px;color:var(--muted);max-width:360px;line-height:1.45\\"><details class=bd><summary>Basis &mdash; why</summary><div class=bt>"+(r.basis||"")+"</div></details></td></tr>"}'
+    + '+"<td data-label=\'Basis\' class=basis style=\\"font-size:11px;color:var(--muted);max-width:380px;line-height:1.5\\"><details class=bd><summary>Basis &mdash; why</summary><div class=bt>"+(r.read?"<b>Phase:</b> "+r.read.phase+"<br><b>Confirm:</b> "+r.read.trigger+"<br><b>Reach:</b> TP1 "+r.read.targets[0].tag+" \\u00b7 TP2 "+r.read.targets[1].tag+" \\u00b7 TP3 "+r.read.targets[2].tag+"<br><br>":"")+"\\u2022 "+(r.basis||"").split("; ").join("<br>\\u2022 ")+"</div></details></td></tr>"}'
     + 'if(!rows.length)h="<tr><td colspan=12 style=\\"padding:16px;text-align:center;color:var(--muted)\\">No setups match these filters.</td></tr>";$("tb").innerHTML=h}'
     + '["f-sym","f-score","f-sort","f-rr","f-hold","f-lev"].forEach(function(id){$(id).addEventListener("input",render)});'
     + '(function(){var sl=$("symlist"),sy=DATA.map(function(r){return r.sym}).sort();for(var i=0;i<sy.length;i++){var o=document.createElement("option");o.value=sy[i];sl.appendChild(o)}})();'
