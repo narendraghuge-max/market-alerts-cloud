@@ -459,7 +459,7 @@ function analyze(symbol, daily, h4, h1, m15, anchors) {
   const entryMid = (entry1 + entry2) / 2;
   const riskU2 = Math.max(Math.abs(entryMid - stop), 1e-6);
   const nearVol = tp => !!vp && (Math.abs(tp - vp.poc) < atrDaily * 0.5 || Math.abs(tp - vp.val) < atrDaily * 0.5 || Math.abs(tp - vp.vah) < atrDaily * 0.5);
-  const reachTag = p => p >= 0.45 ? 'even money' : p >= 0.33 ? 'reachable' : p >= 0.2 ? 'a stretch' : 'long shot';
+  const reachTag = p => p >= 0.6 ? 'likely' : p >= 0.4 ? 'even money' : p >= 0.25 ? 'a stretch' : 'long shot';
   const targets = [T1, T2, T3].map(tp => { const R = Math.abs(tp - entryMid) / riskU2; const p = 1 / (1 + R); return { p: Math.round(p * 100), tag: reachTag(p) + (nearVol(tp) ? ' · at a volume magnet' : ''), atrAway: +(Math.abs(tp - entryMid) / (atrDaily || 1)).toFixed(1) }; });
   const zTop = Math.max(entry1, entry2), zBot = Math.min(entry1, entry2);
   const trigger = sweep
@@ -635,11 +635,11 @@ function buildReport(rows, errs, exitRows = [], optIdeas = { calls: [], puts: []
         + '<td data-label="Your cost" class="r" style="color:var(--muted)">' + (r.cost != null ? r.cost.toFixed(2) : '-') + '</td>'
         + '<td data-label="Gain/loss" class="r" style="color:' + ((r.pnl || 0) >= 0 ? '#16a34a' : '#dc2626') + '">' + (r.pnl != null ? ((r.pnl >= 0 ? '+' : '-') + money(r.pnl) + ' (' + (r.pnlPct >= 0 ? '+' : '') + r.pnlPct.toFixed(1) + '%)') : '-') + '</td>'
         + '<td data-label="Safety price" class="r">' + r.stop + ' <span style="color:var(--muted)">(' + r.distPct.toFixed(1) + '%)</span></td>'
-        + '<td data-label="Take-profit" class="r" style="font-size:12px">' + (r.tp1 != null ? r.tp1 + ' &middot; ' + r.tp2 + ' &middot; ' + r.tp3 : '&mdash;') + '</td>'
+        + '<td data-label="Take-profit" class="r" style="font-size:12px">' + (r.tp1 != null ? r.tp1 + (r.read ? ' <span style="font-size:10px;color:var(--muted)" title="odds of reaching this take-profit before your safety stop = 1/(1+R)">(' + r.read.targets[0].p + '%)</span>' : '') + ' &middot; ' + r.tp2 + (r.read ? ' <span style="font-size:10px;color:var(--muted)">(' + r.read.targets[1].p + '%)</span>' : '') + ' &middot; ' + r.tp3 + (r.read ? ' <span style="font-size:10px;color:var(--muted)">(' + r.read.targets[2].p + '%)</span>' : '') : '&mdash;') + '</td>'
         + '<td data-label="Volume 30d" class="r" style="font-size:11px">' + (r.vp ? 'POC ' + r.vp.poc + '<div style="color:var(--muted)">VA ' + r.vp.val + '&ndash;' + r.vp.vah + (r.vp.regime === 'choppy' ? ' <b style="color:#dc2626">choppy</b>' : r.vp.regime === 'tight' ? ' tight' : '') + '</div>' : '&mdash;') + '</td>'
         + '<td data-label="Avg price" class="r">' + r.ema50.toFixed(2) + '</td>'
         + '<td data-label="What to do" style="font-size:12px;color:' + exCol(r.status) + '" title="' + esc(r.reason) + '">' + esc(r.plan || r.sellAt) + '</td>'
-        + '<td data-label="Basis" class="basis" style="font-size:11px;color:var(--muted);line-height:1.45"><details class="bd"><summary>Basis &mdash; why</summary><div class="bt">' + esc(r.basis || '') + '</div></details></td></tr>').join('')
+        + '<td data-label="Basis" class="basis" style="font-size:11px;color:var(--muted);line-height:1.5"><details class="bd"><summary>Basis &mdash; why</summary><div class="bt">' + (r.read ? '<b>Phase:</b> ' + esc(r.read.phase) + '<br><b>Reach:</b> TP1 ' + esc(r.read.targets[0].tag) + ' &middot; TP2 ' + esc(r.read.targets[1].tag) + ' &middot; TP3 ' + esc(r.read.targets[2].tag) + '<br><br>' : '') + '&bull; ' + esc(r.basis || '').split('; ').join('<br>&bull; ') + '</div></details></td></tr>').join('')
       + '</tbody></table>';
   }
   // Recommended options (Day/Swing/Runner tiers) - rendered by the shared module.

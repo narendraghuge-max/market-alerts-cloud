@@ -205,7 +205,19 @@ function analyzeExit(sym, cfg, daily, h1) {
   const vpRead = vpConfluence(price, [T1, T2, T3], vp, 'long');
   if (vpRead) plan += '  |  vol: ' + vpRead;
 
-  return { sym, status, reason, sellAt, plan, basis, grade, trend, price: f2(price), stop: cfg.stop, tp1: T1, tp2: T2, tp3: T3, vp, ema50: f2(ema50), distPct: f2(distPct), premium, lev: !!cfg.lev, winner: !!cfg.winner, note: cfg.note || '', shares: cfg.shares, cost: cost != null ? f2(cost) : null, pnl: pnl != null ? f2(pnl) : null, pnlPct: pnlPct != null ? f2(pnlPct) : null };
+  // ---- (new) before-stop odds per take-profit (from HERE: reward-to-TP vs risk-to-your-stop) + Power-of-3 phase ----
+  const riskH = Math.max(Math.abs(price - cfg.stop), 1e-6);
+  const reachTag = p => p >= 0.6 ? 'likely' : p >= 0.4 ? 'even money' : p >= 0.25 ? 'a stretch' : 'long shot';
+  const nearVolH = tp => !!vp && (Math.abs(tp - vp.poc) < price * 0.02 || Math.abs(tp - vp.val) < price * 0.02 || Math.abs(tp - vp.vah) < price * 0.02);
+  const targetsH = [T1, T2, T3].map(tp => { const R = Math.abs(tp - price) / riskH; const p = 1 / (1 + R); return { p: Math.round(p * 100), tag: reachTag(p) + (nearVolH(tp) ? ' · at a volume magnet' : '') }; });
+  const phaseH = status === 'SELL' ? 'Distribution / Markdown — broke your level'
+    : winnerReverse ? 'Distribution — winner topping (take profit)'
+    : trend === 'up' ? (premium ? 'Markup — extended (in premium)' : 'Markup — trend intact')
+    : trend === 'down' ? 'Markdown — losing momentum'
+    : premium ? 'Distribution — ranging at premium' : 'Accumulation — basing at discount';
+  const read = { phase: phaseH, targets: targetsH };
+
+  return { sym, status, reason, sellAt, plan, basis, read, grade, trend, price: f2(price), stop: cfg.stop, tp1: T1, tp2: T2, tp3: T3, vp, ema50: f2(ema50), distPct: f2(distPct), premium, lev: !!cfg.lev, winner: !!cfg.winner, note: cfg.note || '', shares: cfg.shares, cost: cost != null ? f2(cost) : null, pnl: pnl != null ? f2(pnl) : null, pnlPct: pnlPct != null ? f2(pnlPct) : null };
 }
 
 async function one(sym, cfg) {
