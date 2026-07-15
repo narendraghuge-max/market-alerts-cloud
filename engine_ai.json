@@ -1,6 +1,6 @@
 {
-  "aiTs": "7/15/2026, 7:01:32 AM (Gemini)",
-  "aiEpoch": 1784113292698,
+  "aiTs": "7/15/2026, 7:31:19 AM (Gemini)",
+  "aiEpoch": 1784115079246,
   "v": 10,
   "src": "Gemini",
   "modes": {
@@ -10,48 +10,48 @@
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Cure concentration flag"
+          "note": "Reduce concentration, meet mandate"
         },
         {
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Exit all leveraged ETFs"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
-        },
-        {
-          "sym": "SMH",
-          "action": "Trim",
-          "targetPct": 5,
-          "note": "Reduce downtrend exposure"
+          "note": "Exit all leveraged ETFs"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 25,
-          "note": "Favor income & stability"
+          "note": "Increase income, stability"
+        },
+        {
+          "sym": "QQQ",
+          "action": "Add",
+          "targetPct": 20,
+          "note": "Increase broad index exposure"
         },
         {
           "sym": "CRWD",
           "action": "Trim",
           "targetPct": 10,
-          "note": "Reduce single name size"
+          "note": "Reduce single name concentration"
         }
       ],
       "plan": [
-        "Trim SPY to 20% to cure concentration and reduce overall risk.",
+        "Trim SPY to 20% to reduce concentration and meet the mandate.",
         "Sell all SOXL and SPAL to eliminate leveraged ETF exposure.",
-        "Reduce SMH to 5% due to its downtrend and to lower sector concentration.",
-        "Increase QQQI to 25% to favor income and broad market stability.",
+        "Increase QQQI to 25% for more income and stability.",
+        "Add to QQQ, targeting 20%, to boost broad index exposure.",
         "Trim CRWD to 10% to reduce single name concentration.",
-        "This plan aims for capital preservation by reducing leverage and concentration."
+        "Maintain a significant cash buffer for capital preservation."
       ],
-      "read": "This conservative approach targets around 1.5% per month, focusing on capital preservation. It significantly reduces leverage and concentration, leading to lower expected drawdowns. Returns will likely be modest but more stable."
+      "read": "This conservative plan targets around 1.5% per month, prioritizing capital preservation. It significantly reduces leverage and concentration, aiming for lower drawdown. Expect reduced volatility but also lower potential for outsized gains."
     },
     "balanced": {
       "moves": [
@@ -59,48 +59,48 @@
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Cure concentration flag"
+          "note": "Reduce concentration, meet mandate"
         },
         {
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit flagged holding"
+          "note": "Exit below stop, reduce leverage"
         },
         {
           "sym": "SPAL",
           "action": "Trim",
           "targetPct": 2,
-          "note": "Reduce leveraged ETF"
+          "note": "Reduce leveraged ETF exposure"
         },
         {
-          "sym": "SMH",
+          "sym": "CRWD",
           "action": "Trim",
-          "targetPct": 8,
-          "note": "Reduce downtrend exposure"
+          "targetPct": 12,
+          "note": "Reduce single name concentration"
         },
         {
           "sym": "AMD",
           "action": "Buy",
           "targetPct": 5,
-          "note": "Add high-score setup"
+          "note": "Add strong scanner setup"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 20,
-          "note": "Maintain income exposure"
+          "note": "Slightly increase income exposure"
         }
       ],
       "plan": [
-        "Trim SPY to 25% to address concentration and meet mandate limits.",
-        "Sell SOXL completely as it is flagged and below stop.",
+        "Trim SPY to 25% to meet the concentration mandate.",
+        "Sell SOXL entirely due to being below its stop and to reduce leverage.",
         "Trim SPAL to 2% to reduce leveraged ETF exposure.",
-        "Reduce SMH to 8% due to its downtrend, while maintaining some chip exposure.",
-        "Buy AMD at 5% as a high-scoring long setup to add quality tech.",
-        "Increase QQQI to 20% to balance growth with income and stability."
+        "Reduce CRWD to 12% to manage single name concentration.",
+        "Buy AMD, targeting 5%, based on its strong scanner setup.",
+        "Slightly increase QQQI to 20% for balanced income exposure."
       ],
-      "read": "This balanced approach targets around 2.5% per month, prioritizing risk-first growth. It reduces overall leverage and concentration while introducing new high-quality setups. Expect moderate drawdowns with potential for steady growth."
+      "read": "This balanced plan targets around 2.5% per month, focusing on risk-first growth. It reduces overall leverage and concentration while adding a high-quality scanner setup. Expect moderate volatility and growth potential."
     },
     "aggressive": {
       "moves": [
@@ -108,97 +108,103 @@
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Cure concentration flag"
+          "note": "Meet concentration mandate"
         },
         {
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit flagged holding"
+          "note": "Exit below stop, reallocate"
+        },
+        {
+          "sym": "SMH",
+          "action": "Trim",
+          "targetPct": 10,
+          "note": "Reduce downtrend exposure"
         },
         {
           "sym": "SPAL",
           "action": "Add",
           "targetPct": 5,
-          "note": "Add leveraged ETF"
-        },
-        {
-          "sym": "SMH",
-          "action": "Trim",
-          "targetPct": 5,
-          "note": "Reduce downtrend exposure"
-        },
-        {
-          "sym": "CRWD",
-          "action": "Add",
-          "targetPct": 18,
-          "note": "Press winning position"
+          "note": "Increase leveraged ETF exposure"
         },
         {
           "sym": "AMD",
           "action": "Buy",
           "targetPct": 10,
-          "note": "Add high-score setup"
+          "note": "Aggressively add top setup"
+        },
+        {
+          "sym": "CRWD",
+          "action": "Add",
+          "targetPct": 15,
+          "note": "Press winning position"
         }
       ],
       "plan": [
-        "Trim SPY to 25% to meet the single name concentration limit.",
-        "Sell SOXL completely as it is a flagged holding below its stop.",
-        "Increase SPAL to 5% to maintain leveraged exposure in a high-beta sector.",
-        "Trim SMH to 5% due to its downtrend, reallocating capital to stronger setups.",
-        "Increase CRWD to 18% to press a winning position with strong momentum.",
-        "Buy AMD at 10% as a high-scoring long setup to add aggressive tech exposure."
+        "Trim SPY to 25% to meet the concentration mandate.",
+        "Sell SOXL entirely as it is below its stop and reallocate capital.",
+        "Trim SMH to 10% due to its downtrend status.",
+        "Add to SPAL, targeting 5%, to increase leveraged ETF exposure.",
+        "Buy AMD, targeting 10%, based on its strong scanner setup.",
+        "Add to CRWD, targeting 15%, to press a winning position."
       ],
-      "read": "This aggressive approach targets around 4% per month, stretching for growth. It increases exposure to leveraged ETFs and concentrates in high-scoring setups. This mode carries significantly higher risk, including larger potential drawdowns and daily decay from leveraged ETFs, requiring strict stop discipline."
+      "read": "This aggressive plan targets around 4% per month, leaning into stretch growth. It uses leverage and concentrates in high-scoring setups. Be aware that this approach significantly amplifies both upside and drawdown, and leveraged ETFs experience daily decay and rebalancing, leading to potential rapid losses if stops are not strictly followed."
     },
     "income": {
       "moves": [
         {
           "sym": "SPY",
           "action": "Trim",
-          "targetPct": 25,
-          "note": "Cure concentration flag"
+          "targetPct": 20,
+          "note": "Reduce concentration, add income"
         },
         {
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Exit all leveraged ETFs"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Exit all leveraged ETFs"
+        },
+        {
+          "sym": "CRWD",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Exit high-beta single name"
         },
         {
           "sym": "SMH",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut high-beta tech"
-        },
-        {
-          "sym": "CRWD",
-          "action": "Trim",
-          "targetPct": 5,
-          "note": "Reduce high-beta tech"
+          "note": "Exit high-beta sector"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 40,
           "note": "Maximize income exposure"
+        },
+        {
+          "sym": "QQQ",
+          "action": "Trim",
+          "targetPct": 10,
+          "note": "Reduce growth exposure"
         }
       ],
       "plan": [
-        "Trim SPY to 25% to meet concentration limits while maintaining broad exposure.",
-        "Sell all SOXL and SPAL to eliminate leveraged ETF exposure completely.",
-        "Sell SMH to remove high-beta semiconductor exposure.",
-        "Reduce CRWD to 5% to minimize high-beta single name risk.",
-        "Increase QQQI to 40% to maximize income generation and stability.",
-        "This plan prioritizes steady monthly distributions and low drawdown."
+        "Trim SPY to 20% to reduce concentration and free capital for income.",
+        "Sell all SOXL and SPAL to eliminate leveraged ETF exposure.",
+        "Sell CRWD to exit high-beta single name exposure.",
+        "Sell SMH to reduce high-beta sector exposure.",
+        "Add significantly to QQQI, targeting 40%, to maximize income exposure.",
+        "Trim QQQ to 10% to reduce growth-oriented exposure."
       ],
-      "read": "This income approach targets around 1% per month, focusing on yield and capital preservation. It significantly reduces high-beta and leveraged holdings, emphasizing income-generating ETFs. While aiming for reliable distributions, NAV can still fall in selloffs, and distributions are not guaranteed."
+      "read": "This income plan targets around 1% per month, focusing on parking cash for yield. It prioritizes steady monthly distributions and low drawdown by rotating into income ETFs. Remember, distributions are variable, and NAV can still fall in a selloff; this is not a savings account."
     }
   }
 }
