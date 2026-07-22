@@ -1,8 +1,8 @@
 {
-  "aiTs": "7/22/2026, 11:31:47 AM (auto)",
-  "aiEpoch": 1784734307738,
+  "aiTs": "7/22/2026, 12:01:37 PM (Gemini)",
+  "aiEpoch": 1784736097259,
   "v": 10,
-  "src": "auto",
+  "src": "Gemini",
   "modes": {
     "conservative": {
       "moves": [
@@ -10,28 +10,48 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "no leverage"
+          "note": "Cut leveraged ETFs"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "no leverage"
+          "note": "Cut leveraged ETFs"
+        },
+        {
+          "sym": "QQQI",
+          "action": "Trim",
+          "targetPct": 10,
+          "note": "Reduce income exposure"
         },
         {
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 20,
-          "note": "cap single name"
+          "note": "Reduce concentration"
+        },
+        {
+          "sym": "CRWD",
+          "action": "Trim",
+          "targetPct": 10,
+          "note": "Reduce tech concentration"
+        },
+        {
+          "sym": "NVDA",
+          "action": "Buy",
+          "targetPct": 15,
+          "note": "Top quality long setup"
         }
       ],
       "plan": [
-        "Exit leveraged ETFs (SOXL, SPAL) - they decay and can gap against you.",
-        "Trim SPY (31%) to ~20% to cap single-name risk.",
-        "Lean on income (QQQI) + broad index; hold a 15-20% cash buffer.",
-        "Use tight stops - the goal is small, steady gains and shallow drawdowns."
+        "Sell all leveraged ETFs to eliminate risk.",
+        "Trim QQQI and CRWD to reduce concentration.",
+        "Reduce SPY to meet single-name limits.",
+        "Buy NVDA as a top-rated long setup.",
+        "Hold significant cash for safety.",
+        "Focus on capital preservation and low drawdown."
       ],
-      "read": "A ~1.5%/mo steady target is realistic for a de-risked book; expect calmer swings but you give up some upside in strong tapes. Preservation first."
+      "read": "Targeting ~1.5% monthly return with a focus on capital preservation. This plan significantly reduces leverage and concentration risk, holding a larger cash buffer for stability. Expect lower potential gains but also a much lower chance of significant drawdowns."
     },
     "balanced": {
       "moves": [
@@ -39,63 +59,109 @@
           "sym": "SOXL",
           "action": "Trim",
           "targetPct": 3,
-          "note": "cut leverage/decay"
+          "note": "Reduce leveraged ETFs"
         },
         {
           "sym": "SPAL",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Cut leveraged ETFs"
+        },
+        {
+          "sym": "QQQI",
           "action": "Trim",
-          "targetPct": 1,
-          "note": "cut leverage/decay"
+          "targetPct": 10,
+          "note": "Reduce income exposure"
         },
         {
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 25,
-          "note": "reduce concentration"
+          "note": "Reduce concentration"
+        },
+        {
+          "sym": "CRWD",
+          "action": "Trim",
+          "targetPct": 10,
+          "note": "Reduce tech concentration"
         },
         {
           "sym": "NVDA",
           "action": "Buy",
-          "targetPct": 4,
-          "note": "scanner top setup"
+          "targetPct": 15,
+          "note": "Top quality long setup"
+        },
+        {
+          "sym": "MSFT",
+          "action": "Buy",
+          "targetPct": 10,
+          "note": "Quality tech long setup"
         }
       ],
       "plan": [
-        "Keep leveraged ETFs small (<=3%) and on tight stops - they decay and amplify drawdowns.",
-        "Trim SPY (31%) toward ~25% to cut single-name risk.",
-        "Best fresh setup: NVDA: ACCUMULATE 10/12, entry 207.59-206.76, stop 204.47, targets 213.99/221.01/227.4, R 2.06. A starter (~4%) only if it triggers.",
-        "Hold a ~10% cash buffer and respect every stop."
+        "Trim SOXL and sell SPAL to reduce leverage.",
+        "Trim QQQI and CRWD to lower sector concentration.",
+        "Reduce SPY to meet single-name limits.",
+        "Add NVDA and MSFT as strong long setups.",
+        "Maintain a moderate cash buffer.",
+        "Balance risk reduction with growth opportunities."
       ],
-      "read": "A ~2.5%/mo target is aggressive but not impossible in a strong tape; hinges on cutting concentration/leverage + consistency. Expect losing months - size so a bad one (~-35.37%) doesn't force your hand."
+      "read": "Targeting ~2.5% monthly return with a risk-first growth approach. This plan reduces leverage and concentration while adding quality long setups. It aims for steady growth with controlled drawdowns, maintaining a balance between risk and reward."
     },
     "aggressive": {
       "moves": [
         {
           "sym": "SOXL",
           "action": "Add",
-          "targetPct": 6,
-          "note": "lean into momentum"
+          "targetPct": 10,
+          "note": "Increase leveraged ETFs"
         },
         {
           "sym": "SPAL",
+          "action": "Watch",
+          "targetPct": 0,
+          "note": "Keep leveraged ETFs low"
+        },
+        {
+          "sym": "QQQI",
+          "action": "Trim",
+          "targetPct": 5,
+          "note": "Reduce income exposure"
+        },
+        {
+          "sym": "SPY",
+          "action": "Trim",
+          "targetPct": 20,
+          "note": "Reduce concentration"
+        },
+        {
+          "sym": "CRWD",
           "action": "Add",
-          "targetPct": 6,
-          "note": "lean into momentum"
+          "targetPct": 15,
+          "note": "Increase strong tech"
         },
         {
           "sym": "NVDA",
           "action": "Buy",
-          "targetPct": 6,
-          "note": "high-conviction setup"
+          "targetPct": 20,
+          "note": "Top quality long setup"
+        },
+        {
+          "sym": "GUSH",
+          "action": "Buy",
+          "targetPct": 5,
+          "note": "High R-value long setup"
         }
       ],
       "plan": [
-        "Lean into leveraged ETFs (SOXL, SPAL) toward ~6% each - but hold a STRICT stop; they decay and can drop hard fast.",
-        "Press the strongest scanner setup: NVDA: ACCUMULATE 10/12, entry 207.59-206.76, stop 204.47, targets 213.99/221.01/227.4, R 2.06 (~6%).",
-        "Run a small (~5%) cash buffer - stay invested for the upside.",
-        "Wider but STRICT stops. This mode can lose a lot fast - discipline is everything."
+        "Increase SOXL exposure for aggressive growth.",
+        "Trim QQQI to free up capital.",
+        "Reduce SPY to manage concentration.",
+        "Add to CRWD and buy NVDA for high conviction.",
+        "Add GUSH as a high potential R-value setup.",
+        "Maintain a small cash buffer, accepting higher risk."
       ],
-      "read": "A ~4%/mo stretch target needs leverage + a strong tape + tight discipline; the same leverage means a bad month can run past -60%. Higher upside AND higher risk of a deep drawdown - not a promise."
+      "read": "Targeting ~4% monthly return through aggressive growth and leverage. This plan concentrates on high-scoring long setups and increases leveraged ETF exposure. Expect significantly higher potential gains but also substantially larger drawdowns and amplified volatility due to leverage and daily decay."
     },
     "income": {
       "moves": [
@@ -103,34 +169,54 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "too volatile to park"
+          "note": "Cut leveraged ETFs"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "too volatile to park"
+          "note": "Cut leveraged ETFs"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 30,
-          "note": "income anchor"
+          "note": "Maximize income focus"
         },
         {
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 20,
-          "note": "cut single-name risk"
+          "note": "Reduce broad index"
+        },
+        {
+          "sym": "SMH",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Cut volatile sectors"
+        },
+        {
+          "sym": "CRWD",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Cut high-beta names"
+        },
+        {
+          "sym": "OXY",
+          "action": "Buy",
+          "targetPct": 15,
+          "note": "Energy income setup"
         }
       ],
       "plan": [
-        "Exit leveraged ETFs (SOXL, SPAL) - too volatile for parked cash.",
-        "Build QQQI toward ~30% as your monthly-distribution anchor.",
-        "Keep the rest in broad index + a cash buffer; the distributions pay you monthly.",
-        "Low-drawdown income park - but NAV can still dip and distributions vary (not a savings account)."
+        "Sell all leveraged ETFs and volatile tech.",
+        "Maximize QQQI for steady income generation.",
+        "Trim SPY to reduce growth focus.",
+        "Add OXY for energy sector income.",
+        "Hold a significant cash buffer for stability.",
+        "Prioritize reliable monthly distributions over growth."
       ],
-      "read": "Covered-call ETFs (QQQI/JEPQ/JEPI/SPYI) can distribute ~1%/mo (~13%/yr) as steady income, but they cap upside and NAV can fall in a selloff. Good for parking cash for yield, not for growth; distributions are variable, not guaranteed."
+      "read": "Targeting ~1% monthly return with a focus on stable income distributions. This plan eliminates leverage and high-beta growth names, shifting heavily into income-generating assets like QQQI. Expect lower NAV volatility and consistent payouts, though distributions are not guaranteed and NAV can still decline."
     }
   }
 }
