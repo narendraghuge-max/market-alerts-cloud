@@ -1,222 +1,204 @@
 {
-  "aiTs": "7/23/2026, 1:01:14 PM (Gemini)",
-  "aiEpoch": 1784826074762,
+  "aiTs": "7/23/2026, 1:31:38 PM (Gemini)",
+  "aiEpoch": 1784827898550,
   "v": 10,
   "src": "Gemini",
   "modes": {
     "conservative": {
       "moves": [
         {
+          "sym": "SPY",
+          "action": "Trim",
+          "targetPct": 20,
+          "note": "Reduce concentration, lower risk"
+        },
+        {
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF"
+          "note": "Exit all leveraged ETFs"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF"
-        },
-        {
-          "sym": "SMH",
-          "action": "Sell",
-          "targetPct": 5,
-          "note": "Reduce semiconductor exposure"
+          "note": "Exit all leveraged ETFs"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 25,
-          "note": "Increase income focus"
+          "note": "Favor income, broad index"
         },
         {
-          "sym": "AVGO",
-          "action": "Buy",
-          "targetPct": 15,
-          "note": "Top risk/reward setup"
-        },
-        {
-          "sym": "SPY",
+          "sym": "QQQ",
           "action": "Trim",
-          "targetPct": 20,
-          "note": "Reduce index concentration"
+          "targetPct": 15,
+          "note": "Reduce concentration, lower risk"
+        },
+        {
+          "sym": "CVX",
+          "action": "Buy",
+          "targetPct": 5,
+          "note": "Add top quality, diversify"
         }
       ],
       "plan": [
-        "Eliminate all leveraged ETFs to reduce risk.",
-        "Significantly reduce exposure to semiconductors.",
-        "Increase allocation to income-generating assets.",
-        "Add a high-quality, strong setup like AVGO.",
-        "Reduce concentration in the broad index.",
-        "Maintain a significant cash buffer for safety."
+        "Trim SPY and QQQ to reduce concentration and lower overall portfolio risk.",
+        "Completely exit SOXL and SPAL to eliminate leveraged ETF exposure.",
+        "Increase QQQI allocation to favor income and broad index exposure for stability.",
+        "Initiate a new position in CVX, a top-quality scanner setup, to diversify the portfolio.",
+        "Maintain a significant cash buffer by reducing overall equity exposure.",
+        "Focus on capital preservation with tighter stops and lower drawdown potential."
       ],
-      "read": "This plan prioritizes capital preservation with a target of around 1.5% per month. It aims for lower drawdowns by cutting leverage and reducing concentration, holding a larger cash position."
+      "read": "This conservative approach targets around 1.5% potential monthly return with a focus on capital preservation. It significantly reduces leverage and concentration, leading to lower expected volatility and drawdown. However, it also limits upside potential compared to more aggressive strategies."
     },
     "balanced": {
       "moves": [
         {
-          "sym": "SOXL",
+          "sym": "SPY",
           "action": "Trim",
-          "targetPct": 1,
-          "note": "Reduce leveraged ETF"
+          "targetPct": 25,
+          "note": "Cure concentration flag"
+        },
+        {
+          "sym": "SOXL",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Reduce leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit leveraged ETF"
-        },
-        {
-          "sym": "SMH",
-          "action": "Trim",
-          "targetPct": 8,
-          "note": "Reduce semiconductor exposure"
+          "note": "Reduce leveraged ETF exposure"
         },
         {
           "sym": "QQQI",
           "action": "Add",
-          "targetPct": 15,
-          "note": "Increase income allocation"
-        },
-        {
-          "sym": "AVGO",
-          "action": "Buy",
-          "targetPct": 12,
-          "note": "Add strong setup"
-        },
-        {
-          "sym": "SPY",
-          "action": "Trim",
           "targetPct": 25,
-          "note": "Reduce index concentration"
+          "note": "Blend income and broad index"
         },
         {
-          "sym": "CRWD",
-          "action": "Add",
-          "targetPct": 10,
-          "note": "Add quality tech"
+          "sym": "QQQ",
+          "action": "Trim",
+          "targetPct": 15,
+          "note": "Reduce concentration"
+        },
+        {
+          "sym": "GUSH",
+          "action": "Buy",
+          "targetPct": 5,
+          "note": "Add strong risk/reward setup"
         }
       ],
       "plan": [
-        "Reduce leveraged ETF exposure significantly.",
-        "Trim semiconductor holdings to lower risk.",
-        "Increase income allocation for stability.",
-        "Add a top-rated semiconductor stock (AVGO).",
-        "Reduce concentration in the broad index.",
-        "Add a strong AI/Software name (CRWD)."
+        "Trim SPY and QQQ to address current concentration flags and reduce overall risk.",
+        "Sell SOXL and SPAL to reduce leveraged ETF exposure, aligning with a risk-first growth approach.",
+        "Increase QQQI to blend income with broad index exposure for a more balanced portfolio.",
+        "Initiate a new position in GUSH, a high-scoring scanner setup, to add growth potential.",
+        "Maintain a moderate cash buffer to manage market swings.",
+        "This strategy aims for growth while prioritizing risk management and diversification."
       ],
-      "read": "This balanced approach targets around 2.5% per month, focusing on risk-first growth. It blends index exposure, quality tech, and some income, while reducing leverage and concentration."
+      "read": "This balanced approach targets around 2.5% potential monthly return with a focus on risk-first growth. It reduces overall leverage and concentration, aiming for a more stable growth trajectory. Expected volatility and drawdown are moderate, balancing potential returns with risk management."
     },
     "aggressive": {
       "moves": [
         {
+          "sym": "SPY",
+          "action": "Trim",
+          "targetPct": 25,
+          "note": "Cure concentration flag"
+        },
+        {
           "sym": "SOXL",
-          "action": "Add",
-          "targetPct": 5,
-          "note": "Increase leveraged ETF"
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Exit below stop, reallocate"
         },
         {
           "sym": "SPAL",
-          "action": "Buy",
-          "targetPct": 2,
-          "note": "Add leveraged ETF"
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Exit below stop, reallocate"
         },
         {
-          "sym": "SMH",
-          "action": "Add",
-          "targetPct": 15,
-          "note": "Increase semiconductor exposure"
-        },
-        {
-          "sym": "AVGO",
-          "action": "Buy",
-          "targetPct": 15,
-          "note": "Add top setup"
-        },
-        {
-          "sym": "DDOG",
+          "sym": "GUSH",
           "action": "Buy",
           "targetPct": 10,
-          "note": "Add strong setup"
+          "note": "Press strongest scanner setup"
         },
         {
-          "sym": "SPY",
-          "action": "Trim",
-          "targetPct": 20,
-          "note": "Reduce index concentration"
-        },
-        {
-          "sym": "QQQI",
-          "action": "Trim",
+          "sym": "CVX",
+          "action": "Buy",
           "targetPct": 10,
-          "note": "Reduce income allocation"
+          "note": "Add strong scanner setup"
+        },
+        {
+          "sym": "TZA",
+          "action": "Buy",
+          "targetPct": 5,
+          "note": "Add leveraged ETF for growth"
         }
       ],
       "plan": [
-        "Increase allocation to leveraged ETFs.",
-        "Boost exposure to semiconductors.",
-        "Add top-scoring scanner setups (AVGO, DDOG).",
-        "Reduce broad index and income allocations.",
-        "Concentrate capital in highest conviction plays.",
-        "Maintain a small cash buffer."
+        "Trim SPY to cure the concentration flag, freeing up capital for high-conviction plays.",
+        "Exit SOXL and SPAL as they are below stop and in downtrends, reallocating capital to stronger setups.",
+        "Initiate significant positions in GUSH and CVX, pressing the highest-scoring scanner setups.",
+        "Add TZA, a leveraged ETF, to lean into aggressive growth potential.",
+        "Maintain a smaller cash buffer, focusing on deploying capital into high-potential trades.",
+        "This strategy embraces leverage and concentration with strict stop discipline for aggressive growth."
       ],
-      "read": "This aggressive plan targets around 4% per month, accepting higher risk for potential growth. It leans into leverage and concentration, especially in semiconductors and top scanner setups. Be aware of amplified drawdowns and leveraged ETF decay."
+      "read": "This aggressive approach targets around 4% potential monthly return, aiming for stretched growth. It utilizes leverage and concentrates in high-scoring setups, which significantly raises both upside potential and drawdown risk. Leveraged ETFs like TZA decay daily and can lead to substantial losses quickly if not managed with strict stop discipline."
     },
     "income": {
       "moves": [
         {
+          "sym": "SPY",
+          "action": "Trim",
+          "targetPct": 20,
+          "note": "Reduce concentration, income focus"
+        },
+        {
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate leveraged ETF"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate leveraged ETF"
-        },
-        {
-          "sym": "SMH",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Eliminate volatile sector"
-        },
-        {
-          "sym": "CRWD",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Eliminate high-beta tech"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "QQQI",
           "action": "Add",
-          "targetPct": 40,
-          "note": "Maximize income ETF"
-        },
-        {
-          "sym": "SPY",
-          "action": "Add",
           "targetPct": 30,
-          "note": "Add broad index for income"
+          "note": "Prioritize income distributions"
         },
         {
-          "sym": "OXY",
-          "action": "Buy",
+          "sym": "QQQ",
+          "action": "Trim",
           "targetPct": 10,
-          "note": "Add income-generating stock"
+          "note": "Reduce growth exposure"
+        },
+        {
+          "sym": "CVX",
+          "action": "Buy",
+          "targetPct": 5,
+          "note": "Add quality for stability"
         }
       ],
       "plan": [
-        "Eliminate all leveraged ETFs and high-beta tech.",
-        "Maximize allocation to income-focused ETFs (QQQI).",
-        "Increase broad index for steady distributions.",
-        "Add an energy stock for income potential (OXY).",
-        "Focus on reliable monthly distributions.",
-        "Maintain a significant cash buffer."
+        "Trim SPY and QQQ to reduce concentration and shift focus towards income generation.",
+        "Completely exit SOXL and SPAL to eliminate all leveraged and high-beta exposure.",
+        "Significantly increase QQQI allocation to prioritize steady monthly distributions.",
+        "Initiate a small position in CVX, a quality name, for added stability and diversification.",
+        "Maintain a cash buffer to further reduce drawdown potential and support income goals.",
+        "This strategy aims to park cash for yield, focusing on low drawdown and reliable income."
       ],
-      "read": "This income-focused plan targets around 1% per month, prioritizing steady monthly distributions over growth. It aims for very low drawdowns by cutting leverage and volatile single names, holding substantial cash and income-generating assets."
+      "read": "This income approach targets around 1% potential monthly return, aiming to park cash for yield. It prioritizes low drawdown and reliable income distributions from ETFs. While designed for stability, distributions are variable, and NAV can still decline in market selloffs, meaning it is not a savings account."
     }
   }
 }
