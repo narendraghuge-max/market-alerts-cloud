@@ -9,7 +9,7 @@ import { dirname, join } from 'node:path';
 const dir = dirname(fileURLToPath(import.meta.url));
 const now = Date.now();
 const GATE_MS = 28 * 60 * 1000;
-const V = 10;                                   // engine prompt/schema version (bump to force one regen)
+const V = 11;                                   // engine prompt/schema version (bump to force one regen)
 const TARGET = +(process.env.TARGET_MONTHLY || 2.5);   // realistic monthly return target, %
 const read = f => { try { return JSON.parse(readFileSync(join(dir, f), 'utf8')); } catch { return null; } };
 const r2 = n => Math.round(n * 100) / 100;
@@ -165,8 +165,9 @@ const setups = (scan?.results || [])
   .map(s => `${s.symbol}: ${s.action} ${s.score}/12, entry ${s.levels.entry1}-${s.levels.entry2}, stop ${s.levels.stop}, targets ${s.levels.tp1}/${s.levels.tp2}/${s.levels.tp3}, R ${s.levels.rr}`);
 const attention = holdings.filter(h => h.status === 'SELL' || h.status === 'TRIM').map(h => `${h.sym} ${h.status} (${h.pnlPct >= 0 ? '+' : ''}${h.pnlPct}%)`);
 
-// ---- AI action plan: THREE modes (conservative / balanced / aggressive) in ONE call ----
+// ---- AI action plan: FOUR modes in ONE call, STICKY (carry the prior plan so it doesn't reshuffle every refresh) ----
 const modeSpec = MODES.map(m => `- "${m.key}" (${m.label}, target ~${m.target}%/mo): ${m.posture}`).join('\n');
+const priorPlan = (prevAI && prevAI.modes) ? MODES.map(m => `${m.key}: ${(prevAI.modes[m.key]?.moves || []).map(x => `${x.action} ${x.sym}${x.targetPct != null ? '→' + x.targetPct + '%' : ''}`).join(', ') || '(no moves)'}`).join('  |  ') : '';
 const prompt = `You are my portfolio risk manager & allocation strategist. Decision-support, NOT advice, NOT a guarantee - plain English, no jargon.
 I'm a retail trader on MARGIN, ~90% tech/chip-concentrated. Give me THREE alternative plans for the SAME current book - one per risk mode below. Use ONLY the data below; never invent numbers.
 
@@ -178,10 +179,10 @@ SCANNER'S BEST RISK/REWARD LONG SETUPS RIGHT NOW (the ONLY names you may propose
 MY MANDATE (hard limits every plan MUST stay inside): single name <=${IPS.maxName}%, any sector <=${IPS.maxSector}%, leveraged ETFs (SOXL/SPAL/TQQQ) <=${IPS.maxLev}% of book combined (now ${Math.round(levSleeve * 100)}%), gross leverage <=${IPS.maxGrossLev}x (now ${r2(marginLev)}x), true leverage <=${IPS.maxTrueLev}x (now ${r2(trueLev)}x).${breaches.length ? ' CURRENTLY BREACHED: ' + breaches.map(b => b.rule + ' ' + b.current + ' > ' + b.limit).join('; ') + ' — every mode MUST include the trims that cure these.' : ' Currently compliant.'}
 DISCIPLINE (NON-NEGOTIABLE, ALL MODES incl. aggressive): NEVER Add or Buy a name whose read above shows a downtrend/short, is below its stop, or is flagged SELL/TRIM — that is averaging down into weakness, NOT aggression. To ADD exposure use ONLY the strongest LONG setups from the scanner list. Aggressive = press what is WORKING + use leverage there; it is never permission to catch a falling knife.
 
-THE THREE MODES (make the plans genuinely DIFFERENT - conservative de-risks hardest, aggressive leans into leverage/concentration):
+THE MODES (make the plans genuinely DIFFERENT - conservative de-risks hardest, aggressive leans into leverage/concentration):
 ${modeSpec}
-
-Return ONLY valid JSON (no markdown), EXACTLY this shape (all three keys required):
+${priorPlan ? `\nYOUR CURRENT PLAN — BE STICKY. This is a swing/position book (NOT day-trading); a plan that reshuffles every few hours is useless and erodes trust. Current plan per mode:\n${priorPlan}\nREAFFIRM the SAME tickers/actions unless something MATERIAL changed since: a holding broke or hit its stop, a mandate breach appeared or cleared, or a clearly STRONGER new scanner long setup emerged. If nothing material changed, return essentially the SAME moves. Deviate only with a concrete reason.\n` : ''}
+Return ONLY valid JSON (no markdown), EXACTLY this shape (all four keys required):
 {"conservative":{"moves":[{"sym":"...","action":"Sell|Trim|Add|Buy|Watch","targetPct":<number>,"note":"<=7 words why"}],"plan":["...","..."],"read":"..."},"balanced":{"moves":[...],"plan":[...],"read":"..."},"aggressive":{"moves":[...],"plan":[...],"read":"..."},"income":{"moves":[...],"plan":[...],"read":"..."}}
 For EACH mode:
 - moves = 3-7 concrete moves matching THAT mode's posture. action = Sell (exit fully), Trim (reduce), Add (increase), Buy (start NEW), Watch (conditional add only if it triggers). targetPct = % of my book this name should be AFTER the move (0 to exit; Buy/Watch = intended size %). ONLY use tickers from my holdings or the scanner setups above. Obey the DISCIPLINE + MANDATE above: no Add/Buy on a weak/short/below-stop name, and keep the resulting book within the limits.
@@ -191,7 +192,7 @@ Decision-support / educational only. Never guarantee outcomes.`;
 
 async function claude(p) {
   const key = process.env.ANTHROPIC_API_KEY; if (!key) throw new Error('no ANTHROPIC_API_KEY');
-  const r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' }, body: JSON.stringify({ model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6', max_tokens: 3500, messages: [{ role: 'user', content: p }] }), signal: AbortSignal.timeout(45000) });
+  const r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' }, body: JSON.stringify({ model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6', max_tokens: 3500, temperature: 0, messages: [{ role: 'user', content: p }] }), signal: AbortSignal.timeout(45000) });
   if (!r.ok) throw new Error('claude HTTP ' + r.status);
   const t = ((await r.json()).content || []).filter(c => c.type === 'text').map(c => c.text).join('').trim();
   if (!t) throw new Error('claude empty'); return t;
@@ -200,7 +201,7 @@ async function gemini(p) {
   const key = process.env.GEMINI_API_KEY; if (!key) throw new Error('no GEMINI_API_KEY');
   for (const m of ['gemini-2.5-flash', 'gemini-2.5-flash-lite']) {
     try {
-      const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + m + ':generateContent?key=' + key, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: p }] }], generationConfig: { temperature: 0.5, maxOutputTokens: 4000, thinkingConfig: { thinkingBudget: 0 }, responseMimeType: 'application/json' } }), signal: AbortSignal.timeout(45000) });
+      const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + m + ':generateContent?key=' + key, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: p }] }], generationConfig: { temperature: 0, maxOutputTokens: 4000, thinkingConfig: { thinkingBudget: 0 }, responseMimeType: 'application/json' } }), signal: AbortSignal.timeout(45000) });
       if (!r.ok) continue;
       const t = (await r.json()).candidates?.[0]?.content?.parts?.[0]?.text; if (t) return t.trim();
     } catch {}

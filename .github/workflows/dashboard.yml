@@ -3,7 +3,7 @@ name: dashboard
 # Runs in the cloud on GitHub's servers - independent of any personal computer.
 on:
   schedule:
-    - cron: '*/15 8-23 * * 1-5'   # every 15 min, 08:00-23:59 UTC (≈4am-8pm ET), weekdays — pre-market through after-hours. ~64 deploys/day, safely under Vercel's free 100/day.
+    - cron: '*/15 8-23 * * 1-5'   # polls every 15 min, but the ANCHOR GATE only lets it regenerate + deploy 3x/day (open ~9:35, midday ~12:35, close ~16:10 ET) and FREEZES between — so swing recommendations stay stable intraday. ~3 deploys/day.
   workflow_dispatch:           # lets you run it manually from the Actions tab
 
 concurrency:
@@ -22,26 +22,37 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Anchor gate — regenerate only at open/midday/close ET, freeze between
+        id: gate
+        env:
+          EVENT: ${{ github.event_name }}
+        run: node anchor_gate.mjs >> "$GITHUB_OUTPUT"
+
       - name: Fetch market headlines (free, no AI)
+        if: steps.gate.outputs.is_anchor == 'true'
         run: node fetch_news.mjs
 
       - name: Holdings snapshot (for the briefing + engine)
+        if: steps.gate.outputs.is_anchor == 'true'
         env:
           HOLDINGS_JSON: ${{ secrets.HOLDINGS_JSON }}
         run: node scan_exits.mjs --json > exits.json
 
       - name: Buy-scan snapshot (shared by briefing + engine)
+        if: steps.gate.outputs.is_anchor == 'true'
         env:
           HOLDINGS_JSON: ${{ secrets.HOLDINGS_JSON }}
         run: node scan_smc.mjs --json > scan.json
 
-      - name: AI briefing + analyzed events (Claude, Gemini fallback; gated to ~30 min)
+      - name: AI briefing + analyzed events (Claude, Gemini fallback; deterministic temp 0)
+        if: steps.gate.outputs.is_anchor == 'true'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: node make_briefing.mjs
 
-      - name: Portfolio Engine (quant + $/share sizing every run ~15 min; AI plan gated ~30 min)
+      - name: Portfolio Engine (deterministic temp 0 + sticky plan)
+        if: steps.gate.outputs.is_anchor == 'true'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
@@ -53,24 +64,27 @@ jobs:
           IPS_MAXTRUELEV: '2.5'   # max look-through leverage (incl. 2x/3x ETF internal leverage)
         run: node portfolio_engine.mjs
 
-      - name: Persist briefing + events + engine AI cache between runs
+      - name: Persist AI cache + anchor state between runs
+        if: steps.gate.outputs.is_anchor == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add briefing.json events.json engine_ai.json
+          git add briefing.json events.json engine_ai.json anchor_state.json
           if git diff --cached --quiet; then
-            echo "no AI change to persist"
+            echo "nothing to persist"
           else
-            git commit -m "AI briefing + events + engine plan refresh [skip ci]"
+            git commit -m "Anchor refresh (open/midday/close) [skip ci]"
             git push
           fi
 
       - name: Generate dashboard (report.html)
+        if: steps.gate.outputs.is_anchor == 'true'
         env:
           HOLDINGS_JSON: ${{ secrets.HOLDINGS_JSON }}
         run: node scan_smc.mjs
 
       - name: Assemble static site
+        if: steps.gate.outputs.is_anchor == 'true'
         run: |
           mkdir -p site
           cp report.html site/index.html
@@ -79,6 +93,7 @@ jobs:
           node make_icon.mjs site   # PWA app icon + manifest (Investment Navigator)
 
       - name: Deploy to Vercel (same project = same URL)
+        if: steps.gate.outputs.is_anchor == 'true'
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}

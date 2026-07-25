@@ -78,7 +78,7 @@ async function gemini(p) {
     : [{ name: 'gemini-2.5-pro', think: -1, maxOut: 4000 }, { name: 'gemini-2.5-flash', think: -1, maxOut: 4000 }, { name: 'gemini-2.5-flash-lite', think: 0, maxOut: 1200 }];
   let lastErr;
   for (const m of MODELS) {
-    const body = JSON.stringify({ contents: [{ parts: [{ text: p }] }], generationConfig: { temperature: 0.5, maxOutputTokens: m.maxOut, thinkingConfig: { thinkingBudget: m.think }, responseMimeType: 'application/json' } });
+    const body = JSON.stringify({ contents: [{ parts: [{ text: p }] }], generationConfig: { temperature: 0, maxOutputTokens: m.maxOut, thinkingConfig: { thinkingBudget: m.think }, responseMimeType: 'application/json' } });
     for (let attempt = 0; attempt < 2; attempt++) {
       if (attempt) await new Promise(z => setTimeout(z, 1500));
       try {
@@ -99,7 +99,7 @@ async function claude(p) {
   const key = process.env.ANTHROPIC_API_KEY;
   if (!key) throw new Error('no ANTHROPIC_API_KEY');
   const model = process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-6';
-  const r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' }, body: JSON.stringify({ model, max_tokens: 1500, messages: [{ role: 'user', content: p }] }), signal: AbortSignal.timeout(45000) });
+  const r = await fetch('https://api.anthropic.com/v1/messages', { method: 'POST', headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' }, body: JSON.stringify({ model, max_tokens: 1500, temperature: 0, messages: [{ role: 'user', content: p }] }), signal: AbortSignal.timeout(45000) });
   if (!r.ok) throw new Error('claude HTTP ' + r.status + ' ' + (await r.text()).slice(0, 150));
   const t = ((await r.json()).content || []).filter(c => c.type === 'text').map(c => c.text).join('').trim();
   if (!t) throw new Error('claude empty response');
