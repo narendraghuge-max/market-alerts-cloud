@@ -1,6 +1,6 @@
 {
-  "aiTs": "7/30/2026, 6:01:09 AM (Gemini)",
-  "aiEpoch": 1785405669934,
+  "aiTs": "7/30/2026, 6:31:11 AM (Gemini)",
+  "aiEpoch": 1785407471956,
   "v": 11,
   "src": "Gemini",
   "modes": {
@@ -22,19 +22,19 @@
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Reduce concentration, cure breach"
+          "note": "Reduce concentration, broad index"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 15,
-          "note": "Favor income, broad index"
+          "note": "Favor income, quality name"
         },
         {
           "sym": "CRWD",
           "action": "Trim",
           "targetPct": 5,
-          "note": "Reduce single name exposure"
+          "note": "Reduce single name concentration"
         },
         {
           "sym": "MSFT",
@@ -44,14 +44,14 @@
         }
       ],
       "plan": [
-        "Sell SOXL and SPAL to zero to eliminate leveraged ETF exposure.",
-        "Trim SPY to 20% to reduce broad index concentration and cure the mandate breach.",
-        "Add to QQQI, targeting 15%, to favor income and broad index exposure.",
+        "Sell SOXL to 0% to eliminate leveraged ETF exposure.",
+        "Sell SPAL to 0% to eliminate leveraged ETF exposure.",
+        "Trim SPY to 20% to reduce concentration and meet mandate.",
+        "Add QQQI to 15% to favor income and quality.",
         "Trim CRWD to 5% to reduce single name concentration.",
-        "Buy MSFT, targeting 10%, as a top-quality name from the scanner.",
-        "Maintain a large cash buffer for capital preservation."
+        "Buy MSFT at 10% as a top-quality name."
       ],
-      "read": "This conservative plan targets around 1.5% per month, prioritizing capital preservation. It significantly reduces leverage and concentration, but still carries market risk, especially from broad index exposure."
+      "read": "This conservative plan targets around 1.5% per month, prioritizing capital preservation. It significantly reduces leverage and concentration, aiming for lower drawdown and steady performance."
     },
     "balanced": {
       "moves": [
@@ -71,13 +71,13 @@
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Reduce concentration, cure breach"
+          "note": "Reduce concentration, broad index"
         },
         {
           "sym": "TZA",
           "action": "Buy",
           "targetPct": 4,
-          "note": "Add inverse exposure for balance"
+          "note": "Add strong inverse setup"
         },
         {
           "sym": "QQQI",
@@ -87,13 +87,13 @@
         }
       ],
       "plan": [
-        "Trim SOXL to 3% and SPAL to 1% to reduce leveraged ETF exposure.",
-        "Trim SPY to 25% to reduce broad index concentration and cure the mandate breach.",
-        "Buy TZA, targeting 4%, to add some inverse market exposure for balance.",
-        "Add to QQQI, targeting 10%, to increase income exposure.",
-        "Keep total adds within total trims plus a cash buffer."
+        "Trim SOXL to 3% to reduce leveraged ETF exposure.",
+        "Trim SPAL to 1% to reduce leveraged ETF exposure.",
+        "Trim SPY to 25% to reduce concentration and meet mandate.",
+        "Buy TZA at 4% to add a strong inverse setup.",
+        "Add QQQI to 10% to increase income exposure."
       ],
-      "read": "This balanced plan aims for around 2.5% per month, focusing on risk-first growth. It reduces overall leverage and concentration, blending broad index with quality tech and some inverse exposure. Market downturns could still impact returns."
+      "read": "This balanced plan targets around 2.5% per month, focusing on risk-first growth. It blends broad index exposure with quality tech and a small amount of leverage, aiming for moderate growth with controlled risk."
     },
     "aggressive": {
       "moves": [
@@ -113,19 +113,19 @@
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Cure concentration breach"
+          "note": "Reduce concentration, broad index"
         },
         {
           "sym": "TZA",
           "action": "Buy",
           "targetPct": 6,
-          "note": "Add high-scoring inverse setup"
+          "note": "Add strong inverse setup"
         },
         {
           "sym": "SOXS",
           "action": "Buy",
           "targetPct": 5,
-          "note": "Add high-scoring inverse setup"
+          "note": "Add strong inverse semiconductor setup"
         },
         {
           "sym": "CRWD",
@@ -135,13 +135,14 @@
         }
       ],
       "plan": [
-        "Add to SOXL, targeting 6%, and SPAL, targeting 6%, to increase leveraged ETF exposure.",
-        "Trim SPY to 25% to cure the concentration breach.",
-        "Buy TZA, targeting 6%, and SOXS, targeting 5%, as high-scoring inverse setups.",
-        "Trim CRWD to 10% to reduce single name concentration.",
-        "Maintain a smaller cash buffer and use wider but strict stops."
+        "Add SOXL to 6% to increase leveraged ETF exposure.",
+        "Add SPAL to 6% to increase leveraged ETF exposure.",
+        "Trim SPY to 25% to reduce concentration and meet mandate.",
+        "Buy TZA at 6% to add a strong inverse setup.",
+        "Buy SOXS at 5% to add a strong inverse semiconductor setup.",
+        "Trim CRWD to 10% to reduce single name concentration."
       ],
-      "read": "This aggressive plan targets around 4% per month, aiming for stretched growth. It leans into leveraged ETFs and high-scoring scanner setups, which significantly increases both potential upside and drawdown. Leveraged ETFs decay daily, and this mode can lose a lot very quickly if stops are not strictly adhered to."
+      "read": "This aggressive plan targets around 4% per month, aiming for stretched growth. It leans into leveraged ETFs and high-scoring scanner setups, which significantly raises both upside potential and drawdown risk. Leveraged ETFs also experience daily decay and rebalancing, requiring strict stop discipline."
     },
     "income": {
       "moves": [
@@ -167,29 +168,30 @@
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Reduce concentration, cure breach"
+          "note": "Reduce concentration, broad index"
         },
         {
           "sym": "CRWD",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut high-beta single name"
+          "note": "Exit high-beta single name"
         },
         {
           "sym": "SMH",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut high-beta sector exposure"
+          "note": "Exit high-beta sector"
         }
       ],
       "plan": [
-        "Sell SOXL and SPAL to zero to eliminate all leveraged ETF exposure.",
-        "Add to QQQI, targeting 30%, to prioritize income and covered-call exposure.",
-        "Trim SPY to 20% to reduce broad index concentration and cure the mandate breach.",
-        "Sell CRWD and SMH to zero to cut high-beta single names and sector exposure.",
-        "Maintain a cash buffer for stability and prioritize low drawdown."
+        "Sell SOXL to 0% to eliminate leveraged ETF exposure.",
+        "Sell SPAL to 0% to eliminate leveraged ETF exposure.",
+        "Add QQQI to 30% to prioritize income and covered calls.",
+        "Trim SPY to 20% to reduce concentration and meet mandate.",
+        "Sell CRWD to 0% to exit high-beta single name.",
+        "Sell SMH to 0% to exit high-beta sector."
       ],
-      "read": "This income plan targets around 1% per month, focusing on parking cash for yield. It prioritizes steady monthly distributions from income ETFs and low drawdown. Distributions are variable, and NAV can still fall in market selloffs, so this is not a savings account."
+      "read": "This income plan targets around 1% per month, focusing on parking cash for yield. It rotates into income/covered-call ETFs and broad index for steady distributions, aiming for low drawdown. Distributions are variable, and NAV can still fall in a selloff."
     }
   }
 }
