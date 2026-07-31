@@ -1,65 +1,95 @@
 {
-  "aiTs": "7/31/2026, 10:01:18 AM (Gemini)",
-  "aiEpoch": 1785506478045,
+  "aiTs": "7/31/2026, 10:31:12 AM (Gemini)",
+  "aiEpoch": 1785508272983,
   "v": 11,
   "src": "Gemini",
   "modes": {
     "conservative": {
       "moves": [
         {
-          "sym": "SOXL",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Cut leveraged ETF exposure"
-        },
-        {
-          "sym": "SPAL",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Cut leveraged ETF exposure"
+          "sym": "SPY",
+          "action": "Trim",
+          "targetPct": 20,
+          "note": "Cure concentration, reduce risk"
         },
         {
           "sym": "QQQI",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce income exposure"
+          "note": "Exit downtrending income ETF"
         },
         {
           "sym": "QQQ",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce broad index exposure"
-        },
-        {
-          "sym": "SMH",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Reduce semiconductor exposure"
+          "note": "Exit downtrending broad index"
         },
         {
           "sym": "CRWD",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce tech concentration"
+          "note": "Exit downtrending software"
+        },
+        {
+          "sym": "SMH",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Exit downtrending semiconductors"
+        },
+        {
+          "sym": "SOXL",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Cut all leveraged ETFs"
+        },
+        {
+          "sym": "SPAL",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "MSFT",
           "action": "Buy",
           "targetPct": 10,
-          "note": "Add quality tech name"
+          "note": "Add top-quality long setup"
         }
       ],
       "plan": [
-        "Sell all leveraged ETFs (SOXL, SPAL) to zero.",
-        "Exit remaining tech/semiconductor holdings (QQQI, QQQ, SMH, CRWD).",
-        "Buy Microsoft (MSFT) as a quality tech addition.",
-        "This plan prioritizes capital preservation and reduces risk significantly.",
-        "It aims for steady, low-drawdown performance."
+        "Trim SPY to 20% to cure concentration and reduce broad index risk.",
+        "Sell QQQI, QQQ, CRWD, and SMH to exit downtrending positions.",
+        "Sell SOXL and SPAL to eliminate all leveraged ETF exposure.",
+        "Buy MSFT at 10% as a top-quality long setup for capital preservation.",
+        "Maintain a significant cash buffer for stability."
       ],
-      "read": "This conservative approach focuses on capital preservation. Expect lower monthly returns, around 1.5%, with significantly reduced drawdown risk. It prioritizes safety over aggressive growth."
+      "read": "This conservative plan targets capital preservation with a realistic outlook of ~1.5% per month. It significantly de-risks the portfolio by cutting all leveraged ETFs and downtrending positions, reducing concentration, and favoring high-quality setups. Expect lower drawdowns but also more modest returns."
     },
     "balanced": {
       "moves": [
+        {
+          "sym": "SPY",
+          "action": "Trim",
+          "targetPct": 25,
+          "note": "Cure concentration, reduce risk"
+        },
+        {
+          "sym": "QQQI",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Exit downtrending income ETF"
+        },
+        {
+          "sym": "QQQ",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Exit downtrending broad index"
+        },
+        {
+          "sym": "SMH",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Exit downtrending semiconductors"
+        },
         {
           "sym": "SOXL",
           "action": "Trim",
@@ -73,143 +103,128 @@
           "note": "Reduce leveraged ETF exposure"
         },
         {
-          "sym": "QQQI",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Reduce income exposure"
-        },
-        {
-          "sym": "QQQ",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Reduce broad index exposure"
-        },
-        {
-          "sym": "SMH",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Reduce semiconductor exposure"
-        },
-        {
           "sym": "SNOW",
           "action": "Buy",
           "targetPct": 4,
-          "note": "Add quality tech name"
+          "note": "Add quality tech long setup"
         }
       ],
       "plan": [
-        "Trim leveraged ETFs (SOXL, SPAL) to minimal levels.",
-        "Sell income (QQQI) and broad index (QQQ) holdings.",
-        "Exit semiconductor exposure (SMH).",
-        "Buy Snowflake (SNOW) as a quality tech addition.",
-        "This plan balances risk reduction with growth potential.",
-        "It aims for steady, risk-first growth."
+        "Trim SPY to 25% to cure concentration and reduce broad index risk.",
+        "Sell QQQI, QQQ, and SMH to exit downtrending positions.",
+        "Trim SOXL to 3% and SPAL to 1% to reduce leveraged ETF exposure.",
+        "Buy SNOW at 4% as a quality tech long setup.",
+        "Maintain a cash buffer of ~10% for flexibility."
       ],
-      "read": "This balanced plan aims for risk-first growth, targeting around 2.5% per month. It reduces concentration and leverage while adding quality names. Drawdowns are expected to be moderate."
+      "read": "This balanced plan prioritizes risk-first growth, targeting ~2.5% per month. It reduces overall leverage and concentration while blending broad index exposure with quality tech. The plan aims for a moderate risk profile with controlled drawdowns, balancing growth potential with capital protection."
     },
     "aggressive": {
       "moves": [
         {
-          "sym": "SOXL",
-          "action": "Add",
-          "targetPct": 6,
-          "note": "Increase leveraged ETF exposure"
-        },
-        {
-          "sym": "SPAL",
-          "action": "Add",
-          "targetPct": 6,
-          "note": "Increase leveraged ETF exposure"
+          "sym": "SPY",
+          "action": "Trim",
+          "targetPct": 25,
+          "note": "Cure concentration, reduce risk"
         },
         {
           "sym": "QQQI",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce income exposure"
+          "note": "Exit downtrending income ETF"
         },
         {
           "sym": "QQQ",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce broad index exposure"
+          "note": "Exit downtrending broad index"
         },
         {
           "sym": "SMH",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce semiconductor exposure"
+          "note": "Exit downtrending semiconductors"
+        },
+        {
+          "sym": "SOXL",
+          "action": "Add",
+          "targetPct": 6,
+          "note": "Increase leveraged semiconductor…"
+        },
+        {
+          "sym": "SPAL",
+          "action": "Add",
+          "targetPct": 6,
+          "note": "Increase leveraged space exposure"
         },
         {
           "sym": "SNOW",
           "action": "Buy",
           "targetPct": 6,
-          "note": "Add high-scoring tech name"
+          "note": "Add high-scoring tech long setup"
         }
       ],
       "plan": [
-        "Increase leveraged ETFs (SOXL, SPAL) to target levels.",
-        "Sell income (QQQI) and broad index (QQQ) holdings.",
-        "Exit semiconductor exposure (SMH).",
-        "Buy Snowflake (SNOW) as a high-conviction addition.",
-        "This plan aggressively pursues growth by increasing leverage and concentration.",
-        "It accepts higher potential upside and significantly larger drawdowns."
+        "Trim SPY to 25% to cure concentration while maintaining exposure.",
+        "Sell QQQI, QQQ, and SMH to exit downtrending positions.",
+        "Add SOXL to 6% and SPAL to 6% to increase leveraged ETF exposure.",
+        "Buy SNOW at 6% as a high-scoring tech long setup.",
+        "Maintain a smaller cash buffer (~5%) and use strict stops."
       ],
-      "read": "This aggressive plan targets substantial growth, around 4% per month, by leaning into leverage and high-conviction names. Expect amplified gains and losses, with leveraged ETFs subject to daily decay. Strict stop discipline is crucial to manage potentially large drawdowns."
+      "read": "This aggressive growth plan targets ~4% per month by leaning into leverage and high-scoring setups. It significantly increases both upside potential and drawdown risk, especially with leveraged ETFs subject to decay. Strict stop discipline is crucial to manage the amplified losses possible with this approach."
     },
     "income": {
       "moves": [
         {
-          "sym": "SOXL",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Eliminate leveraged ETF exposure"
-        },
-        {
-          "sym": "SPAL",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Eliminate leveraged ETF exposure"
+          "sym": "SPY",
+          "action": "Trim",
+          "targetPct": 20,
+          "note": "Reduce broad index, free cash"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 30,
-          "note": "Increase income ETF exposure"
-        },
-        {
-          "sym": "SPY",
-          "action": "Trim",
-          "targetPct": 20,
-          "note": "Reduce broad index exposure"
+          "note": "Increase income ETF for distributions"
         },
         {
           "sym": "QQQ",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate broad index exposure"
+          "note": "Exit broad index, focus income"
         },
         {
           "sym": "CRWD",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate tech concentration"
+          "note": "Exit high-beta single name"
         },
         {
           "sym": "SMH",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate semiconductor exposure"
+          "note": "Exit high-beta sector ETF"
+        },
+        {
+          "sym": "SOXL",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Cut all leveraged ETFs"
+        },
+        {
+          "sym": "SPAL",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Cut all leveraged ETFs"
         }
       ],
       "plan": [
-        "Sell all leveraged ETFs (SOXL, SPAL) and high-beta tech (QQQ, CRWD, SMH).",
-        "Increase income ETF (QQQI) to a significant allocation.",
-        "Reduce broad index (SPY) exposure.",
-        "This plan prioritizes generating steady monthly income.",
-        "It aims for low drawdowns and reliable distributions.",
-        "Growth potential is secondary to income generation."
+        "Trim SPY to 20% to reduce broad index exposure and free up capital.",
+        "Add QQQI to 30% to significantly increase income-generating exposure.",
+        "Sell QQQ, CRWD, SMH, SOXL, and SPAL to eliminate growth-oriented and leveraged positions.",
+        "Focus on steady monthly distributions with a low drawdown priority.",
+        "Maintain a cash buffer for stability and future income opportunities."
       ],
-      "read": "This income-focused plan prioritizes steady monthly distributions, targeting around 1% per month. It shifts capital to income-generating ETFs and reduces volatile assets. While aiming for low drawdowns, NAV can still decline in market selloffs, and distributions are not guaranteed."
+      "read": "This income plan targets ~1% per month by prioritizing steady monthly distributions. It rotates heavily into income ETFs and broad index, cutting leverage and high-beta names to near zero. While aiming for low drawdown, distributions are variable, and NAV can still decline in market selloffs; this is not a savings account."
     }
   }
 }
