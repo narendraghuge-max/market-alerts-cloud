@@ -1,6 +1,6 @@
 {
-  "aiTs": "8/4/2026, 5:31:07 AM (Gemini)",
-  "aiEpoch": 1785835867280,
+  "aiTs": "8/4/2026, 6:01:19 AM (Gemini)",
+  "aiEpoch": 1785837679184,
   "v": 11,
   "src": "Gemini",
   "modes": {
@@ -10,41 +10,47 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF exposure"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF exposure"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Reduce concentration, build cash"
+          "note": "Reduce concentration, meet mandate"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 15,
-          "note": "Increase income focus"
+          "note": "Favor income, broad index"
         },
         {
           "sym": "CRWD",
           "action": "Trim",
           "targetPct": 10,
           "note": "Reduce single name concentration"
+        },
+        {
+          "sym": "SMH",
+          "action": "Trim",
+          "targetPct": 0,
+          "note": "Exit flagged downtrend"
         }
       ],
       "plan": [
-        "Sell all leveraged ETFs (SOXL, SPAL) to zero.",
-        "Trim SPY to 20% to reduce concentration and build cash.",
-        "Add QQQI to 15% for income generation.",
-        "Trim CRWD to 10% to further reduce single name concentration.",
-        "Hold remaining positions as is."
+        "Sell SOXL and SPAL to zero, eliminating all leveraged ETF exposure.",
+        "Trim SPY to 20% to reduce concentration and meet the mandate.",
+        "Add to QQQI, bringing it to 15% to favor income and broad index exposure.",
+        "Trim CRWD to 10% to reduce single name concentration.",
+        "Sell SMH to zero, exiting a flagged downtrending position."
       ],
-      "read": "This plan prioritizes capital preservation with a target of around 1.5% monthly return. It significantly reduces leverage and concentration, holding a larger cash buffer for stability and lower drawdowns."
+      "read": "This conservative plan targets capital preservation with a potential ~1.5%/month return. It significantly reduces risk by eliminating leveraged ETFs and lowering concentration, but still carries market exposure."
     },
     "balanced": {
       "moves": [
@@ -64,29 +70,35 @@
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Reduce concentration to mandate limit"
+          "note": "Reduce concentration, meet mandate"
         },
         {
           "sym": "SNOW",
           "action": "Buy",
           "targetPct": 4,
-          "note": "Add strong risk/reward setup"
+          "note": "Add strong scanner setup"
         },
         {
           "sym": "CRWD",
           "action": "Trim",
           "targetPct": 10,
           "note": "Reduce single name concentration"
+        },
+        {
+          "sym": "SMH",
+          "action": "Trim",
+          "targetPct": 0,
+          "note": "Exit flagged downtrend"
         }
       ],
       "plan": [
-        "Trim leveraged ETFs SOXL to 3% and SPAL to 1%.",
-        "Trim SPY to 25% to meet concentration mandate.",
-        "Buy SNOW at 4% as a new, high-scoring addition.",
-        "Trim CRWD to 10% to manage single stock risk.",
-        "Hold other positions to maintain a balanced approach."
+        "Trim SOXL to 3% and SPAL to 1%, reducing leveraged ETF exposure.",
+        "Trim SPY to 25% to reduce concentration and meet the mandate.",
+        "Buy SNOW at 4% of the book, adding a strong scanner setup.",
+        "Trim CRWD to 10% to reduce single name concentration.",
+        "Sell SMH to zero, exiting a flagged downtrending position."
       ],
-      "read": "This balanced approach aims for risk-first growth, targeting around 2.5% monthly. It reduces leverage and concentration while adding a promising new name, maintaining a moderate cash buffer."
+      "read": "This balanced plan targets risk-first growth with a potential ~2.5%/month return. It blends broad index exposure with quality tech and small leveraged positions, accepting moderate market risk."
     },
     "aggressive": {
       "moves": [
@@ -106,29 +118,35 @@
           "sym": "SNOW",
           "action": "Buy",
           "targetPct": 6,
-          "note": "Add strong risk/reward setup"
+          "note": "Add strong scanner setup"
         },
         {
           "sym": "CRWD",
           "action": "Add",
           "targetPct": 14,
-          "note": "Maintain strong performer"
+          "note": "Lean into working position"
         },
         {
           "sym": "SMH",
           "action": "Trim",
           "targetPct": 10,
-          "note": "Reduce underperforming sector exposure"
+          "note": "Reduce flagged downtrend"
+        },
+        {
+          "sym": "SPY",
+          "action": "Trim",
+          "targetPct": 25,
+          "note": "Meet concentration mandate"
         }
       ],
       "plan": [
-        "Increase leveraged ETFs SOXL and SPAL to 6% each.",
-        "Buy SNOW at 6% as a high-conviction, strong setup.",
-        "Add to CRWD, maintaining its position at 14%.",
-        "Trim SMH to 10% to reduce exposure in a weak sector.",
-        "Hold other positions to maximize aggressive growth potential."
+        "Add to SOXL and SPAL, bringing each to 6% to increase leveraged ETF exposure.",
+        "Buy SNOW at 6% of the book, adding a strong scanner setup.",
+        "Add to CRWD, maintaining its current 14% allocation to lean into a working position.",
+        "Trim SMH to 10% to reduce exposure to a flagged downtrend.",
+        "Trim SPY to 25% to meet the concentration mandate."
       ],
-      "read": "This aggressive plan targets ~4% monthly growth by leaning into leverage and high-scoring setups, including leveraged ETFs. Expect higher potential upside but also significantly larger drawdowns and the risk of rapid losses due to leverage and ETF decay."
+      "read": "This aggressive plan targets stretch growth with a potential ~4%/month return. It significantly increases both upside and drawdown risk due to higher leverage and concentration, and leveraged ETFs decay daily. Strict stop discipline is critical."
     },
     "income": {
       "moves": [
@@ -136,47 +154,47 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate high-beta, leveraged ETFs"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate high-beta, leveraged ETFs"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 30,
-          "note": "Maximize income generation"
+          "note": "Prioritize income, broad index"
         },
         {
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Reduce concentration, build cash"
+          "note": "Reduce concentration, meet mandate"
         },
         {
           "sym": "CRWD",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut high-beta single names"
+          "note": "Exit high-beta single name"
         },
         {
           "sym": "SMH",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut high-beta single names"
+          "note": "Exit high-beta, downtrending"
         }
       ],
       "plan": [
-        "Sell all leveraged ETFs (SOXL, SPAL) to zero.",
-        "Significantly increase QQQI to 30% for income focus.",
-        "Trim SPY to 20% to reduce concentration and increase cash buffer.",
-        "Sell high-beta single names CRWD and SMH to zero.",
-        "Hold remaining positions for steady, lower-risk income generation."
+        "Sell SOXL and SPAL to zero, eliminating all leveraged ETF exposure.",
+        "Add to QQQI, bringing it to 30% to prioritize income and broad index exposure.",
+        "Trim SPY to 20% to reduce concentration and meet the mandate.",
+        "Sell CRWD to zero, exiting a high-beta single name.",
+        "Sell SMH to zero, exiting a high-beta, downtrending position."
       ],
-      "read": "This income-focused plan targets around 1% monthly through distributions, prioritizing capital preservation and reliable income over growth. It cuts leverage and high-beta names, focusing on income-generating assets and a cash buffer, accepting lower potential upside for reduced volatility."
+      "read": "This income plan targets parking cash for yield with a potential ~1%/month return. It prioritizes low drawdown and reliable distributions, but distributions are variable and NAV can still fall in a selloff."
     }
   }
 }
