@@ -1,8 +1,8 @@
 {
-  "aiTs": "8/18/2026, 5:01:46 PM (auto)",
-  "aiEpoch": 1787086906642,
+  "aiTs": "8/18/2026, 5:31:19 PM (Gemini)",
+  "aiEpoch": 1787088679105,
   "v": 11,
-  "src": "auto",
+  "src": "Gemini",
   "modes": {
     "conservative": {
       "moves": [
@@ -10,28 +10,48 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "no leverage"
+          "note": "Cut all leveraged ETFs to zero"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "no leverage"
+          "note": "Cut all leveraged ETFs to zero"
+        },
+        {
+          "sym": "SMH",
+          "action": "Trim",
+          "targetPct": 10,
+          "note": "Trim flagged holding, reduce semis"
         },
         {
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 20,
-          "note": "cap single name"
+          "note": "Reduce concentration, meet mandate"
+        },
+        {
+          "sym": "QQQI",
+          "action": "Add",
+          "targetPct": 25,
+          "note": "Favor income, broad index"
+        },
+        {
+          "sym": "CRWD",
+          "action": "Trim",
+          "targetPct": 10,
+          "note": "Cap single name <=20%"
         }
       ],
       "plan": [
-        "Exit leveraged ETFs (SOXL, SPAL) - they decay and can gap against you.",
-        "Trim SPY (32%) to ~20% to cap single-name risk.",
-        "Lean on income (QQQI) + broad index; hold a 15-20% cash buffer.",
-        "Use tight stops - the goal is small, steady gains and shallow drawdowns."
+        "Sell SOXL and SPAL to zero to eliminate all leveraged ETF exposure.",
+        "Trim SMH as it is flagged and to reduce semiconductor concentration.",
+        "Reduce SPY to 20% to meet the single name concentration mandate.",
+        "Increase QQQI to 25% to favor income and broad index exposure.",
+        "Trim CRWD to 10% to cap single name exposure at 20%.",
+        "This plan prioritizes capital preservation and reduces overall risk."
       ],
-      "read": "A ~1.5%/mo steady target is realistic for a de-risked book; expect calmer swings but you give up some upside in strong tapes. Preservation first."
+      "read": "This conservative plan targets a modest ~1.5% per month, focusing on capital preservation and low drawdown. It significantly reduces leverage and concentration, but still carries market risk, especially from remaining tech exposure."
     },
     "balanced": {
       "moves": [
@@ -39,34 +59,48 @@
           "sym": "SOXL",
           "action": "Trim",
           "targetPct": 3,
-          "note": "cut leverage/decay"
+          "note": "Reduce leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Trim",
           "targetPct": 2,
-          "note": "cut leverage/decay"
+          "note": "Reduce leveraged ETF exposure"
+        },
+        {
+          "sym": "SMH",
+          "action": "Trim",
+          "targetPct": 10,
+          "note": "Trim flagged holding, reduce semis"
         },
         {
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 25,
-          "note": "reduce concentration"
+          "note": "Reduce concentration, meet mandate"
         },
         {
           "sym": "NFLX",
           "action": "Buy",
           "targetPct": 4,
-          "note": "scanner top setup"
+          "note": "Add strong scanner setup"
+        },
+        {
+          "sym": "CRWD",
+          "action": "Trim",
+          "targetPct": 10,
+          "note": "Reduce concentration"
         }
       ],
       "plan": [
-        "Keep leveraged ETFs small (<=3%) and on tight stops - they decay and amplify drawdowns.",
-        "Trim SPY (32%) toward ~25% to cut single-name risk.",
-        "Best fresh setup: NFLX: WATCH 9/12, entry 77.69-77.61, stop 77.5, targets 78.11/78.43/78.73, R 2.16. A starter (~4%) only if it triggers.",
-        "Hold a ~10% cash buffer and respect every stop."
+        "Trim SOXL to 3% and SPAL to 2% to reduce leveraged ETF exposure.",
+        "Trim SMH to 10% as it is flagged and to reduce semiconductor concentration.",
+        "Reduce SPY to 25% to meet the single name concentration mandate.",
+        "Buy NFLX at 4% as a strong scanner setup to diversify.",
+        "Trim CRWD to 10% to reduce concentration.",
+        "This plan balances risk and growth, maintaining a small cash buffer."
       ],
-      "read": "A ~2.5%/mo target is aggressive but not impossible in a strong tape; hinges on cutting concentration/leverage + consistency. Expect losing months - size so a bad one (~-26.42%) doesn't force your hand."
+      "read": "This balanced plan aims for ~2.5% per month, focusing on risk-first growth by reducing leverage and concentration. It blends broad index exposure with quality tech, but market volatility can still impact returns."
     },
     "aggressive": {
       "moves": [
@@ -74,28 +108,48 @@
           "sym": "SOXL",
           "action": "Add",
           "targetPct": 6,
-          "note": "lean into momentum"
+          "note": "Increase leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Add",
           "targetPct": 6,
-          "note": "lean into momentum"
+          "note": "Increase leveraged ETF exposure"
+        },
+        {
+          "sym": "SPY",
+          "action": "Trim",
+          "targetPct": 25,
+          "note": "Meet concentration mandate"
         },
         {
           "sym": "NFLX",
           "action": "Buy",
           "targetPct": 6,
-          "note": "high-conviction setup"
+          "note": "Add strong scanner setup"
+        },
+        {
+          "sym": "CRWD",
+          "action": "Add",
+          "targetPct": 18,
+          "note": "Press what is working"
+        },
+        {
+          "sym": "SMH",
+          "action": "Trim",
+          "targetPct": 10,
+          "note": "Trim flagged holding"
         }
       ],
       "plan": [
-        "Lean into leveraged ETFs (SOXL, SPAL) toward ~6% each - but hold a STRICT stop; they decay and can drop hard fast.",
-        "Press the strongest scanner setup: NFLX: WATCH 9/12, entry 77.69-77.61, stop 77.5, targets 78.11/78.43/78.73, R 2.16 (~6%).",
-        "Run a small (~5%) cash buffer - stay invested for the upside.",
-        "Wider but STRICT stops. This mode can lose a lot fast - discipline is everything."
+        "Increase SOXL to 6% and SPAL to 6% to lean into leveraged ETFs.",
+        "Trim SPY to 25% to meet the single name concentration mandate.",
+        "Buy NFLX at 6% as a high-scoring scanner setup.",
+        "Increase CRWD to 18% to press what is working.",
+        "Trim SMH to 10% as it is flagged.",
+        "This plan uses leverage and concentrates in high-scoring setups."
       ],
-      "read": "A ~4%/mo stretch target needs leverage + a strong tape + tight discipline; the same leverage means a bad month can run past -45%. Higher upside AND higher risk of a deep drawdown - not a promise."
+      "read": "This aggressive plan targets ~4% per month, aiming for stretch growth by using leverage and concentration. This approach significantly raises both upside potential and drawdown risk, with leveraged ETFs subject to daily decay and rebalancing. Strict stop discipline is crucial to manage potential rapid losses."
     },
     "income": {
       "moves": [
@@ -103,34 +157,48 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "too volatile to park"
+          "note": "Cut all leveraged ETFs to zero"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "too volatile to park"
+          "note": "Cut all leveraged ETFs to zero"
         },
         {
-          "sym": "QQQI",
-          "action": "Add",
-          "targetPct": 30,
-          "note": "income anchor"
+          "sym": "SMH",
+          "action": "Trim",
+          "targetPct": 5,
+          "note": "Reduce high-beta single names"
         },
         {
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 20,
-          "note": "cut single-name risk"
+          "note": "Reduce concentration, favor income"
+        },
+        {
+          "sym": "QQQI",
+          "action": "Add",
+          "targetPct": 30,
+          "note": "Rotate into income ETF"
+        },
+        {
+          "sym": "QQQ",
+          "action": "Trim",
+          "targetPct": 10,
+          "note": "Reduce growth exposure"
         }
       ],
       "plan": [
-        "Exit leveraged ETFs (SOXL, SPAL) - too volatile for parked cash.",
-        "Build QQQI toward ~30% as your monthly-distribution anchor.",
-        "Keep the rest in broad index + a cash buffer; the distributions pay you monthly.",
-        "Low-drawdown income park - but NAV can still dip and distributions vary (not a savings account)."
+        "Sell SOXL and SPAL to zero to eliminate all leveraged ETF exposure.",
+        "Trim SMH to 5% to reduce high-beta single name exposure.",
+        "Reduce SPY to 20% to meet the concentration mandate and favor income.",
+        "Increase QQQI to 30% to rotate into income-focused ETFs.",
+        "Trim QQQ to 10% to reduce growth exposure.",
+        "This plan prioritizes steady monthly distributions and low drawdown."
       ],
-      "read": "Covered-call ETFs (QQQI/JEPQ/JEPI/SPYI) can distribute ~1%/mo (~13%/yr) as steady income, but they cap upside and NAV can fall in a selloff. Good for parking cash for yield, not for growth; distributions are variable, not guaranteed."
+      "read": "This income plan targets ~1% per month, focusing on parking cash for yield and steady distributions. While prioritizing low drawdown, distributions are variable and NAV can still fall in a selloff, meaning it is not a savings account."
     }
   }
 }
