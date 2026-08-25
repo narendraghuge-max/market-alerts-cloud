@@ -1,8 +1,8 @@
 {
-  "aiTs": "8/25/2026, 4:01:11 PM (Gemini)",
-  "aiEpoch": 1787688071354,
+  "aiTs": "8/25/2026, 4:31:01 PM (auto)",
+  "aiEpoch": 1787689861660,
   "v": 11,
-  "src": "Gemini",
+  "src": "auto",
   "modes": {
     "conservative": {
       "moves": [
@@ -10,153 +10,92 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "no leverage"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "no leverage"
         },
         {
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Reduce concentration, cure breach"
-        },
-        {
-          "sym": "CRWD",
-          "action": "Trim",
-          "targetPct": 10,
-          "note": "Trim flagged holding"
-        },
-        {
-          "sym": "SMH",
-          "action": "Trim",
-          "targetPct": 8,
-          "note": "Trim flagged holding"
-        },
-        {
-          "sym": "QQQI",
-          "action": "Add",
-          "targetPct": 25,
-          "note": "Favor income, broad index"
-        },
-        {
-          "sym": "GLD",
-          "action": "Buy",
-          "targetPct": 5,
-          "note": "Diversify with top-quality setup"
+          "note": "cap single name"
         }
       ],
       "plan": [
-        "Sell SOXL and SPAL to zero to eliminate all leveraged ETF exposure.",
-        "Trim SPY to 20% to reduce concentration and cure the sector breach.",
-        "Trim CRWD to 10% and SMH to 8% as they are flagged by the scanner.",
-        "Add to QQQI, targeting 25% of the book, to favor income and broad index exposure.",
-        "Buy GLD at 5% for diversification and a top-quality setup."
+        "Exit leveraged ETFs (SOXL, SPAL) - they decay and can gap against you.",
+        "Trim SPY (33%) to ~20% to cap single-name risk.",
+        "Lean on income (QQQI) + broad index; hold a 15-20% cash buffer.",
+        "Use tight stops - the goal is small, steady gains and shallow drawdowns."
       ],
-      "read": "This conservative plan targets capital preservation with a potential ~1.5%/month return. It significantly de-risks the portfolio by cutting leveraged ETFs and reducing concentration. Expect lower drawdowns but also more modest growth potential."
+      "read": "A ~1.5%/mo steady target is realistic for a de-risked book; expect calmer swings but you give up some upside in strong tapes. Preservation first."
     },
     "balanced": {
       "moves": [
         {
           "sym": "SOXL",
           "action": "Trim",
-          "targetPct": 0,
-          "note": "Reduce leverage to small"
+          "targetPct": 3,
+          "note": "cut leverage/decay"
         },
         {
           "sym": "SPAL",
           "action": "Trim",
-          "targetPct": 0,
-          "note": "Reduce leverage to small"
+          "targetPct": 2,
+          "note": "cut leverage/decay"
         },
         {
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Reduce concentration, cure breach"
-        },
-        {
-          "sym": "CRWD",
-          "action": "Trim",
-          "targetPct": 10,
-          "note": "Trim flagged holding"
-        },
-        {
-          "sym": "SMH",
-          "action": "Trim",
-          "targetPct": 10,
-          "note": "Trim flagged holding"
+          "note": "reduce concentration"
         },
         {
           "sym": "HOOD",
           "action": "Buy",
           "targetPct": 4,
-          "note": "Add strong scanner setup"
+          "note": "scanner top setup"
         }
       ],
       "plan": [
-        "Trim SOXL and SPAL to zero to reduce overall leverage.",
-        "Trim SPY to 25% to address concentration and sector breaches.",
-        "Trim CRWD to 10% and SMH to 10% based on scanner flags.",
-        "Buy HOOD at 4% to add a strong risk/reward setup from the scanner."
+        "Keep leveraged ETFs small (<=3%) and on tight stops - they decay and amplify drawdowns.",
+        "Trim SPY (33%) toward ~25% to cut single-name risk.",
+        "Best fresh setup: HOOD: ACCUMULATE 9/12, entry 105.89-105.47, stop 102.53, targets 112.5/118.65/124.35, R 1.97. A starter (~4%) only if it triggers.",
+        "Hold a ~10% cash buffer and respect every stop."
       ],
-      "read": "The balanced plan aims for risk-first growth, targeting ~2.5%/month. It reduces leverage and concentration while blending broad index with quality tech. This approach seeks a moderate balance between growth and drawdown risk."
+      "read": "A ~2.5%/mo target is aggressive but not impossible in a strong tape; hinges on cutting concentration/leverage + consistency. Expect losing months - size so a bad one (~-21.67%) doesn't force your hand."
     },
     "aggressive": {
       "moves": [
         {
-          "sym": "SPY",
-          "action": "Trim",
-          "targetPct": 25,
-          "note": "Cure concentration breach"
+          "sym": "SOXL",
+          "action": "Add",
+          "targetPct": 6,
+          "note": "lean into momentum"
         },
         {
-          "sym": "QQQI",
-          "action": "Trim",
-          "targetPct": 10,
-          "note": "Reduce income for growth"
-        },
-        {
-          "sym": "QQQ",
-          "action": "Trim",
-          "targetPct": 10,
-          "note": "Reduce broad index for growth"
-        },
-        {
-          "sym": "CRWD",
-          "action": "Trim",
-          "targetPct": 10,
-          "note": "Trim flagged holding"
-        },
-        {
-          "sym": "SMH",
-          "action": "Trim",
-          "targetPct": 10,
-          "note": "Trim flagged holding"
+          "sym": "SPAL",
+          "action": "Add",
+          "targetPct": 6,
+          "note": "lean into momentum"
         },
         {
           "sym": "HOOD",
           "action": "Buy",
-          "targetPct": 8,
-          "note": "Add highest-scoring setup"
-        },
-        {
-          "sym": "MARA",
-          "action": "Buy",
-          "targetPct": 8,
-          "note": "Add strong scanner setup"
+          "targetPct": 6,
+          "note": "high-conviction setup"
         }
       ],
       "plan": [
-        "Trim SPY to 25% to cure the concentration breach.",
-        "Trim QQQI to 10% and QQQ to 10% to free up capital for higher growth.",
-        "Trim CRWD to 10% and SMH to 10% based on scanner flags.",
-        "Buy HOOD at 8% and MARA at 8% to concentrate in high-scoring scanner setups."
+        "Lean into leveraged ETFs (SOXL, SPAL) toward ~6% each - but hold a STRICT stop; they decay and can drop hard fast.",
+        "Press the strongest scanner setup: HOOD: ACCUMULATE 9/12, entry 105.89-105.47, stop 102.53, targets 112.5/118.65/124.35, R 1.97 (~6%).",
+        "Run a small (~5%) cash buffer - stay invested for the upside.",
+        "Wider but STRICT stops. This mode can lose a lot fast - discipline is everything."
       ],
-      "read": "This aggressive growth plan targets ~4%/month by leaning into leverage and concentration. It raises both upside and drawdown potential, with leveraged ETFs subject to daily decay. Strict stop discipline is crucial to manage the higher risk."
+      "read": "A ~4%/mo stretch target needs leverage + a strong tape + tight discipline; the same leverage means a bad month can run past -37%. Higher upside AND higher risk of a deep drawdown - not a promise."
     },
     "income": {
       "moves": [
@@ -164,53 +103,34 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "too volatile to park"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
-        },
-        {
-          "sym": "SPY",
-          "action": "Trim",
-          "targetPct": 20,
-          "note": "Reduce concentration, cure breach"
-        },
-        {
-          "sym": "CRWD",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Exit high-beta single name"
-        },
-        {
-          "sym": "SMH",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Exit high-beta single name"
+          "note": "too volatile to park"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 30,
-          "note": "Prioritize income, low drawdown"
+          "note": "income anchor"
         },
         {
-          "sym": "GLD",
-          "action": "Buy",
-          "targetPct": 5,
-          "note": "Diversify for stability"
+          "sym": "SPY",
+          "action": "Trim",
+          "targetPct": 20,
+          "note": "cut single-name risk"
         }
       ],
       "plan": [
-        "Sell SOXL and SPAL to zero to eliminate all leveraged ETFs.",
-        "Trim SPY to 20% to reduce concentration and cure the sector breach.",
-        "Sell CRWD and SMH to zero to exit high-beta single names.",
-        "Add to QQQI, targeting 30% of the book, to prioritize income and low drawdown.",
-        "Buy GLD at 5% for diversification and stability."
+        "Exit leveraged ETFs (SOXL, SPAL) - too volatile for parked cash.",
+        "Build QQQI toward ~30% as your monthly-distribution anchor.",
+        "Keep the rest in broad index + a cash buffer; the distributions pay you monthly.",
+        "Low-drawdown income park - but NAV can still dip and distributions vary (not a savings account)."
       ],
-      "read": "The income plan targets ~1%/month by rotating into income/covered-call ETFs and broad index. It prioritizes low drawdown and reliable distributions over growth. Distributions are variable, and NAV can still fall in a selloff."
+      "read": "Covered-call ETFs (QQQI/JEPQ/JEPI/SPYI) can distribute ~1%/mo (~13%/yr) as steady income, but they cap upside and NAV can fall in a selloff. Good for parking cash for yield, not for growth; distributions are variable, not guaranteed."
     }
   }
 }
