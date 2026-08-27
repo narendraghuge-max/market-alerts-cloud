@@ -1,8 +1,8 @@
 {
-  "aiTs": "8/27/2026, 4:31:15 PM (Gemini)",
-  "aiEpoch": 1787862675345,
+  "aiTs": "8/27/2026, 5:01:09 PM (auto)",
+  "aiEpoch": 1787864469388,
   "v": 11,
-  "src": "Gemini",
+  "src": "auto",
   "modes": {
     "conservative": {
       "moves": [
@@ -10,83 +10,63 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF exposure"
+          "note": "no leverage"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF exposure"
+          "note": "no leverage"
         },
         {
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Reduce concentration, build cash"
-        },
-        {
-          "sym": "CRWD",
-          "action": "Trim",
-          "targetPct": 10,
-          "note": "Reduce concentration"
-        },
-        {
-          "sym": "ZS",
-          "action": "Buy",
-          "targetPct": 10,
-          "note": "Add strong scanner setup"
+          "note": "cap single name"
         }
       ],
       "plan": [
-        "Sell all leveraged ETFs (SOXL, SPAL) to zero.",
-        "Trim SPY to 20% to reduce concentration and increase cash.",
-        "Trim CRWD to 10% to further reduce concentration.",
-        "Buy ZS with 10% of the book as a strong long setup.",
-        "This plan prioritizes capital preservation with a larger cash buffer."
+        "Exit leveraged ETFs (SOXL, SPAL) - they decay and can gap against you.",
+        "Trim SPY (32%) to ~20% to cap single-name risk.",
+        "Lean on income (QQQI) + broad index; hold a 15-20% cash buffer.",
+        "Use tight stops - the goal is small, steady gains and shallow drawdowns."
       ],
-      "read": "This conservative approach aims for lower monthly gains, focusing on capital preservation. Expect reduced volatility and drawdowns, with a significant cash position."
+      "read": "A ~1.5%/mo steady target is realistic for a de-risked book; expect calmer swings but you give up some upside in strong tapes. Preservation first."
     },
     "balanced": {
       "moves": [
         {
-          "sym": "SPY",
-          "action": "Trim",
-          "targetPct": 25,
-          "note": "Reduce concentration to mandate limit"
-        },
-        {
           "sym": "SOXL",
           "action": "Trim",
           "targetPct": 3,
-          "note": "Reduce leveraged ETF exposure"
+          "note": "cut leverage/decay"
         },
         {
           "sym": "SPAL",
           "action": "Trim",
           "targetPct": 2,
-          "note": "Reduce leveraged ETF exposure"
+          "note": "cut leverage/decay"
+        },
+        {
+          "sym": "SPY",
+          "action": "Trim",
+          "targetPct": 25,
+          "note": "reduce concentration"
         },
         {
           "sym": "ZS",
           "action": "Buy",
           "targetPct": 4,
-          "note": "Add strong scanner setup"
-        },
-        {
-          "sym": "CRWD",
-          "action": "Add",
-          "targetPct": 19,
-          "note": "Increase exposure to strong performer"
+          "note": "scanner top setup"
         }
       ],
       "plan": [
-        "Trim SPY to 25% to meet the concentration mandate.",
-        "Reduce SOXL to 3% and SPAL to 2% to lower leverage.",
-        "Buy ZS with 4% as a new, high-scoring addition.",
-        "Increase CRWD to 19% to lean into a strong performer.",
-        "This plan balances growth with risk reduction, maintaining some leverage."
+        "Keep leveraged ETFs small (<=3%) and on tight stops - they decay and amplify drawdowns.",
+        "Trim SPY (32%) toward ~25% to cut single-name risk.",
+        "Best fresh setup: ZS: ACCUMULATE 8/12, entry 186.68-186.46, stop 185.53, targets 188.73/189.91/190.93, R 1.77. A starter (~4%) only if it triggers.",
+        "Hold a ~10% cash buffer and respect every stop."
       ],
-      "read": "This balanced plan targets moderate monthly gains by blending index exposure, quality tech, and limited leverage. It aims for risk-first growth with a moderate cash buffer."
+      "read": "A ~2.5%/mo target is aggressive but not impossible in a strong tape; hinges on cutting concentration/leverage + consistency. Expect losing months - size so a bad one (~-22.79%) doesn't force your hand."
     },
     "aggressive": {
       "moves": [
@@ -94,41 +74,28 @@
           "sym": "SOXL",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase leveraged ETF exposure"
+          "note": "lean into momentum"
         },
         {
           "sym": "SPAL",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase leveraged ETF exposure"
+          "note": "lean into momentum"
         },
         {
           "sym": "ZS",
           "action": "Buy",
           "targetPct": 6,
-          "note": "Add strong scanner setup"
-        },
-        {
-          "sym": "CRWD",
-          "action": "Add",
-          "targetPct": 21,
-          "note": "Increase exposure to strong performer"
-        },
-        {
-          "sym": "SPY",
-          "action": "Trim",
-          "targetPct": 20,
-          "note": "Reduce concentration, build cash"
+          "note": "high-conviction setup"
         }
       ],
       "plan": [
-        "Increase SOXL to 6% and SPAL to 6% to leverage upside.",
-        "Buy ZS with 6% as a new, high-scoring addition.",
-        "Increase CRWD to 21% to concentrate on a strong performer.",
-        "Trim SPY to 20% to reduce concentration and increase cash.",
-        "This aggressive plan aims for high growth by concentrating on top setups and leverage."
+        "Lean into leveraged ETFs (SOXL, SPAL) toward ~6% each - but hold a STRICT stop; they decay and can drop hard fast.",
+        "Press the strongest scanner setup: ZS: ACCUMULATE 8/12, entry 186.68-186.46, stop 185.53, targets 188.73/189.91/190.93, R 1.77 (~6%).",
+        "Run a small (~5%) cash buffer - stay invested for the upside.",
+        "Wider but STRICT stops. This mode can lose a lot fast - discipline is everything."
       ],
-      "read": "This aggressive plan seeks high monthly gains by concentrating on top-rated setups and increasing leveraged ETF exposure. Expect higher potential upside but also significantly larger drawdowns and leverage decay risk."
+      "read": "A ~4%/mo stretch target needs leverage + a strong tape + tight discipline; the same leverage means a bad month can run past -39%. Higher upside AND higher risk of a deep drawdown - not a promise."
     },
     "income": {
       "moves": [
@@ -136,47 +103,34 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate leveraged ETF exposure"
+          "note": "too volatile to park"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate leveraged ETF exposure"
-        },
-        {
-          "sym": "CRWD",
-          "action": "Sell",
-          "targetPct": 5,
-          "note": "Reduce high-beta single names"
-        },
-        {
-          "sym": "SMH",
-          "action": "Sell",
-          "targetPct": 5,
-          "note": "Reduce high-beta single names"
+          "note": "too volatile to park"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 30,
-          "note": "Increase income focus"
+          "note": "income anchor"
         },
         {
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Reduce concentration, build cash"
+          "note": "cut single-name risk"
         }
       ],
       "plan": [
-        "Sell all leveraged ETFs (SOXL, SPAL) to zero.",
-        "Sell CRWD and SMH to reduce high-beta single names.",
-        "Increase QQQI to 30% to focus on income generation.",
-        "Trim SPY to 20% to reduce concentration and increase cash.",
-        "This plan prioritizes steady monthly distributions and capital preservation."
+        "Exit leveraged ETFs (SOXL, SPAL) - too volatile for parked cash.",
+        "Build QQQI toward ~30% as your monthly-distribution anchor.",
+        "Keep the rest in broad index + a cash buffer; the distributions pay you monthly.",
+        "Low-drawdown income park - but NAV can still dip and distributions vary (not a savings account)."
       ],
-      "read": "This income-focused plan aims for modest monthly distributions with low drawdowns. It prioritizes income-generating assets over growth, with a significant cash buffer."
+      "read": "Covered-call ETFs (QQQI/JEPQ/JEPI/SPYI) can distribute ~1%/mo (~13%/yr) as steady income, but they cap upside and NAV can fall in a selloff. Good for parking cash for yield, not for growth; distributions are variable, not guaranteed."
     }
   }
 }
