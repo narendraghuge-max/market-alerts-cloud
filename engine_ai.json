@@ -1,8 +1,8 @@
 {
-  "aiTs": "9/9/2026, 11:31:06 AM (auto)",
-  "aiEpoch": 1788967866783,
+  "aiTs": "9/9/2026, 12:01:32 PM (Gemini)",
+  "aiEpoch": 1788969692106,
   "v": 11,
-  "src": "auto",
+  "src": "Gemini",
   "modes": {
     "conservative": {
       "moves": [
@@ -10,28 +10,41 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "no leverage"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "no leverage"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 20,
-          "note": "cap single name"
+          "note": "Reduce concentration, build cash"
+        },
+        {
+          "sym": "QQQI",
+          "action": "Add",
+          "targetPct": 20,
+          "note": "Increase income focus"
+        },
+        {
+          "sym": "ORCL",
+          "action": "Buy",
+          "targetPct": 10,
+          "note": "Add quality, lower beta name"
         }
       ],
       "plan": [
-        "Exit leveraged ETFs (SOXL, SPAL) - they decay and can gap against you.",
-        "Trim SPY (32%) to ~20% to cap single-name risk.",
-        "Lean on income (QQQI) + broad index; hold a 15-20% cash buffer.",
-        "Use tight stops - the goal is small, steady gains and shallow drawdowns."
+        "Sell all SOXL and SPAL to eliminate leveraged ETF risk.",
+        "Trim SPY to 20% to reduce concentration and build a cash buffer.",
+        "Add QQQI to 20% to increase income-generating assets.",
+        "Buy Oracle (ORCL) at 10% as a quality, lower-beta addition.",
+        "This plan prioritizes capital preservation with a significant cash buffer."
       ],
-      "read": "A ~1.5%/mo steady target is realistic for a de-risked book; expect calmer swings but you give up some upside in strong tapes. Preservation first."
+      "read": "This conservative approach aims for ~1.5% monthly return by focusing on capital preservation. Expect lower volatility and drawdowns, with a larger cash buffer providing safety."
     },
     "balanced": {
       "moves": [
@@ -39,34 +52,41 @@
           "sym": "SOXL",
           "action": "Trim",
           "targetPct": 3,
-          "note": "cut leverage/decay"
+          "note": "Reduce leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Trim",
           "targetPct": 2,
-          "note": "cut leverage/decay"
+          "note": "Reduce leveraged ETF exposure"
         },
         {
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 25,
-          "note": "reduce concentration"
+          "note": "Reduce concentration"
         },
         {
           "sym": "MRVL",
           "action": "Buy",
           "targetPct": 4,
-          "note": "scanner top setup"
+          "note": "Add quality tech name"
+        },
+        {
+          "sym": "ASML",
+          "action": "Add",
+          "targetPct": 8,
+          "note": "Increase exposure to strong name"
         }
       ],
       "plan": [
-        "Keep leveraged ETFs small (<=3%) and on tight stops - they decay and amplify drawdowns.",
-        "Trim SPY (32%) toward ~25% to cut single-name risk.",
-        "Best fresh setup: MRVL: BUY 9/12, entry 227.47-227.24, stop 222.85, targets 236.79/251.7/269.75, R 2.02. A starter (~4%) only if it triggers.",
-        "Hold a ~10% cash buffer and respect every stop."
+        "Trim SOXL to 3% and SPAL to 2% to reduce leveraged ETF risk.",
+        "Trim SPY to 25% to address concentration and create room for new buys.",
+        "Buy Marvell (MRVL) at 4% as a quality tech addition.",
+        "Increase ASML to 8% to lean into a strong scanner setup.",
+        "This plan balances risk reduction with selective growth opportunities."
       ],
-      "read": "A ~2.5%/mo target is aggressive but not impossible in a strong tape; hinges on cutting concentration/leverage + consistency. Expect losing months - size so a bad one (~-22.96%) doesn't force your hand."
+      "read": "This balanced approach targets ~2.5% monthly return with a risk-first growth strategy. It reduces concentration and leverage while adding quality names, aiming for moderate growth with controlled drawdowns."
     },
     "aggressive": {
       "moves": [
@@ -74,28 +94,41 @@
           "sym": "SOXL",
           "action": "Add",
           "targetPct": 6,
-          "note": "lean into momentum"
+          "note": "Increase leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Add",
           "targetPct": 6,
-          "note": "lean into momentum"
+          "note": "Increase leveraged ETF exposure"
         },
         {
           "sym": "MRVL",
           "action": "Buy",
           "targetPct": 6,
-          "note": "high-conviction setup"
+          "note": "Add high-conviction tech name"
+        },
+        {
+          "sym": "CRWD",
+          "action": "Add",
+          "targetPct": 10,
+          "note": "Increase exposure to working name"
+        },
+        {
+          "sym": "SMR",
+          "action": "Buy",
+          "targetPct": 5,
+          "note": "Add strong scanner setup"
         }
       ],
       "plan": [
-        "Lean into leveraged ETFs (SOXL, SPAL) toward ~6% each - but hold a STRICT stop; they decay and can drop hard fast.",
-        "Press the strongest scanner setup: MRVL: BUY 9/12, entry 227.47-227.24, stop 222.85, targets 236.79/251.7/269.75, R 2.02 (~6%).",
-        "Run a small (~5%) cash buffer - stay invested for the upside.",
-        "Wider but STRICT stops. This mode can lose a lot fast - discipline is everything."
+        "Increase SOXL and SPAL to 6% each, embracing leveraged ETF growth.",
+        "Buy Marvell (MRVL) at 6% to add to the tech concentration.",
+        "Increase CrowdStrike (CRWD) to 10% to press strength.",
+        "Buy SMR at 5% based on its strong scanner read and risk/reward.",
+        "This plan aggressively pursues growth through leverage and concentration."
       ],
-      "read": "A ~4%/mo stretch target needs leverage + a strong tape + tight discipline; the same leverage means a bad month can run past -39%. Higher upside AND higher risk of a deep drawdown - not a promise."
+      "read": "This aggressive plan targets ~4% monthly return by leveraging high-conviction tech and leveraged ETFs. Expect amplified upside potential but also significantly larger drawdowns and the risk of rapid losses due to leverage and ETF decay."
     },
     "income": {
       "moves": [
@@ -103,34 +136,41 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "too volatile to park"
+          "note": "Eliminate leveraged ETF risk"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "too volatile to park"
-        },
-        {
-          "sym": "QQQI",
-          "action": "Add",
-          "targetPct": 30,
-          "note": "income anchor"
+          "note": "Eliminate leveraged ETF risk"
         },
         {
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 20,
-          "note": "cut single-name risk"
+          "note": "Reduce broad index, build cash"
+        },
+        {
+          "sym": "QQQI",
+          "action": "Add",
+          "targetPct": 30,
+          "note": "Maximize income focus"
+        },
+        {
+          "sym": "ORCL",
+          "action": "Buy",
+          "targetPct": 10,
+          "note": "Add stable income-generating name"
         }
       ],
       "plan": [
-        "Exit leveraged ETFs (SOXL, SPAL) - too volatile for parked cash.",
-        "Build QQQI toward ~30% as your monthly-distribution anchor.",
-        "Keep the rest in broad index + a cash buffer; the distributions pay you monthly.",
-        "Low-drawdown income park - but NAV can still dip and distributions vary (not a savings account)."
+        "Sell all SOXL and SPAL to remove high-beta, leveraged assets.",
+        "Trim SPY to 20% to reduce broad market exposure and increase cash.",
+        "Significantly increase QQQI to 30% to maximize income generation.",
+        "Buy Oracle (ORCL) at 10% as a stable name contributing to income.",
+        "This plan prioritizes steady monthly distributions and capital preservation."
       ],
-      "read": "Covered-call ETFs (QQQI/JEPQ/JEPI/SPYI) can distribute ~1%/mo (~13%/yr) as steady income, but they cap upside and NAV can fall in a selloff. Good for parking cash for yield, not for growth; distributions are variable, not guaranteed."
+      "read": "This income-focused plan targets ~1% monthly return through distributions, prioritizing capital preservation. Expect lower growth potential but more stable, consistent income streams with reduced volatility."
     }
   }
 }
