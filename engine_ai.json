@@ -1,8 +1,8 @@
 {
-  "aiTs": "9/16/2026, 8:01:17 AM (auto)",
-  "aiEpoch": 1789560077374,
+  "aiTs": "9/16/2026, 8:31:04 AM (Gemini)",
+  "aiEpoch": 1789561864077,
   "v": 11,
-  "src": "auto",
+  "src": "Gemini",
   "modes": {
     "conservative": {
       "moves": [
@@ -10,92 +10,131 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "no leverage"
+          "note": "Cut all leveraged ETFs to zero"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "no leverage"
+          "note": "Cut all leveraged ETFs to zero"
         },
         {
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 20,
-          "note": "cap single name"
+          "note": "Reduce concentration, meet mandate"
+        },
+        {
+          "sym": "QQQ",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Scanner flags SELL, downtrend"
+        },
+        {
+          "sym": "QQQI",
+          "action": "Add",
+          "targetPct": 25,
+          "note": "Favor income for capital preservation"
+        },
+        {
+          "sym": "NBIS",
+          "action": "Buy",
+          "targetPct": 5,
+          "note": "Top quality, strong R/R setup"
         }
       ],
       "plan": [
-        "Exit leveraged ETFs (SOXL, SPAL) - they decay and can gap against you.",
-        "Trim SPY (31%) to ~20% to cap single-name risk.",
-        "Lean on income (QQQI) + broad index; hold a 15-20% cash buffer.",
-        "Use tight stops - the goal is small, steady gains and shallow drawdowns."
+        "Sell SOXL and SPAL to zero to eliminate leveraged ETF exposure. Trim SPY to 20% to reduce concentration and meet the mandate. Sell QQQ as it is flagged for sale and in a downtrend. Add to QQQI for increased income and stability. Buy NBIS for a top-quality, strong risk/reward long setup."
       ],
-      "read": "A ~1.5%/mo steady target is realistic for a de-risked book; expect calmer swings but you give up some upside in strong tapes. Preservation first."
+      "read": "This plan targets capital preservation with a potential ~1.5%/month return. It significantly reduces risk by eliminating leveraged ETFs and high concentration, but limits upside potential."
     },
     "balanced": {
       "moves": [
         {
+          "sym": "SPY",
+          "action": "Trim",
+          "targetPct": 25,
+          "note": "Reduce concentration, meet mandate"
+        },
+        {
+          "sym": "QQQ",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Scanner flags SELL, downtrend"
+        },
+        {
           "sym": "SOXL",
           "action": "Trim",
           "targetPct": 3,
-          "note": "cut leverage/decay"
+          "note": "Reduce leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Trim",
           "targetPct": 2,
-          "note": "cut leverage/decay"
-        },
-        {
-          "sym": "SPY",
-          "action": "Trim",
-          "targetPct": 25,
-          "note": "reduce concentration"
+          "note": "Reduce leveraged ETF exposure"
         },
         {
           "sym": "RDDT",
           "action": "Buy",
           "targetPct": 4,
-          "note": "scanner top setup"
+          "note": "Strong scanner long setup"
+        },
+        {
+          "sym": "QCOM",
+          "action": "Buy",
+          "targetPct": 4,
+          "note": "Accumulate, good R/R"
         }
       ],
       "plan": [
-        "Keep leveraged ETFs small (<=3%) and on tight stops - they decay and amplify drawdowns.",
-        "Trim SPY (31%) toward ~25% to cut single-name risk.",
-        "Best fresh setup: RDDT: WATCH 10/12, entry 159.22-159.07, stop 158.62, targets 161.06/161.98/163.24, R 3.04. A starter (~4%) only if it triggers.",
-        "Hold a ~10% cash buffer and respect every stop."
+        "Trim SPY to 25% to reduce concentration and meet the mandate. Sell QQQ as it is flagged for sale and in a downtrend. Trim SOXL and SPAL to reduce leveraged ETF exposure. Buy RDDT and QCOM as strong scanner long setups to add quality growth."
       ],
-      "read": "A ~2.5%/mo target is aggressive but not impossible in a strong tape; hinges on cutting concentration/leverage + consistency. Expect losing months - size so a bad one (~-25.34%) doesn't force your hand."
+      "read": "This balanced plan aims for risk-first growth, targeting ~2.5%/month. It reduces overall leverage and concentration while adding quality growth names, balancing risk and reward."
     },
     "aggressive": {
       "moves": [
         {
+          "sym": "SPY",
+          "action": "Trim",
+          "targetPct": 25,
+          "note": "Reduce concentration, meet mandate"
+        },
+        {
+          "sym": "QQQ",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Scanner flags SELL, downtrend"
+        },
+        {
           "sym": "SOXL",
           "action": "Add",
           "targetPct": 6,
-          "note": "lean into momentum"
+          "note": "Increase leveraged exposure to semis"
         },
         {
           "sym": "SPAL",
           "action": "Add",
           "targetPct": 6,
-          "note": "lean into momentum"
+          "note": "Increase leveraged exposure to space"
         },
         {
           "sym": "RDDT",
           "action": "Buy",
           "targetPct": 6,
-          "note": "high-conviction setup"
+          "note": "Highest scanner score, strong R/R"
+        },
+        {
+          "sym": "NBIS",
+          "action": "Buy",
+          "targetPct": 6,
+          "note": "Strong R/R, high score"
         }
       ],
       "plan": [
-        "Lean into leveraged ETFs (SOXL, SPAL) toward ~6% each - but hold a STRICT stop; they decay and can drop hard fast.",
-        "Press the strongest scanner setup: RDDT: WATCH 10/12, entry 159.22-159.07, stop 158.62, targets 161.06/161.98/163.24, R 3.04 (~6%).",
-        "Run a small (~5%) cash buffer - stay invested for the upside.",
-        "Wider but STRICT stops. This mode can lose a lot fast - discipline is everything."
+        "Trim SPY to 25% to reduce concentration and meet the mandate. Sell QQQ as it is flagged for sale and in a downtrend. Add to SOXL and SPAL to increase leveraged exposure in high-conviction sectors. Buy RDDT and NBIS as high-scoring, strong risk/reward long setups."
       ],
-      "read": "A ~4%/mo stretch target needs leverage + a strong tape + tight discipline; the same leverage means a bad month can run past -43%. Higher upside AND higher risk of a deep drawdown - not a promise."
+      "read": "This aggressive plan targets stretch growth, aiming for ~4%/month. It significantly increases exposure to leveraged ETFs and concentrates in high-conviction setups, leading to higher potential returns but also much larger drawdowns and daily decay risk. Strict stop discipline is critical."
     },
     "income": {
       "moves": [
@@ -103,34 +142,43 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "too volatile to park"
+          "note": "Cut all leveraged ETFs to zero"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "too volatile to park"
-        },
-        {
-          "sym": "QQQI",
-          "action": "Add",
-          "targetPct": 30,
-          "note": "income anchor"
+          "note": "Cut all leveraged ETFs to zero"
         },
         {
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 20,
-          "note": "cut single-name risk"
+          "note": "Reduce concentration, meet mandate"
+        },
+        {
+          "sym": "QQQ",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Scanner flags SELL, downtrend"
+        },
+        {
+          "sym": "QQQI",
+          "action": "Add",
+          "targetPct": 30,
+          "note": "Prioritize income for distributions"
+        },
+        {
+          "sym": "CRWD",
+          "action": "Trim",
+          "targetPct": 10,
+          "note": "Reduce high-beta single name"
         }
       ],
       "plan": [
-        "Exit leveraged ETFs (SOXL, SPAL) - too volatile for parked cash.",
-        "Build QQQI toward ~30% as your monthly-distribution anchor.",
-        "Keep the rest in broad index + a cash buffer; the distributions pay you monthly.",
-        "Low-drawdown income park - but NAV can still dip and distributions vary (not a savings account)."
+        "Sell SOXL and SPAL to zero to eliminate all leveraged ETF exposure. Trim SPY to 20% to reduce concentration and meet the mandate. Sell QQQ as it is flagged for sale and in a downtrend. Add significantly to QQQI to prioritize income distributions. Trim CRWD to reduce high-beta single name exposure."
       ],
-      "read": "Covered-call ETFs (QQQI/JEPQ/JEPI/SPYI) can distribute ~1%/mo (~13%/yr) as steady income, but they cap upside and NAV can fall in a selloff. Good for parking cash for yield, not for growth; distributions are variable, not guaranteed."
+      "read": "This income plan focuses on parking cash for yield, targeting ~1%/month. It prioritizes steady monthly distributions and low drawdown by cutting leverage and high-beta names, but NAV can still fall in a selloff and distributions are variable."
     }
   }
 }
