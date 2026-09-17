@@ -1,6 +1,6 @@
 {
-  "aiTs": "9/17/2026, 4:31:21 AM (Gemini)",
-  "aiEpoch": 1789633881065,
+  "aiTs": "9/17/2026, 5:01:17 AM (Gemini)",
+  "aiEpoch": 1789635677984,
   "v": 11,
   "src": "Gemini",
   "modes": {
@@ -16,19 +16,19 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate leveraged ETF risk"
+          "note": "Exit leveraged ETF, below stop"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate leveraged ETF risk"
+          "note": "Exit leveraged ETF, below stop"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 25,
-          "note": "Increase income, quality exposure"
+          "note": "Increase income exposure"
         },
         {
           "sym": "QQQ",
@@ -38,13 +38,13 @@
         }
       ],
       "plan": [
-        "Trim SPY to 20% to reduce concentration and meet the mandate.",
-        "Sell all SOXL and SPAL to eliminate leveraged ETF risk.",
-        "Add to QQQI, targeting 25%, for increased income and quality exposure.",
-        "Increase QQQ to 20% for more broad index exposure.",
+        "Trim SPY to 20% to reduce concentration and meet the single-name mandate.",
+        "Sell SOXL and SPAL to zero, exiting all leveraged ETFs as they are below stop and not suitable for conservative mode.",
+        "Add to QQQI, increasing income exposure to 25% for stability.",
+        "Increase QQQ to 20% for additional broad index exposure.",
         "This plan prioritizes capital preservation and reduces overall portfolio risk."
       ],
-      "read": "This conservative plan targets approximately 1.5% per month, focusing on capital preservation. It significantly reduces leverage and concentration, aiming for lower drawdown. Expect steady, but modest, returns with reduced volatility."
+      "read": "This conservative plan targets a modest ~1.5%/month return, focusing on capital preservation. It significantly reduces risk by eliminating leveraged ETFs and lowering concentration. Expect lower volatility and drawdowns, but also limited upside potential."
     },
     "balanced": {
       "moves": [
@@ -58,13 +58,13 @@
           "sym": "SOXL",
           "action": "Trim",
           "targetPct": 3,
-          "note": "Maintain small leveraged exposure"
+          "note": "Reduce leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Trim",
           "targetPct": 2,
-          "note": "Maintain small leveraged exposure"
+          "note": "Reduce leveraged ETF exposure"
         },
         {
           "sym": "QQQ",
@@ -80,13 +80,13 @@
         }
       ],
       "plan": [
-        "Trim SPY to 25% to reduce concentration and meet the mandate.",
-        "Trim SOXL to 3% and SPAL to 2% to maintain small leveraged exposure.",
-        "Add to QQQ, targeting 20%, for increased broad index exposure.",
-        "Increase CRWD to 18% to lean into a strong performing asset.",
-        "This plan balances risk and growth, maintaining a moderate risk profile."
+        "Trim SPY to 25% to meet the single-name concentration mandate.",
+        "Reduce SOXL to 3% and SPAL to 2%, keeping some leveraged exposure but within limits.",
+        "Increase QQQ to 20% for balanced broad market exposure.",
+        "Add to CRWD, increasing its allocation to 18% to lean into a strong performer.",
+        "This plan balances risk and growth, maintaining a small cash buffer."
       ],
-      "read": "This balanced plan targets approximately 2.5% per month, focusing on risk-first growth. It reduces overall leverage and concentration while maintaining some exposure to growth and leveraged ETFs. Expect moderate returns with controlled risk."
+      "read": "The balanced plan aims for ~2.5%/month, prioritizing risk-first growth. It reduces overall leverage and concentration while maintaining exposure to quality tech and broad indices. Expect moderate volatility and drawdowns, with potential for solid growth."
     },
     "aggressive": {
       "moves": [
@@ -100,13 +100,13 @@
           "sym": "SOXL",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase leveraged semiconductor…"
+          "note": "Increase leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase leveraged space exposure"
+          "note": "Increase leveraged ETF exposure"
         },
         {
           "sym": "CRWD",
@@ -122,13 +122,13 @@
         }
       ],
       "plan": [
-        "Trim SPY to 25% to reduce concentration and meet the mandate.",
-        "Add to SOXL, targeting 6%, and SPAL, targeting 6%, to increase leveraged exposure.",
-        "Increase CRWD to 20% to lean into a strong performing asset.",
-        "Buy NET, targeting 5%, as a new position from the scanner's best setups.",
-        "This plan aims for aggressive growth by leveraging strong setups and increasing exposure to leveraged ETFs."
+        "Trim SPY to 25% to meet the single-name concentration mandate.",
+        "Increase SOXL to 6% and SPAL to 6%, leveraging into these ETFs for aggressive growth.",
+        "Add to CRWD, increasing its allocation to 20% to press a working position.",
+        "Buy NET at 5% as a new position, based on its strong scanner setup.",
+        "This plan uses leverage and concentration to target higher growth, with strict stops."
       ],
-      "read": "This aggressive plan targets approximately 4% per month, aiming for stretch growth. It significantly increases exposure to leveraged ETFs and concentrates in high-scoring setups. Be aware this mode carries substantially higher drawdown risk and leveraged ETFs experience daily decay, meaning losses can accumulate rapidly if not managed with strict stops."
+      "read": "This aggressive plan targets ~4%/month, aiming for stretch growth. It significantly increases exposure to leveraged ETFs and concentrates in high-scoring setups. Be aware this mode carries substantially higher drawdown risk and daily decay from leveraged ETFs, requiring strict stop discipline."
     },
     "income": {
       "moves": [
@@ -142,19 +142,19 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate leveraged ETF risk"
+          "note": "Exit leveraged ETF, below stop"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate leveraged ETF risk"
+          "note": "Exit leveraged ETF, below stop"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 30,
-          "note": "Maximize income exposure"
+          "note": "Maximize income ETF exposure"
         },
         {
           "sym": "QQQ",
@@ -164,13 +164,13 @@
         }
       ],
       "plan": [
-        "Trim SPY to 20% to reduce concentration and meet the mandate.",
-        "Sell all SOXL and SPAL to eliminate leveraged ETF risk.",
-        "Add to QQQI, targeting 30%, to maximize income exposure.",
-        "Trim QQQ to 15% to reduce growth exposure in favor of income.",
-        "This plan prioritizes steady monthly distributions and low drawdown."
+        "Trim SPY to 20% to reduce concentration and meet the single-name mandate.",
+        "Sell SOXL and SPAL to zero, eliminating all leveraged ETFs.",
+        "Add to QQQI, increasing income exposure to 30% for steady distributions.",
+        "Trim QQQ to 15%, reducing growth-oriented exposure.",
+        "This plan prioritizes low drawdown and reliable income over growth."
       ],
-      "read": "This income plan targets approximately 1% per month, focusing on parking cash for yield. It prioritizes steady monthly distributions and low drawdown by rotating into income ETFs and reducing high-beta names. Remember, distributions are variable and NAV can still fall in a selloff; this is not a savings account."
+      "read": "The income plan targets ~1%/month, focusing on parking cash for yield. It prioritizes steady monthly distributions and low drawdown by rotating into income ETFs and broad indices. While aiming for stability, distributions are variable, and NAV can still fall in market selloffs."
     }
   }
 }
