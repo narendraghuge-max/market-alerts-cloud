@@ -1,6 +1,6 @@
 {
-  "aiTs": "9/21/2026, 8:31:05 PM (Gemini)",
-  "aiEpoch": 1790037065975,
+  "aiTs": "9/22/2026, 4:01:00 AM (Gemini)",
+  "aiEpoch": 1790064060250,
   "v": 11,
   "src": "Gemini",
   "modes": {
@@ -22,29 +22,29 @@
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Reduce concentration, build cash"
+          "note": "Reduce concentration, add cash"
         },
         {
           "sym": "CRWD",
           "action": "Trim",
           "targetPct": 10,
-          "note": "Reduce single name concentration"
+          "note": "Reduce concentration"
         },
         {
           "sym": "MSTR",
           "action": "Buy",
           "targetPct": 5,
-          "note": "Add strong risk/reward setup"
+          "note": "Add strong scanner setup"
         }
       ],
       "plan": [
         "Sell all leveraged ETFs (SOXL, SPAL) to zero.",
-        "Trim SPY to reduce broad index concentration and increase cash.",
-        "Trim CRWD to manage single-stock concentration.",
-        "Buy MSTR as a high-quality, strong setup.",
-        "This plan prioritizes capital preservation with a significant cash buffer."
+        "Trim SPY to 20% to reduce concentration and increase cash.",
+        "Trim CRWD to 10% to further reduce concentration.",
+        "Buy MSTR at 5% as a strong long setup.",
+        "This plan prioritizes capital preservation with a larger cash buffer."
       ],
-      "read": "This conservative approach aims for lower monthly returns by focusing on capital preservation. Expect modest gains with significantly reduced downside risk and drawdowns."
+      "read": "This plan aims for ~1.5% monthly return with a focus on capital preservation. Expect lower drawdowns but also capped upside potential."
     },
     "balanced": {
       "moves": [
@@ -67,26 +67,26 @@
           "note": "Reduce concentration, add cash"
         },
         {
-          "sym": "GOOGL",
-          "action": "Buy",
-          "targetPct": 4,
-          "note": "Add strong risk/reward setup"
-        },
-        {
           "sym": "CRWD",
           "action": "Trim",
           "targetPct": 12,
-          "note": "Manage single name concentration"
+          "note": "Reduce concentration"
+        },
+        {
+          "sym": "GOOGL",
+          "action": "Buy",
+          "targetPct": 4,
+          "note": "Add strong scanner setup"
         }
       ],
       "plan": [
-        "Trim leveraged ETFs (SOXL, SPAL) to maintain minimal exposure.",
-        "Trim SPY to reduce concentration and build a cash buffer.",
-        "Buy GOOGL as a high-conviction, strong setup.",
-        "Trim CRWD to manage single-stock concentration.",
-        "This plan balances growth with risk reduction, adding quality names."
+        "Trim leveraged ETFs (SOXL to 3%, SPAL to 2%) to reduce risk.",
+        "Trim SPY to 25% to address concentration and increase cash.",
+        "Trim CRWD to 12% to balance sector exposure.",
+        "Buy GOOGL at 4% as a strong long setup.",
+        "This plan balances risk reduction with growth opportunities."
       ],
-      "read": "This balanced mode seeks moderate monthly growth while keeping risk controlled. Expect steady progress with manageable drawdowns, blending index and quality tech."
+      "read": "This plan targets ~2.5% monthly return by balancing risk reduction with growth. Expect moderate drawdowns and growth potential."
     },
     "aggressive": {
       "moves": [
@@ -103,38 +103,38 @@
           "note": "Increase leveraged ETF exposure"
         },
         {
-          "sym": "GOOGL",
-          "action": "Buy",
-          "targetPct": 6,
-          "note": "Add strong risk/reward setup"
-        },
-        {
-          "sym": "MSTR",
-          "action": "Buy",
-          "targetPct": 5,
-          "note": "Add strong risk/reward setup"
+          "sym": "SPY",
+          "action": "Trim",
+          "targetPct": 25,
+          "note": "Reduce concentration, add cash"
         },
         {
           "sym": "CRWD",
           "action": "Trim",
           "targetPct": 10,
-          "note": "Manage concentration, fund adds"
+          "note": "Reduce concentration"
         },
         {
-          "sym": "SPY",
-          "action": "Trim",
-          "targetPct": 25,
-          "note": "Reduce concentration, fund adds"
+          "sym": "GOOGL",
+          "action": "Buy",
+          "targetPct": 6,
+          "note": "Add strong scanner setup"
+        },
+        {
+          "sym": "MSTR",
+          "action": "Buy",
+          "targetPct": 5,
+          "note": "Add strong scanner setup"
         }
       ],
       "plan": [
-        "Increase exposure to leveraged ETFs (SOXL, SPAL) for amplified gains.",
-        "Buy GOOGL and MSTR, leveraging strong scanner signals.",
-        "Trim CRWD and SPY to manage concentration and fund new positions.",
-        "This plan aggressively pursues growth by increasing leverage and concentration.",
-        "Expect higher potential returns but also significantly larger drawdowns and leverage decay."
+        "Increase leveraged ETFs (SOXL to 6%, SPAL to 6%) for higher growth potential.",
+        "Trim SPY to 25% to address concentration and maintain some broad exposure.",
+        "Trim CRWD to 10% to manage concentration.",
+        "Buy GOOGL at 6% and MSTR at 5% as strong long setups.",
+        "This plan aggressively pursues growth with higher leverage and concentration."
       ],
-      "read": "This aggressive mode targets high monthly growth by embracing leverage and concentration. Expect amplified gains but also substantially larger potential drawdowns and the risk of rapid losses, especially with leveraged ETFs."
+      "read": "This plan targets ~4% monthly return, accepting significantly higher drawdowns and leverage risk. Leveraged ETF decay is a key risk. Strict stop discipline is crucial."
     },
     "income": {
       "moves": [
@@ -142,25 +142,25 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate high-beta, leveraged risk"
+          "note": "Eliminate leveraged ETFs"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate high-beta, leveraged risk"
+          "note": "Eliminate leveraged ETFs"
         },
         {
           "sym": "CRWD",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut high-growth, non-income names"
+          "note": "Eliminate high-beta single names"
         },
         {
           "sym": "SMH",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut high-growth, non-income names"
+          "note": "Eliminate sector concentration"
         },
         {
           "sym": "QQQI",
@@ -176,13 +176,13 @@
         }
       ],
       "plan": [
-        "Sell all leveraged ETFs (SOXL, SPAL) and high-growth single names (CRWD, SMH).",
-        "Increase QQQI allocation significantly to focus on income generation.",
-        "Trim SPY to reduce concentration and increase cash buffer.",
-        "This plan prioritizes steady monthly distributions over capital appreciation.",
-        "Expect lower volatility and reliable income, but NAV can still decline in market downturns."
+        "Sell all leveraged ETFs (SOXL, SPAL) and high-beta names (CRWD, SMH).",
+        "Increase QQQI to 30% for income generation.",
+        "Trim SPY to 20% to increase cash buffer.",
+        "This plan prioritizes steady monthly distributions and capital preservation.",
+        "Focus is on income generation over aggressive growth."
       ],
-      "read": "This income-focused mode prioritizes steady monthly distributions and capital preservation. Expect lower, more consistent income generation with significantly reduced volatility and drawdowns."
+      "read": "This plan targets ~1% monthly return focused on income generation and low drawdowns. Distributions are variable and NAV can still fall. Not a savings account."
     }
   }
 }
