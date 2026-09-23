@@ -1,8 +1,8 @@
 {
-  "aiTs": "9/23/2026, 1:31:19 PM (Gemini)",
-  "aiEpoch": 1790184679785,
+  "aiTs": "9/23/2026, 2:01:49 PM (auto)",
+  "aiEpoch": 1790186509693,
   "v": 11,
-  "src": "Gemini",
+  "src": "auto",
   "modes": {
     "conservative": {
       "moves": [
@@ -10,54 +10,40 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF exposure"
-        },
-        {
-          "sym": "SPAL",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Cut leveraged ETF exposure"
+          "note": "no leverage"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce semiconductor leverage"
+          "note": "no leverage"
         },
         {
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce AI/Software leverage"
+          "note": "no leverage"
+        },
+        {
+          "sym": "SPAL",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "no leverage"
         },
         {
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Reduce broad index concentration"
-        },
-        {
-          "sym": "QQQI",
-          "action": "Add",
-          "targetPct": 25,
-          "note": "Increase income allocation"
-        },
-        {
-          "sym": "CRWD",
-          "action": "Trim",
-          "targetPct": 5,
-          "note": "Reduce concentrated tech holding"
+          "note": "cap single name"
         }
       ],
       "plan": [
-        "Sell all leveraged ETFs (SOXL, SPAL, MUU, METU) to zero.",
-        "Trim SPY to 20% to reduce concentration.",
-        "Add QQQI to 25% for income focus.",
-        "Trim CRWD to 5% to reduce single-stock risk.",
-        "This plan prioritizes capital preservation.",
-        "Expect lower volatility and modest returns."
+        "Exit leveraged ETFs (SOXL, MUU, METU, SPAL) - they decay and can gap against you.",
+        "Trim SPY (27%) to ~20% to cap single-name risk.",
+        "Lean on income (QQQI) + broad index; hold a 15-20% cash buffer.",
+        "Use tight stops - the goal is small, steady gains and shallow drawdowns."
       ],
-      "read": "This conservative plan aims for capital preservation with a target of around 1.5% monthly return. It significantly reduces leverage and concentration, holding a larger cash buffer. The risk of large drawdowns is minimized, but upside potential is also capped."
+      "read": "A ~1.5%/mo steady target is realistic for a de-risked book; expect calmer swings but you give up some upside in strong tapes. Preservation first."
     },
     "balanced": {
       "moves": [
@@ -65,54 +51,40 @@
           "sym": "SOXL",
           "action": "Trim",
           "targetPct": 3,
-          "note": "Reduce semiconductor leverage"
-        },
-        {
-          "sym": "SPAL",
-          "action": "Trim",
-          "targetPct": 2,
-          "note": "Reduce space leverage"
+          "note": "cut leverage/decay"
         },
         {
           "sym": "MUU",
           "action": "Trim",
           "targetPct": 3,
-          "note": "Reduce semiconductor leverage"
+          "note": "cut leverage/decay"
         },
         {
           "sym": "METU",
           "action": "Trim",
           "targetPct": 2,
-          "note": "Reduce AI/Software leverage"
+          "note": "cut leverage/decay"
         },
         {
-          "sym": "SPY",
+          "sym": "SPAL",
           "action": "Trim",
-          "targetPct": 25,
-          "note": "Reduce broad index concentration"
+          "targetPct": 2,
+          "note": "cut leverage/decay"
         },
         {
-          "sym": "CRWD",
-          "action": "Add",
-          "targetPct": 15,
-          "note": "Increase high-quality tech holding"
-        },
-        {
-          "sym": "AMD",
+          "sym": "LUNR",
           "action": "Buy",
-          "targetPct": 5,
-          "note": "Add strong risk/reward setup"
+          "targetPct": 4,
+          "note": "scanner top setup"
         }
       ],
       "plan": [
-        "Trim leveraged ETFs (SOXL, SPAL, MUU, METU) to low single digits.",
-        "Trim SPY to 25% to balance index exposure.",
-        "Add to CRWD to 15% for growth potential.",
-        "Buy AMD as a new, strong setup.",
-        "This plan balances risk reduction with growth opportunities.",
-        "Expect moderate volatility and returns around 2.5% monthly."
+        "Keep leveraged ETFs small (<=3%) and on tight stops - they decay and amplify drawdowns.",
+        "Hold single names near ~25% max.",
+        "Best fresh setup: LUNR: WATCH 9/12, entry 15.19-15.17, stop 15.13, targets 15.39/15.55/15.76, R 3.13. A starter (~4%) only if it triggers.",
+        "Hold a ~10% cash buffer and respect every stop."
       ],
-      "read": "This balanced plan targets risk-first growth, aiming for approximately 2.5% monthly returns. It trims leverage and concentration while adding a promising new name (AMD). A moderate cash buffer is maintained. Drawdowns are expected to be manageable, with potential for solid growth."
+      "read": "A ~2.5%/mo target is aggressive but not impossible in a strong tape; hinges on cutting concentration/leverage + consistency. Expect losing months - size so a bad one (~-27.14%) doesn't force your hand."
     },
     "aggressive": {
       "moves": [
@@ -120,54 +92,40 @@
           "sym": "SOXL",
           "action": "Add",
           "targetPct": 7,
-          "note": "Increase semiconductor leverage"
-        },
-        {
-          "sym": "SPAL",
-          "action": "Add",
-          "targetPct": 6,
-          "note": "Increase space leverage"
+          "note": "lean into momentum"
         },
         {
           "sym": "MUU",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase semiconductor leverage"
+          "note": "lean into momentum"
         },
         {
           "sym": "METU",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase AI/Software leverage"
+          "note": "lean into momentum"
         },
         {
-          "sym": "SPY",
-          "action": "Trim",
-          "targetPct": 25,
-          "note": "Reduce broad index concentration"
-        },
-        {
-          "sym": "CRWD",
+          "sym": "SPAL",
           "action": "Add",
-          "targetPct": 15,
-          "note": "Increase high-conviction tech"
+          "targetPct": 6,
+          "note": "lean into momentum"
         },
         {
-          "sym": "PLTR",
+          "sym": "LUNR",
           "action": "Buy",
-          "targetPct": 5,
-          "note": "Add high R/R setup"
+          "targetPct": 6,
+          "note": "high-conviction setup"
         }
       ],
       "plan": [
-        "Increase exposure to leveraged ETFs (SOXL, SPAL, MUU, METU).",
-        "Trim SPY to 25% to allow for concentration.",
-        "Add to CRWD to 15% for strong growth.",
-        "Buy PLTR as a new, high potential setup.",
-        "This plan aggressively pursues growth through leverage and concentration.",
-        "Expect higher volatility and potential for larger drawdowns, targeting ~4% monthly."
+        "Lean into leveraged ETFs (SOXL, MUU, METU, SPAL) toward ~6% each - but hold a STRICT stop; they decay and can drop hard fast.",
+        "Press the strongest scanner setup: LUNR: WATCH 9/12, entry 15.19-15.17, stop 15.13, targets 15.39/15.55/15.76, R 3.13 (~6%).",
+        "Run a small (~5%) cash buffer - stay invested for the upside.",
+        "Wider but STRICT stops. This mode can lose a lot fast - discipline is everything."
       ],
-      "read": "This aggressive plan aims for stretched growth, targeting around 4% monthly returns, by leaning into leverage and concentration. It increases exposure to leveraged ETFs and high-conviction names like CRWD and PLTR. Be aware that this strategy significantly raises both upside potential and drawdown risk, with leveraged ETFs subject to daily decay. Strict stop discipline is crucial."
+      "read": "A ~4%/mo stretch target needs leverage + a strong tape + tight discipline; the same leverage means a bad month can run past -46%. Higher upside AND higher risk of a deep drawdown - not a promise."
     },
     "income": {
       "moves": [
@@ -175,60 +133,46 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate leveraged ETF risk"
-        },
-        {
-          "sym": "SPAL",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Eliminate leveraged ETF risk"
+          "note": "too volatile to park"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate leveraged ETF risk"
+          "note": "too volatile to park"
         },
         {
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate leveraged ETF risk"
+          "note": "too volatile to park"
         },
         {
-          "sym": "CRWD",
+          "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce high-beta tech exposure"
-        },
-        {
-          "sym": "SNOW",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Reduce high-beta tech exposure"
-        },
-        {
-          "sym": "SPY",
-          "action": "Trim",
-          "targetPct": 20,
-          "note": "Reduce broad index for income"
+          "note": "too volatile to park"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 30,
-          "note": "Increase income allocation"
+          "note": "income anchor"
+        },
+        {
+          "sym": "SPY",
+          "action": "Trim",
+          "targetPct": 20,
+          "note": "cut single-name risk"
         }
       ],
       "plan": [
-        "Sell all leveraged ETFs (SOXL, SPAL, MUU, METU) to zero.",
-        "Sell high-beta tech names (CRWD, SNOW) to reduce volatility.",
-        "Trim SPY to 20% to make room for income focus.",
-        "Add QQQI to 30% for steady income generation.",
-        "This plan prioritizes stable monthly distributions.",
-        "Expect low volatility and modest income, with potential for NAV decline."
+        "Exit leveraged ETFs (SOXL, MUU, METU, SPAL) - too volatile for parked cash.",
+        "Build QQQI toward ~30% as your monthly-distribution anchor.",
+        "Keep the rest in broad index + a cash buffer; the distributions pay you monthly.",
+        "Low-drawdown income park - but NAV can still dip and distributions vary (not a savings account)."
       ],
-      "read": "This income-focused plan targets around 1% monthly return through distributions, prioritizing stability over growth. It eliminates leverage and high-beta single names, shifting heavily into income-generating ETFs like QQQI. While aiming for reliable income, it's important to note that distributions are not guaranteed and the Net Asset Value can still fall in market downturns."
+      "read": "Covered-call ETFs (QQQI/JEPQ/JEPI/SPYI) can distribute ~1%/mo (~13%/yr) as steady income, but they cap upside and NAV can fall in a selloff. Good for parking cash for yield, not for growth; distributions are variable, not guaranteed."
     }
   }
 }
