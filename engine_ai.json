@@ -1,6 +1,6 @@
 {
-  "aiTs": "10/6/2026, 9:01:06 AM (auto)",
-  "aiEpoch": 1791291666415,
+  "aiTs": "10/6/2026, 9:31:17 AM (auto)",
+  "aiEpoch": 1791293477432,
   "v": 11,
   "src": "auto",
   "modes": {
@@ -13,13 +13,13 @@
           "note": "no leverage"
         },
         {
-          "sym": "MUU",
+          "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
           "note": "no leverage"
         },
         {
-          "sym": "METU",
+          "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
           "note": "no leverage"
@@ -31,15 +31,27 @@
           "note": "no leverage"
         },
         {
-          "sym": "SPY",
+          "sym": "MSFU",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "no leverage"
+        },
+        {
+          "sym": "PLTU",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "no leverage"
+        },
+        {
+          "sym": "QQQI",
           "action": "Trim",
           "targetPct": 20,
           "note": "cap single name"
         }
       ],
       "plan": [
-        "Exit leveraged ETFs (SOXL, MUU, METU, SPAL) - they decay and can gap against you.",
-        "Trim SPY (26%) to ~20% to cap single-name risk.",
+        "Exit leveraged ETFs (SOXL, METU, MUU, SPAL, MSFU, PLTU) - they decay and can gap against you.",
+        "Trim QQQI (24%) to ~20% to cap single-name risk.",
         "Lean on income (QQQI) + broad index; hold a 15-20% cash buffer.",
         "Use tight stops - the goal is small, steady gains and shallow drawdowns."
       ],
@@ -54,15 +66,15 @@
           "note": "cut leverage/decay"
         },
         {
-          "sym": "MUU",
+          "sym": "METU",
           "action": "Trim",
           "targetPct": 3,
           "note": "cut leverage/decay"
         },
         {
-          "sym": "METU",
+          "sym": "MUU",
           "action": "Trim",
-          "targetPct": 2,
+          "targetPct": 3,
           "note": "cut leverage/decay"
         },
         {
@@ -72,7 +84,19 @@
           "note": "cut leverage/decay"
         },
         {
-          "sym": "MSFT",
+          "sym": "MSFU",
+          "action": "Trim",
+          "targetPct": 2,
+          "note": "cut leverage/decay"
+        },
+        {
+          "sym": "PLTU",
+          "action": "Trim",
+          "targetPct": 2,
+          "note": "cut leverage/decay"
+        },
+        {
+          "sym": "CRWV",
           "action": "Buy",
           "targetPct": 4,
           "note": "scanner top setup"
@@ -81,21 +105,15 @@
       "plan": [
         "Keep leveraged ETFs small (<=3%) and on tight stops - they decay and amplify drawdowns.",
         "Hold single names near ~25% max.",
-        "Best fresh setup: MSFT: ACCUMULATE 9/12, entry 524.65-524.13, stop 523.11, targets 532.35/553.72/557.08, R 5. A starter (~4%) only if it triggers.",
+        "Best fresh setup: CRWV: WATCH 12/12, entry 87.79-87.51, stop 86.88, targets 89.23/90.47/91.81, R 1.58. A starter (~4%) only if it triggers.",
         "Hold a ~10% cash buffer and respect every stop."
       ],
-      "read": "A ~2.5%/mo target is aggressive but not impossible in a strong tape; hinges on cutting concentration/leverage + consistency. Expect losing months - size so a bad one (~-26.29%) doesn't force your hand."
+      "read": "A ~2.5%/mo target is aggressive but not impossible in a strong tape; hinges on cutting concentration/leverage + consistency. Expect losing months - size so a bad one (~-25.59%) doesn't force your hand."
     },
     "aggressive": {
       "moves": [
         {
           "sym": "SOXL",
-          "action": "Add",
-          "targetPct": 7,
-          "note": "lean into momentum"
-        },
-        {
-          "sym": "MUU",
           "action": "Add",
           "targetPct": 6,
           "note": "lean into momentum"
@@ -107,25 +125,43 @@
           "note": "lean into momentum"
         },
         {
+          "sym": "MUU",
+          "action": "Add",
+          "targetPct": 6,
+          "note": "lean into momentum"
+        },
+        {
           "sym": "SPAL",
           "action": "Add",
           "targetPct": 6,
           "note": "lean into momentum"
         },
         {
-          "sym": "MSFT",
+          "sym": "MSFU",
+          "action": "Add",
+          "targetPct": 6,
+          "note": "lean into momentum"
+        },
+        {
+          "sym": "PLTU",
+          "action": "Add",
+          "targetPct": 6,
+          "note": "lean into momentum"
+        },
+        {
+          "sym": "CRWV",
           "action": "Buy",
           "targetPct": 6,
           "note": "high-conviction setup"
         }
       ],
       "plan": [
-        "Lean into leveraged ETFs (SOXL, MUU, METU, SPAL) toward ~6% each - but hold a STRICT stop; they decay and can drop hard fast.",
-        "Press the strongest scanner setup: MSFT: ACCUMULATE 9/12, entry 524.65-524.13, stop 523.11, targets 532.35/553.72/557.08, R 5 (~6%).",
+        "Lean into leveraged ETFs (SOXL, METU, MUU, SPAL, MSFU, PLTU) toward ~6% each - but hold a STRICT stop; they decay and can drop hard fast.",
+        "Press the strongest scanner setup: CRWV: WATCH 12/12, entry 87.79-87.51, stop 86.88, targets 89.23/90.47/91.81, R 1.58 (~6%).",
         "Run a small (~5%) cash buffer - stay invested for the upside.",
         "Wider but STRICT stops. This mode can lose a lot fast - discipline is everything."
       ],
-      "read": "A ~4%/mo stretch target needs leverage + a strong tape + tight discipline; the same leverage means a bad month can run past -45%. Higher upside AND higher risk of a deep drawdown - not a promise."
+      "read": "A ~4%/mo stretch target needs leverage + a strong tape + tight discipline; the same leverage means a bad month can run past -44%. Higher upside AND higher risk of a deep drawdown - not a promise."
     },
     "income": {
       "moves": [
@@ -136,13 +172,13 @@
           "note": "too volatile to park"
         },
         {
-          "sym": "MUU",
+          "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
           "note": "too volatile to park"
         },
         {
-          "sym": "METU",
+          "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
           "note": "too volatile to park"
@@ -154,20 +190,26 @@
           "note": "too volatile to park"
         },
         {
+          "sym": "MSFU",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "too volatile to park"
+        },
+        {
+          "sym": "PLTU",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "too volatile to park"
+        },
+        {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 30,
           "note": "income anchor"
-        },
-        {
-          "sym": "SPY",
-          "action": "Trim",
-          "targetPct": 20,
-          "note": "cut single-name risk"
         }
       ],
       "plan": [
-        "Exit leveraged ETFs (SOXL, MUU, METU, SPAL) - too volatile for parked cash.",
+        "Exit leveraged ETFs (SOXL, METU, MUU, SPAL, MSFU, PLTU) - too volatile for parked cash.",
         "Build QQQI toward ~30% as your monthly-distribution anchor.",
         "Keep the rest in broad index + a cash buffer; the distributions pay you monthly.",
         "Low-drawdown income park - but NAV can still dip and distributions vary (not a savings account)."
