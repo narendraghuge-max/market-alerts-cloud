@@ -27,7 +27,7 @@ const meta = exits?.meta || (read('portfolio.json') || {})._meta || {};    // re
 
 // ---- sector + leverage helpers ----
 const SEMI = ['NVDA','AVGO','AMD','TSM','MU','MUU','AMAT','LRCX','KLAC','SMCI','SMH','ARM','MRVL','ASML','TXN','QCOM','ADI','ON','MCHP','CRDO','ALAB','SOXL','SOXS','NVDU','NVDD'];
-const SOFT = ['CRWD','PLTR','MSFT','GOOGL','META','METU','AMZN','SNOW','TSLA','AAPL','NFLX','ORCL','ANET','NOW','PANW','NET','ZS','DDOG','CRM','APP','RDDT','CRWV','NBIS','VRT','GEV'];
+const SOFT = ['CRWD','PLTR','PLTU','MSFT','MSFU','GOOGL','META','METU','AMZN','SNOW','TSLA','AAPL','NFLX','ORCL','ANET','NOW','PANW','NET','ZS','DDOG','CRM','APP','RDDT','CRWV','NBIS','VRT','GEV'];
 const INDEX = ['SPY','QQQ','IWM','XLK','TQQQ','SQQQ','SPXL','SPXS','TNA','TZA','DIA'];
 const SPACE = ['SPCX','SPAL','SPCH','SSPC','RKLB','ASTS','LUNR','RDW'];
 const INCOME = ['QQQI','JEPI','JEPQ','SPYI'];
