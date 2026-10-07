@@ -1,6 +1,6 @@
 {
-  "aiTs": "10/7/2026, 3:46:09 PM (auto)",
-  "aiEpoch": 1791402369823,
+  "aiTs": "10/7/2026, 4:16:04 PM (auto)",
+  "aiEpoch": 1791404164953,
   "v": 11,
   "src": "auto",
   "modes": {
@@ -25,12 +25,6 @@
           "note": "no leverage"
         },
         {
-          "sym": "SPAL",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "no leverage"
-        },
-        {
           "sym": "PLTU",
           "action": "Sell",
           "targetPct": 0,
@@ -43,6 +37,12 @@
           "note": "no leverage"
         },
         {
+          "sym": "SPAL",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "no leverage"
+        },
+        {
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 20,
@@ -50,7 +50,7 @@
         }
       ],
       "plan": [
-        "Exit leveraged ETFs (SOXL, METU, MUU, SPAL, PLTU, MSFU) - they decay and can gap against you.",
+        "Exit leveraged ETFs (SOXL, METU, MUU, PLTU, MSFU, SPAL) - they decay and can gap against you.",
         "Trim QQQI (25%) to ~20% to cap single-name risk.",
         "Lean on income (QQQI) + broad index; hold a 15-20% cash buffer.",
         "Use tight stops - the goal is small, steady gains and shallow drawdowns."
@@ -78,12 +78,6 @@
           "note": "cut leverage/decay"
         },
         {
-          "sym": "SPAL",
-          "action": "Trim",
-          "targetPct": 2,
-          "note": "cut leverage/decay"
-        },
-        {
           "sym": "PLTU",
           "action": "Trim",
           "targetPct": 2,
@@ -96,7 +90,13 @@
           "note": "cut leverage/decay"
         },
         {
-          "sym": "MCHP",
+          "sym": "SPAL",
+          "action": "Trim",
+          "targetPct": 2,
+          "note": "cut leverage/decay"
+        },
+        {
+          "sym": "AVGO",
           "action": "Buy",
           "targetPct": 4,
           "note": "scanner top setup"
@@ -105,10 +105,10 @@
       "plan": [
         "Keep leveraged ETFs small (<=3%) and on tight stops - they decay and amplify drawdowns.",
         "Hold single names near ~25% max.",
-        "Best fresh setup: MCHP: BUY 9/12, entry 77.09-76.93, stop 76.3, targets 78.56/79.75/81.04, R 1.86. A starter (~4%) only if it triggers.",
+        "Best fresh setup: AVGO: WATCH 9/12, entry 373.98-373.38, stop 371.87, targets 377.31/380.84/383.59, R 1.58. A starter (~4%) only if it triggers.",
         "Hold a ~10% cash buffer and respect every stop."
       ],
-      "read": "A ~2.5%/mo target is aggressive but not impossible in a strong tape; hinges on cutting concentration/leverage + consistency. Expect losing months - size so a bad one (~-26%) doesn't force your hand."
+      "read": "A ~2.5%/mo target is aggressive but not impossible in a strong tape; hinges on cutting concentration/leverage + consistency. Expect losing months - size so a bad one (~-25.99%) doesn't force your hand."
     },
     "aggressive": {
       "moves": [
@@ -131,12 +131,6 @@
           "note": "lean into momentum"
         },
         {
-          "sym": "SPAL",
-          "action": "Add",
-          "targetPct": 6,
-          "note": "lean into momentum"
-        },
-        {
           "sym": "PLTU",
           "action": "Add",
           "targetPct": 6,
@@ -149,15 +143,21 @@
           "note": "lean into momentum"
         },
         {
-          "sym": "MCHP",
+          "sym": "SPAL",
+          "action": "Add",
+          "targetPct": 6,
+          "note": "lean into momentum"
+        },
+        {
+          "sym": "AVGO",
           "action": "Buy",
           "targetPct": 6,
           "note": "high-conviction setup"
         }
       ],
       "plan": [
-        "Lean into leveraged ETFs (SOXL, METU, MUU, SPAL, PLTU, MSFU) toward ~6% each - but hold a STRICT stop; they decay and can drop hard fast.",
-        "Press the strongest scanner setup: MCHP: BUY 9/12, entry 77.09-76.93, stop 76.3, targets 78.56/79.75/81.04, R 1.86 (~6%).",
+        "Lean into leveraged ETFs (SOXL, METU, MUU, PLTU, MSFU, SPAL) toward ~6% each - but hold a STRICT stop; they decay and can drop hard fast.",
+        "Press the strongest scanner setup: AVGO: WATCH 9/12, entry 373.98-373.38, stop 371.87, targets 377.31/380.84/383.59, R 1.58 (~6%).",
         "Run a small (~5%) cash buffer - stay invested for the upside.",
         "Wider but STRICT stops. This mode can lose a lot fast - discipline is everything."
       ],
@@ -184,12 +184,6 @@
           "note": "too volatile to park"
         },
         {
-          "sym": "SPAL",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "too volatile to park"
-        },
-        {
           "sym": "PLTU",
           "action": "Sell",
           "targetPct": 0,
@@ -202,6 +196,12 @@
           "note": "too volatile to park"
         },
         {
+          "sym": "SPAL",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "too volatile to park"
+        },
+        {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 30,
@@ -209,7 +209,7 @@
         }
       ],
       "plan": [
-        "Exit leveraged ETFs (SOXL, METU, MUU, SPAL, PLTU, MSFU) - too volatile for parked cash.",
+        "Exit leveraged ETFs (SOXL, METU, MUU, PLTU, MSFU, SPAL) - too volatile for parked cash.",
         "Build QQQI toward ~30% as your monthly-distribution anchor.",
         "Keep the rest in broad index + a cash buffer; the distributions pay you monthly.",
         "Low-drawdown income park - but NAV can still dip and distributions vary (not a savings account)."
