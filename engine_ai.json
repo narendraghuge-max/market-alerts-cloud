@@ -1,6 +1,6 @@
 {
-  "aiTs": "10/12/2026, 12:31:15 PM (Gemini)",
-  "aiEpoch": 1791822675198,
+  "aiTs": "10/12/2026, 1:00:59 PM (Gemini)",
+  "aiEpoch": 1791824459148,
   "v": 11,
   "src": "Gemini",
   "modes": {
@@ -10,53 +10,54 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exiting downtrending holding"
+          "note": "Cut below-stop holding"
         },
         {
           "sym": "METU",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Reducing leveraged exposure"
+          "action": "Trim",
+          "targetPct": 3,
+          "note": "Reduce concentrated tech"
         },
         {
           "sym": "PLTU",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Reducing leveraged exposure"
-        },
-        {
-          "sym": "MSFU",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Reducing leveraged exposure"
+          "action": "Trim",
+          "targetPct": 2,
+          "note": "Reduce concentrated tech"
         },
         {
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Favoring income, within cap"
+          "note": "Increase income allocation"
+        },
+        {
+          "sym": "SPY",
+          "action": "Add",
+          "targetPct": 25,
+          "note": "Increase broad index exposure"
         }
       ],
       "plan": [
-        "Sell all SOXL and SPAL to eliminate leveraged ETF exposure.",
-        "Exit MUU due to its downtrend and sell signal.",
-        "Sell METU, PLTU, and MSFU to further reduce leveraged exposure.",
-        "Trim QQQI to 20% to stay within the single-name cap for this mode.",
-        "This plan prioritizes capital preservation and reduces overall risk."
+        "Sell all leveraged ETFs (SOXL, SPAL) to zero.",
+        "Exit the MUU holding as it's below its stop.",
+        "Trim some of the AI/Software leveraged ETFs (METU, PLTU).",
+        "Reduce QQQI to 20% to build cash.",
+        "Increase SPY allocation to 25% for broad market exposure.",
+        "This plan prioritizes capital preservation with reduced leverage."
       ],
-      "read": "This conservative plan targets around 1.5% per month, focusing on capital preservation. It significantly reduces leverage and concentration, aiming for lower drawdown. Expect modest returns with reduced volatility."
+      "read": "This conservative plan aims for lower monthly returns around 1.5% by significantly reducing leverage and focusing on income and broad market exposure. Expect lower volatility and drawdowns compared to other modes."
     },
     "balanced": {
       "moves": [
@@ -76,41 +77,42 @@
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exiting downtrending holding"
+          "note": "Exit below-stop holding"
         },
         {
           "sym": "METU",
           "action": "Trim",
           "targetPct": 3,
-          "note": "Reduce leveraged exposure"
+          "note": "Reduce concentrated tech"
         },
         {
           "sym": "PLTU",
           "action": "Trim",
           "targetPct": 2,
-          "note": "Reduce leveraged exposure"
+          "note": "Reduce concentrated tech"
         },
         {
-          "sym": "MSFU",
-          "action": "Trim",
-          "targetPct": 2,
-          "note": "Reduce leveraged exposure"
+          "sym": "SNOW",
+          "action": "Add",
+          "targetPct": 4,
+          "note": "Add strong AI/Software name"
         },
         {
-          "sym": "CEG",
+          "sym": "ZS",
           "action": "Buy",
           "targetPct": 4,
-          "note": "Adding strong scanner setup"
+          "note": "Add strong AI/Software name"
         }
       ],
       "plan": [
-        "Trim SOXL to 3% and SPAL to 2% to reduce leveraged ETF exposure and meet mandate.",
-        "Sell MUU due to its downtrend and sell signal.",
-        "Trim METU to 3%, PLTU to 2%, and MSFU to 2% to reduce overall leverage.",
-        "Buy CEG at 4% as a strong new scanner setup to balance the portfolio.",
-        "This plan aims for risk-first growth with a blend of broad index and quality tech."
+        "Trim leveraged ETFs (SOXL, SPAL) to minimal levels.",
+        "Exit the MUU holding as it's below its stop.",
+        "Reduce exposure in AI/Software leveraged ETFs (METU, PLTU).",
+        "Add new, high-scoring AI/Software names SNOW and ZS.",
+        "This balanced approach seeks growth while managing risk.",
+        "It blends broad index exposure with quality tech and limited leverage."
       ],
-      "read": "This balanced plan targets around 2.5% per month, focusing on risk-first growth. It reduces overall leverage and concentration while adding a high-quality new setup. Expect moderate returns with controlled risk."
+      "read": "This balanced plan targets around 2.5% monthly return by de-risking from concentrated leveraged positions and adding high-quality tech names. It aims for risk-first growth with a moderate cash buffer and controlled leverage."
     },
     "aggressive": {
       "moves": [
@@ -118,53 +120,54 @@
           "sym": "SOXL",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase exposure to strong sector"
+          "note": "Increase leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase exposure to strong sector"
+          "note": "Increase leveraged ETF exposure"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exiting downtrending holding"
+          "note": "Exit below-stop holding"
         },
         {
           "sym": "METU",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase exposure to strong sector"
+          "note": "Increase concentrated tech"
         },
         {
           "sym": "PLTU",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase exposure to strong sector"
-        },
-        {
-          "sym": "MSFU",
-          "action": "Add",
-          "targetPct": 6,
-          "note": "Increase exposure to strong sector"
+          "note": "Increase concentrated tech"
         },
         {
           "sym": "CRWD",
           "action": "Add",
-          "targetPct": 8,
-          "note": "Pressing what is working"
+          "targetPct": 10,
+          "note": "Increase top performer"
+        },
+        {
+          "sym": "VST",
+          "action": "Buy",
+          "targetPct": 5,
+          "note": "Add strong scanner setup"
         }
       ],
       "plan": [
-        "Add to SOXL to 6% and SPAL to 6%, increasing leveraged ETF exposure within mandate.",
-        "Sell MUU due to its downtrend and sell signal.",
-        "Add to METU to 6%, PLTU to 6%, and MSFU to 6%, increasing exposure to strong AI/Software.",
-        "Add to CRWD to 8%, pressing into a high-performing name.",
-        "This plan leans into leverage and concentration for stretch growth."
+        "Increase exposure to leveraged ETFs (SOXL, SPAL) as per mandate.",
+        "Exit the MUU holding as it's below its stop.",
+        "Add to AI/Software leveraged ETFs (METU, PLTU) and top performer CRWD.",
+        "Initiate a new position in VST, a strong scanner setup.",
+        "This aggressive plan concentrates on high-conviction tech and leverage.",
+        "It aims for higher growth but accepts significantly increased drawdown risk."
       ],
-      "read": "This aggressive plan targets around 4% per month, aiming for stretch growth. It significantly increases leveraged exposure and concentration in high-scoring setups. Be aware this raises both upside and drawdown potential, and leveraged ETFs decay daily. Strict stop discipline is crucial."
+      "read": "This aggressive plan targets around 4% monthly return by increasing leverage and concentrating in top-performing tech and strong scanner setups. Expect amplified gains and losses, with leveraged ETFs contributing to higher potential drawdowns and daily rebalancing decay."
     },
     "income": {
       "moves": [
@@ -172,53 +175,54 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exiting downtrending holding"
+          "note": "Exit below-stop holding"
         },
         {
           "sym": "SMH",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce high-beta exposure"
+          "note": "Cut non-income sector"
         },
         {
           "sym": "CRWD",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce high-beta exposure"
+          "note": "Cut high-beta name"
         },
         {
           "sym": "SNOW",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce high-beta exposure"
+          "note": "Cut high-beta name"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 30,
-          "note": "Increase income exposure"
+          "note": "Increase income allocation"
         }
       ],
       "plan": [
-        "Sell all SOXL and SPAL to eliminate leveraged ETF exposure.",
-        "Exit MUU due to its downtrend and sell signal.",
-        "Sell SMH, CRWD, and SNOW to reduce high-beta single name exposure.",
-        "Add to QQQI to 30%, prioritizing income and covered-call ETFs.",
-        "This plan focuses on parking cash for yield and steady distributions."
+        "Sell all leveraged ETFs (SOXL, SPAL) and high-beta tech (CRWD, SNOW).",
+        "Exit the MUU holding as it's below its stop.",
+        "Sell the SMH sector holding to reduce non-income focus.",
+        "Increase QQQI allocation to 30% for income generation.",
+        "This income-focused plan prioritizes steady monthly distributions.",
+        "It aims for low drawdowns and reliable income over aggressive growth."
       ],
-      "read": "This income plan targets around 1% per month, prioritizing yield and low drawdown. It significantly reduces leverage and high-beta names, focusing on income-generating ETFs. Distributions are variable, and NAV can still fall in a selloff."
+      "read": "This income plan targets around 1% monthly return by shifting to income-generating ETFs like QQQI and minimizing volatile single stocks and leverage. Expect lower growth potential but a focus on capital preservation and consistent distributions, though NAV can still decline."
     }
   }
 }
