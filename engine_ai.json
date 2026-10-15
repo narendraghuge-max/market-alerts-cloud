@@ -1,6 +1,6 @@
 {
-  "aiTs": "10/15/2026, 10:31:08 AM (Gemini)",
-  "aiEpoch": 1792074668498,
+  "aiTs": "10/15/2026, 11:01:05 AM (Gemini)",
+  "aiEpoch": 1792076465424,
   "v": 11,
   "src": "Gemini",
   "modes": {
@@ -10,52 +10,54 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "SMCI",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Below stop, cut for preservation"
+          "note": "Cut underperforming tech"
         },
         {
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Reduce concentration, stay within…"
+          "note": "Reduce concentration, favor income"
         },
         {
           "sym": "SMH",
           "action": "Trim",
           "targetPct": 5,
-          "note": "Reduce downtrending sector exposure"
+          "note": "Reduce semiconductor exposure"
         },
         {
           "sym": "QQQ",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Flagged sell, reduce broad index"
+          "note": "Reduce broad index exposure"
         }
       ],
       "plan": [
-        "Sell all leveraged ETFs (SOXL, SPAL, MUU) to zero for capital preservation.",
-        "Sell SMCI as it is below its stop and QQQ as it is flagged sell.",
-        "Trim QQQI to 20% to meet concentration limits and SMH to 5% due to downtrend.",
-        "This plan significantly reduces overall risk and leverage."
+        "Sell all leveraged ETFs (SOXL, SPAL, MUU) to zero.",
+        "Sell SMCI due to underperformance and downtrend.",
+        "Sell QQQ to reduce broad index exposure.",
+        "Trim QQQI to 20% to reduce concentration and favor income.",
+        "Trim SMH to 5% to reduce semiconductor exposure.",
+        "This plan prioritizes capital preservation with reduced leverage and concentration."
       ],
-      "read": "This conservative plan aims for capital preservation with a potential ~1.5%/month return. It significantly reduces leverage and concentration, lowering drawdown risk. Expect lower volatility and more stable performance."
+      "read": "This mode targets a low monthly return of around 1.5% with a focus on capital preservation. Expect lower drawdowns but also capped upside potential."
     },
     "balanced": {
       "moves": [
@@ -81,34 +83,36 @@
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Meet concentration limits"
+          "note": "Maintain income exposure"
         },
         {
           "sym": "SMCI",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Below stop, cut for risk management"
+          "note": "Exit underperforming tech"
         },
         {
           "sym": "QQQ",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Flagged sell, reduce broad index"
+          "note": "Reduce broad index exposure"
         },
         {
           "sym": "SNOW",
           "action": "Add",
           "targetPct": 4,
-          "note": "Strong scanner read, uptrend"
+          "note": "Add strong AI/Software name"
         }
       ],
       "plan": [
-        "Trim SOXL to 3%, SPAL to 1%, and MUU to 2% to reduce leveraged ETF exposure.",
-        "Trim QQQI to 25% to meet concentration limits.",
-        "Sell SMCI as it is below its stop and QQQ as it is flagged sell.",
-        "Add to SNOW, which has a strong scanner read and is in an uptrend."
+        "Trim leveraged ETFs (SOXL, SPAL, MUU) to low single digits.",
+        "Sell SMCI to exit underperforming tech.",
+        "Sell QQQ to reduce broad index exposure.",
+        "Trim QQQI to 25% to maintain income exposure.",
+        "Add SNOW to 4% as a strong AI/Software name.",
+        "This plan balances risk reduction with growth opportunities."
       ],
-      "read": "This balanced plan targets ~2.5%/month growth by managing risk first. It reduces overall leverage and concentration while adding to a quality uptrending name. Expect moderate volatility and growth potential."
+      "read": "This mode targets a moderate monthly return of around 2.5%, prioritizing risk management. It aims for growth by blending quality tech with reduced leverage and concentration."
     },
     "aggressive": {
       "moves": [
@@ -116,53 +120,54 @@
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Meet concentration limits"
+          "note": "Maintain income exposure"
         },
         {
           "sym": "SOXL",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase leveraged semiconductor…"
+          "note": "Increase leveraged ETF exposure"
         },
         {
           "sym": "MUU",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase leveraged semiconductor…"
+          "note": "Increase leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase leveraged space exposure"
+          "note": "Increase leveraged ETF exposure"
         },
         {
           "sym": "SNOW",
           "action": "Add",
           "targetPct": 6,
-          "note": "Strong scanner read, uptrend"
+          "note": "Add strong AI/Software name"
         },
         {
           "sym": "XOM",
           "action": "Buy",
           "targetPct": 5,
-          "note": "Highest scanner score, new sector"
+          "note": "Add strong energy setup"
         },
         {
           "sym": "QQQ",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Flagged sell, reallocate capital"
+          "note": "Reduce broad index exposure"
         }
       ],
       "plan": [
-        "Trim QQQI to 25% to meet concentration limits.",
-        "Add to SOXL, MUU, and SPAL to increase leveraged exposure in high-beta sectors.",
-        "Add to SNOW, which has a strong scanner read and is in an uptrend.",
-        "Buy XOM, the highest-scoring scanner setup, to add a new sector.",
-        "Sell QQQ as it is flagged sell to reallocate capital."
+        "Trim QQQI to 25% to maintain income exposure.",
+        "Add to leveraged ETFs (SOXL, MUU, SPAL) to increase exposure.",
+        "Add SNOW to 6% as a strong AI/Software name.",
+        "Buy XOM to 5% as a strong energy setup.",
+        "Sell QQQ to reduce broad index exposure.",
+        "This plan aggressively pursues growth by increasing leverage and concentration in high-scoring setups."
       ],
-      "read": "This aggressive plan targets ~4%/month growth by leaning into leverage and concentration. It significantly increases both upside and drawdown potential. Be aware of daily decay in leveraged ETFs and the need for strict stop discipline to manage substantial risk."
+      "read": "This mode targets a high monthly return of around 4%, accepting significantly higher potential drawdowns and leverage decay. Strict stop discipline is crucial."
     },
     "income": {
       "moves": [
@@ -170,53 +175,54 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Eliminate leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Eliminate leveraged ETF exposure"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Eliminate leveraged ETF exposure"
         },
         {
           "sym": "SMCI",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Below stop, cut for capital…"
+          "note": "Exit underperforming tech"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 30,
-          "note": "Increase income exposure"
+          "note": "Increase income focus"
         },
         {
           "sym": "QQQ",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Flagged sell, reallocate to income"
+          "note": "Reduce broad index exposure"
         },
         {
           "sym": "SMH",
           "action": "Trim",
           "targetPct": 5,
-          "note": "Reduce downtrending sector exposure"
+          "note": "Reduce semiconductor exposure"
         }
       ],
       "plan": [
-        "Sell all leveraged ETFs (SOXL, SPAL, MUU) to zero for capital preservation.",
-        "Sell SMCI as it is below its stop and QQQ as it is flagged sell.",
-        "Add to QQQI to 30% to increase income exposure.",
-        "Trim SMH to 5% due to its downtrend.",
-        "This plan prioritizes steady distributions over growth."
+        "Sell all leveraged ETFs (SOXL, SPAL, MUU) to zero.",
+        "Sell SMCI to exit underperforming tech.",
+        "Sell QQQ to reduce broad index exposure.",
+        "Add to QQQI to 30% to increase income focus.",
+        "Trim SMH to 5% to reduce semiconductor exposure.",
+        "This plan prioritizes steady monthly distributions and low drawdown over growth."
       ],
-      "read": "This income plan aims for ~1%/month yield by rotating into income-focused ETFs. It significantly reduces high-beta and leveraged holdings for lower drawdown. Distributions are variable, and NAV can still fall in market downturns."
+      "read": "This mode targets a low monthly return of around 1%, focusing on generating consistent income. It prioritizes capital preservation and reliable distributions over growth potential."
     }
   }
 }
