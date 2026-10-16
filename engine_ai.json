@@ -1,6 +1,6 @@
 {
-  "aiTs": "10/16/2026, 1:01:10 PM (Gemini)",
-  "aiEpoch": 1792170070112,
+  "aiTs": "10/16/2026, 1:31:12 PM (Gemini)",
+  "aiEpoch": 1792171872308,
   "v": 11,
   "src": "Gemini",
   "modes": {
@@ -10,52 +10,54 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "SMCI",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Below stop, capital preservation"
+          "note": "Cut high-risk tech exposure"
         },
         {
           "sym": "SNOW",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Scanner sell signal"
+          "note": "Cut high-risk tech exposure"
         },
         {
           "sym": "CRWD",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Scanner sell signal, take profit"
+          "note": "Cut high-risk tech exposure"
         },
         {
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Reduce concentration, stay within…"
+          "note": "Reduce income concentration"
         }
       ],
       "plan": [
-        "Sell all leveraged ETFs (SOXL, SPAL, MUU) to zero for capital preservation.",
-        "Exit SMCI, SNOW, and CRWD due to scanner sell signals or being below stop.",
-        "Trim QQQI to 20% to meet the single-name concentration mandate.",
-        "This plan aims for a low-drawdown portfolio focused on stability."
+        "Sell all leveraged ETFs (SOXL, SPAL, MUU) to zero.",
+        "Exit high-risk tech names (SMCI, SNOW, CRWD) completely.",
+        "Reduce QQQI allocation to 20% to lower concentration.",
+        "Hold remaining broad index and income ETFs.",
+        "This plan prioritizes capital preservation.",
+        "Expect lower volatility and modest returns."
       ],
-      "read": "This conservative plan targets a modest ~1.5% monthly return, prioritizing capital preservation. It significantly reduces risk by eliminating leveraged ETFs and trimming concentrated positions. Expect lower volatility and smaller drawdowns."
+      "read": "This conservative mode focuses on capital preservation by cutting leveraged ETFs and high-risk tech. Expect a lower target return of around 1.5% per month with significantly reduced drawdown potential. A larger cash buffer is implicitly held."
     },
     "balanced": {
       "moves": [
@@ -81,34 +83,36 @@
           "sym": "SMCI",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Below stop, reduce risk"
+          "note": "Cut high-risk tech exposure"
         },
         {
           "sym": "SNOW",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Scanner sell signal"
+          "note": "Cut high-risk tech exposure"
         },
         {
           "sym": "CRWD",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Scanner sell signal, take profit"
+          "note": "Cut high-risk tech exposure"
         },
         {
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Meet single-name concentration mandate"
+          "note": "Maintain income allocation"
         }
       ],
       "plan": [
-        "Trim SOXL to 3%, SPAL to 1%, and MUU to 2% to reduce overall leverage.",
-        "Sell SMCI, SNOW, and CRWD based on scanner signals or being below stop.",
-        "Trim QQQI to 25% to comply with the single-name concentration limit.",
-        "This plan balances risk and growth, maintaining a small leveraged ETF sleeve."
+        "Trim leveraged ETFs (SOXL, SPAL, MUU) to low single digits.",
+        "Exit high-risk tech names (SMCI, SNOW, CRWD) completely.",
+        "Maintain QQQI at 25% for income.",
+        "Hold remaining broad index and quality tech.",
+        "This plan balances risk reduction with growth.",
+        "Targeting around 2.5% monthly return with controlled risk."
       ],
-      "read": "This balanced plan aims for ~2.5% monthly growth, focusing on risk-first growth. It reduces leverage and concentration while maintaining some exposure to quality tech. Expect moderate volatility and drawdowns."
+      "read": "This balanced mode aims for risk-first growth by reducing leverage and exiting high-conviction tech names. Expect a target return of approximately 2.5% per month, with a moderate cash buffer and controlled drawdown. Concentration is reduced."
     },
     "aggressive": {
       "moves": [
@@ -116,52 +120,54 @@
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Meet single-name concentration mandate"
+          "note": "Maintain income allocation"
         },
         {
           "sym": "SMH",
           "action": "Trim",
           "targetPct": 8,
-          "note": "Scanner trim signal"
+          "note": "Reduce semiconductor concentration"
         },
         {
           "sym": "CRWD",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Scanner sell signal, take profit"
+          "note": "Exit underperforming tech"
         },
         {
           "sym": "SNOW",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Scanner sell signal"
+          "note": "Exit underperforming tech"
         },
         {
           "sym": "SMCI",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Below stop, reduce risk"
+          "note": "Exit underperforming tech"
         },
         {
           "sym": "XLV",
           "action": "Buy",
           "targetPct": 6,
-          "note": "High-scoring new long setup"
+          "note": "Add defensive sector exposure"
         },
         {
           "sym": "SPXS",
           "action": "Buy",
           "targetPct": 6,
-          "note": "High-scoring new long setup"
+          "note": "Add inverse ETF for hedging"
         }
       ],
       "plan": [
-        "Trim QQQI to 25% and SMH to 8% to meet concentration mandates and scanner signals.",
-        "Sell CRWD, SNOW, and SMCI due to scanner signals or being below stop.",
-        "Buy XLV and SPXS at 6% each, leveraging high-scoring new long setups.",
-        "This plan leans into new high-conviction setups while managing existing breaches."
+        "Trim QQQI to 25% and SMH to 8%.",
+        "Exit underperforming tech names (CRWD, SNOW, SMCI).",
+        "Add SPXS (6%) for potential downside protection.",
+        "Add XLV (6%) for defensive sector exposure.",
+        "This aggressive plan seeks higher growth through concentration.",
+        "Expect higher volatility and potential for larger drawdowns."
       ],
-      "read": "This aggressive plan targets ~4% monthly growth, stretching for higher returns. It uses new high-scoring setups and maintains leverage, but be aware of significantly higher drawdown potential and daily decay in leveraged ETFs. Strict stop discipline is crucial."
+      "read": "This aggressive mode aims for stretched growth by concentrating exposure and adding inverse ETFs for hedging. Expect a target return of around 4% per month, but with significantly higher volatility and the potential for substantial drawdowns due to leverage and concentrated bets. Leveraged ETF decay is a factor."
     },
     "income": {
       "moves": [
@@ -169,52 +175,54 @@
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce high-beta single names"
+          "note": "Cut high-beta tech exposure"
         },
         {
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "MSFU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce high-beta single names"
+          "note": "Cut high-beta tech exposure"
         },
         {
           "sym": "PLTU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce high-beta single names"
+          "note": "Cut high-beta tech exposure"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 30,
-          "note": "Increase income exposure"
+          "note": "Increase income ETF allocation"
         }
       ],
       "plan": [
-        "Sell all leveraged ETFs (SOXL, MUU, SPAL) and high-beta single names (METU, MSFU, PLTU) to near zero.",
-        "Add to QQQI, increasing its allocation to 30% for enhanced income.",
-        "This plan prioritizes steady monthly distributions and low drawdown.",
-        "A significant cash buffer will be maintained for stability."
+        "Sell all high-beta tech and leveraged ETFs (METU, SOXL, MUU, MSFU, PLTU, SPAL).",
+        "Increase QQQI allocation to 30% for income.",
+        "Focus on income-generating ETFs and broad index.",
+        "This plan prioritizes steady monthly distributions.",
+        "Expect low volatility and reliable income.",
+        "NAV can still decline in market selloffs."
       ],
-      "read": "This income plan targets ~1% monthly yield, focusing on parking cash for distributions. It significantly reduces growth-oriented and leveraged positions. While aiming for reliable income, distributions are variable, and NAV can still fall in market selloffs."
+      "read": "This income mode prioritizes steady monthly distributions by selling high-beta tech and leveraged ETFs. Expect a target return of around 1% per month, with very low volatility. While distributions are prioritized, the Net Asset Value (NAV) can still fall in a market downturn."
     }
   }
 }
