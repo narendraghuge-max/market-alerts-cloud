@@ -1,228 +1,220 @@
 {
-  "aiTs": "10/16/2026, 8:01:13 AM (Gemini)",
-  "aiEpoch": 1792152073963,
+  "aiTs": "10/16/2026, 8:31:13 AM (auto)",
+  "aiEpoch": 1792153873199,
   "v": 11,
-  "src": "Gemini",
+  "src": "auto",
   "modes": {
     "conservative": {
       "moves": [
         {
+          "sym": "METU",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "no leverage"
+        },
+        {
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF exposure"
-        },
-        {
-          "sym": "SPAL",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Cut leveraged ETF exposure"
+          "note": "no leverage"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF exposure"
+          "note": "no leverage"
+        },
+        {
+          "sym": "PLTU",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "no leverage"
+        },
+        {
+          "sym": "MSFU",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "no leverage"
+        },
+        {
+          "sym": "SPAL",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "no leverage"
         },
         {
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Reduce concentration, favor income"
-        },
-        {
-          "sym": "SMH",
-          "action": "Trim",
-          "targetPct": 5,
-          "note": "Reduce semiconductor exposure"
-        },
-        {
-          "sym": "QQQ",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Reduce broad index exposure"
-        },
-        {
-          "sym": "SMCI",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Cut underperforming tech"
+          "note": "cap single name"
         }
       ],
       "plan": [
-        "Sell all leveraged ETFs (SOXL, SPAL, MUU) to zero.",
-        "Trim QQQI to 20% to reduce concentration.",
-        "Trim SMH to 5% to lower semiconductor risk.",
-        "Sell QQQ and SMCI to cut exposure to weaker names.",
-        "This plan prioritizes capital preservation with a significant cash buffer.",
-        "Expect lower volatility and a more conservative growth profile."
+        "Exit leveraged ETFs (METU, SOXL, MUU, PLTU, MSFU, SPAL) - they decay and can gap against you.",
+        "Trim QQQI (26%) to ~20% to cap single-name risk.",
+        "Lean on income (QQQI) + broad index; hold a 15-20% cash buffer.",
+        "Use tight stops - the goal is small, steady gains and shallow drawdowns."
       ],
-      "read": "This plan aims for capital preservation with a target of ~1.5% monthly return. It significantly reduces leverage and focuses on income and broad market exposure, aiming for low drawdowns."
+      "read": "A ~1.5%/mo steady target is realistic for a de-risked book; expect calmer swings but you give up some upside in strong tapes. Preservation first."
     },
     "balanced": {
       "moves": [
         {
+          "sym": "METU",
+          "action": "Trim",
+          "targetPct": 3,
+          "note": "cut leverage/decay"
+        },
+        {
           "sym": "SOXL",
           "action": "Trim",
           "targetPct": 3,
-          "note": "Reduce leveraged ETF exposure"
-        },
-        {
-          "sym": "SPAL",
-          "action": "Trim",
-          "targetPct": 1,
-          "note": "Reduce leveraged ETF exposure"
+          "note": "cut leverage/decay"
         },
         {
           "sym": "MUU",
           "action": "Trim",
           "targetPct": 2,
-          "note": "Reduce leveraged ETF exposure"
+          "note": "cut leverage/decay"
         },
         {
-          "sym": "QQQI",
+          "sym": "PLTU",
           "action": "Trim",
-          "targetPct": 25,
-          "note": "Maintain income, reduce concentration"
+          "targetPct": 2,
+          "note": "cut leverage/decay"
         },
         {
-          "sym": "SMH",
+          "sym": "MSFU",
           "action": "Trim",
-          "targetPct": 5,
-          "note": "Reduce semiconductor exposure"
+          "targetPct": 2,
+          "note": "cut leverage/decay"
         },
         {
-          "sym": "QQQ",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Reduce broad index exposure"
+          "sym": "SPAL",
+          "action": "Trim",
+          "targetPct": 1,
+          "note": "cut leverage/decay"
         },
         {
           "sym": "XLV",
           "action": "Buy",
           "targetPct": 4,
-          "note": "Add defensive sector exposure"
+          "note": "scanner top setup"
         }
       ],
       "plan": [
-        "Trim leveraged ETFs (SOXL, SPAL, MUU) to small positions.",
-        "Trim QQQI to 25% to manage concentration.",
-        "Trim SMH to 5% to reduce semiconductor risk.",
-        "Sell QQQ to reduce broad index exposure.",
-        "Buy XLV as a defensive sector addition.",
-        "This plan balances risk reduction with growth opportunities."
+        "Keep leveraged ETFs small (<=3%) and on tight stops - they decay and amplify drawdowns.",
+        "Hold single names near ~25% max.",
+        "Best fresh setup: XLV: WATCH 9/12, entry 177.01-176.84, stop 176.57, targets 178.86/179.13/179.39, R 4.18. A starter (~4%) only if it triggers.",
+        "Hold a ~10% cash buffer and respect every stop."
       ],
-      "read": "This balanced approach targets ~2.5% monthly return by reducing leverage and concentration while adding a defensive sector. It aims for risk-first growth with a moderate cash buffer."
+      "read": "A ~2.5%/mo target is aggressive but not impossible in a strong tape; hinges on cutting concentration/leverage + consistency. Expect losing months - size so a bad one (~-26.8%) doesn't force your hand."
     },
     "aggressive": {
       "moves": [
         {
-          "sym": "QQQI",
-          "action": "Trim",
-          "targetPct": 25,
-          "note": "Maintain income, reduce concentration"
-        },
-        {
-          "sym": "SMH",
-          "action": "Trim",
-          "targetPct": 5,
-          "note": "Reduce semiconductor exposure"
-        },
-        {
-          "sym": "QQQ",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Reduce broad index exposure"
+          "sym": "METU",
+          "action": "Add",
+          "targetPct": 6,
+          "note": "lean into momentum"
         },
         {
           "sym": "SOXL",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase leveraged semiconductor…"
+          "note": "lean into momentum"
         },
         {
           "sym": "MUU",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase leveraged semiconductor…"
+          "note": "lean into momentum"
+        },
+        {
+          "sym": "PLTU",
+          "action": "Add",
+          "targetPct": 6,
+          "note": "lean into momentum"
+        },
+        {
+          "sym": "MSFU",
+          "action": "Add",
+          "targetPct": 6,
+          "note": "lean into momentum"
+        },
+        {
+          "sym": "SPAL",
+          "action": "Add",
+          "targetPct": 6,
+          "note": "lean into momentum"
         },
         {
           "sym": "XLV",
           "action": "Buy",
           "targetPct": 6,
-          "note": "Add defensive sector exposure"
-        },
-        {
-          "sym": "AMZN",
-          "action": "Buy",
-          "targetPct": 5,
-          "note": "Add high-scoring tech name"
+          "note": "high-conviction setup"
         }
       ],
       "plan": [
-        "Trim QQQI to 25% and SMH to 5% to manage concentration.",
-        "Sell QQQ to reduce broad index exposure.",
-        "Add to leveraged semiconductor ETFs SOXL and MUU.",
-        "Buy XLV for defensive sector exposure.",
-        "Buy AMZN as a high-potential tech addition.",
-        "This plan aggressively pursues growth by increasing leverage and concentration in strong setups."
+        "Lean into leveraged ETFs (METU, SOXL, MUU, PLTU, MSFU, SPAL) toward ~6% each - but hold a STRICT stop; they decay and can drop hard fast.",
+        "Press the strongest scanner setup: XLV: WATCH 9/12, entry 177.01-176.84, stop 176.57, targets 178.86/179.13/179.39, R 4.18 (~6%).",
+        "Run a small (~5%) cash buffer - stay invested for the upside.",
+        "Wider but STRICT stops. This mode can lose a lot fast - discipline is everything."
       ],
-      "read": "This aggressive plan targets ~4% monthly return by increasing leverage and concentrating in high-scoring setups, including leveraged ETFs. Expect higher potential upside but also significantly larger drawdowns and the risk of rapid losses due to leverage and ETF decay."
+      "read": "A ~4%/mo stretch target needs leverage + a strong tape + tight discipline; the same leverage means a bad month can run past -46%. Higher upside AND higher risk of a deep drawdown - not a promise."
     },
     "income": {
       "moves": [
         {
+          "sym": "METU",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "too volatile to park"
+        },
+        {
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate leveraged ETF exposure"
-        },
-        {
-          "sym": "SPAL",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Eliminate leveraged ETF exposure"
+          "note": "too volatile to park"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate leveraged ETF exposure"
+          "note": "too volatile to park"
+        },
+        {
+          "sym": "PLTU",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "too volatile to park"
+        },
+        {
+          "sym": "MSFU",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "too volatile to park"
+        },
+        {
+          "sym": "SPAL",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "too volatile to park"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 30,
-          "note": "Increase income focus"
-        },
-        {
-          "sym": "SMH",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Eliminate semiconductor exposure"
-        },
-        {
-          "sym": "QQQ",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Eliminate broad index exposure"
-        },
-        {
-          "sym": "CRWD",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Eliminate high-beta single name"
+          "note": "income anchor"
         }
       ],
       "plan": [
-        "Sell all leveraged ETFs (SOXL, SPAL, MUU) to zero.",
-        "Increase QQQI to 30% for enhanced income focus.",
-        "Sell SMH and QQQ to remove speculative exposure.",
-        "Sell CRWD to cut high-beta single name risk.",
-        "This plan prioritizes steady monthly distributions over growth.",
-        "Expect lower volatility and reliable income, but limited capital appreciation."
+        "Exit leveraged ETFs (METU, SOXL, MUU, PLTU, MSFU, SPAL) - too volatile for parked cash.",
+        "Build QQQI toward ~30% as your monthly-distribution anchor.",
+        "Keep the rest in broad index + a cash buffer; the distributions pay you monthly.",
+        "Low-drawdown income park - but NAV can still dip and distributions vary (not a savings account)."
       ],
-      "read": "This income-focused plan targets ~1% monthly return by prioritizing income-generating assets like QQQI and reducing leverage and high-beta names. It aims for low drawdowns and consistent distributions, not significant capital growth."
+      "read": "Covered-call ETFs (QQQI/JEPQ/JEPI/SPYI) can distribute ~1%/mo (~13%/yr) as steady income, but they cap upside and NAV can fall in a selloff. Good for parking cash for yield, not for growth; distributions are variable, not guaranteed."
     }
   }
 }
