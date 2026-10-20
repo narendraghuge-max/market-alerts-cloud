@@ -1,6 +1,6 @@
 {
-  "aiTs": "10/20/2026, 3:16:13 PM (Gemini)",
-  "aiEpoch": 1792523773102,
+  "aiTs": "10/20/2026, 3:46:21 PM (Gemini)",
+  "aiEpoch": 1792525581198,
   "v": 11,
   "src": "Gemini",
   "modes": {
@@ -10,53 +10,54 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
-        },
-        {
-          "sym": "METU",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
-        },
-        {
-          "sym": "MUU",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
-        },
-        {
-          "sym": "MSFU",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
-        },
-        {
-          "sym": "PLTU",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF exposure"
+        },
+        {
+          "sym": "MUU",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Cut leveraged ETF exposure"
+        },
+        {
+          "sym": "SMCI",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Cut underperforming tech"
+        },
+        {
+          "sym": "SNOW",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Cut underperforming tech"
         },
         {
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Reduce concentration, stay within…"
+          "note": "Reduce concentration, favor income"
+        },
+        {
+          "sym": "SPY",
+          "action": "Add",
+          "targetPct": 25,
+          "note": "Increase broad index exposure"
         }
       ],
       "plan": [
-        "To preserve capital, we will sell all leveraged ETFs (SOXL, METU, MUU, MSFU, PLTU, SPAL) to zero.",
-        "This significantly reduces overall portfolio risk and leverage.",
-        "We will trim QQQI to 20% to meet the single-name concentration limit.",
-        "The focus is on income and broad index exposure with a large cash buffer.",
-        "This plan prioritizes stability and low drawdown."
+        "Sell all leveraged ETFs (SOXL, SPAL, MUU) to zero.",
+        "Sell SMCI and SNOW due to poor performance and stops.",
+        "Trim QQQI to reduce concentration and favor income.",
+        "Add to SPY to increase broad index exposure.",
+        "This plan prioritizes capital preservation with reduced leverage.",
+        "Expect a lower target return with significantly reduced drawdown risk."
       ],
-      "read": "This conservative plan aims for capital preservation with a potential ~1.5%/month return. It significantly reduces risk by eliminating leveraged ETFs and maintaining a large cash buffer. Expect lower volatility and drawdowns, but also more modest growth potential."
+      "read": "This conservative approach aims for capital preservation with a target of around 1.5% per month. It significantly reduces leverage and focuses on income and broad market exposure, leading to lower potential returns but also a much lower risk of substantial losses."
     },
     "balanced": {
       "moves": [
@@ -67,9 +68,9 @@
           "note": "Reduce leveraged ETF exposure"
         },
         {
-          "sym": "METU",
+          "sym": "SPAL",
           "action": "Trim",
-          "targetPct": 3,
+          "targetPct": 1,
           "note": "Reduce leveraged ETF exposure"
         },
         {
@@ -79,44 +80,39 @@
           "note": "Reduce leveraged ETF exposure"
         },
         {
-          "sym": "MSFU",
-          "action": "Trim",
-          "targetPct": 2,
-          "note": "Reduce leveraged ETF exposure"
+          "sym": "SMCI",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Cut underperforming tech"
         },
         {
-          "sym": "PLTU",
-          "action": "Trim",
-          "targetPct": 2,
-          "note": "Reduce leveraged ETF exposure"
-        },
-        {
-          "sym": "SPAL",
-          "action": "Trim",
-          "targetPct": 1,
-          "note": "Reduce leveraged ETF exposure"
+          "sym": "SNOW",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Cut underperforming tech"
         },
         {
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Reduce concentration, stay within…"
+          "note": "Reduce concentration"
         },
         {
           "sym": "XLF",
           "action": "Buy",
           "targetPct": 4,
-          "note": "Diversify into strong sector setup"
+          "note": "Add new sector exposure"
         }
       ],
       "plan": [
-        "We will trim all leveraged ETFs (SOXL, METU, MUU, MSFU, PLTU, SPAL) to reduce overall leverage.",
-        "QQQI will be trimmed to 25% to comply with single-name concentration limits.",
-        "This reduces risk while maintaining some exposure to growth.",
-        "We will buy XLF at 4% to diversify into a strong scanner setup.",
-        "The plan balances broad index, quality tech, and a small amount of leverage."
+        "Trim leveraged ETFs (SOXL, SPAL, MUU) to reduce overall risk.",
+        "Sell SMCI and SNOW due to poor performance and stops.",
+        "Trim QQQI to manage concentration.",
+        "Buy XLF as a new, well-rated sector addition.",
+        "This plan balances growth with risk reduction.",
+        "Expect moderate returns with controlled drawdowns."
       ],
-      "read": "This balanced plan targets risk-first growth, aiming for approximately ~2.5%/month. It reduces overall leverage and concentration while maintaining exposure to quality tech and broad market. Expect moderate volatility and drawdowns, with a focus on sustainable growth."
+      "read": "This balanced strategy targets approximately 2.5% per month by reducing leverage and concentration while adding a new, well-rated sector. It aims for risk-first growth, blending broad market exposure with quality names and a small allocation to leveraged ETFs."
     },
     "aggressive": {
       "moves": [
@@ -124,59 +120,54 @@
           "sym": "SOXL",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase exposure to leveraged semis"
-        },
-        {
-          "sym": "METU",
-          "action": "Add",
-          "targetPct": 6,
-          "note": "Increase exposure to leveraged…"
-        },
-        {
-          "sym": "MUU",
-          "action": "Add",
-          "targetPct": 6,
-          "note": "Increase exposure to leveraged semis"
-        },
-        {
-          "sym": "MSFU",
-          "action": "Add",
-          "targetPct": 6,
-          "note": "Increase exposure to leveraged…"
-        },
-        {
-          "sym": "PLTU",
-          "action": "Add",
-          "targetPct": 6,
-          "note": "Increase exposure to leveraged…"
+          "note": "Increase leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase exposure to leveraged space"
+          "note": "Increase leveraged ETF exposure"
+        },
+        {
+          "sym": "MUU",
+          "action": "Add",
+          "targetPct": 6,
+          "note": "Increase leveraged ETF exposure"
+        },
+        {
+          "sym": "SMCI",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Cut underperforming tech"
+        },
+        {
+          "sym": "SNOW",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Cut underperforming tech"
         },
         {
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Reduce concentration, stay within…"
+          "note": "Reduce concentration"
         },
         {
           "sym": "XLF",
           "action": "Buy",
           "targetPct": 6,
-          "note": "Add to strong scanner setup"
+          "note": "Add new sector exposure"
         }
       ],
       "plan": [
-        "We will add to all existing leveraged ETFs (SOXL, METU, MUU, MSFU, PLTU, SPAL) to increase growth potential.",
-        "QQQI will be trimmed to 25% to comply with single-name concentration limits.",
-        "This plan leans into leverage and concentrates in high-scoring scanner setups.",
-        "We will buy XLF at 6% to further capitalize on strong setups.",
-        "Strict stop discipline is crucial for managing the increased risk."
+        "Increase exposure to leveraged ETFs (SOXL, SPAL, MUU) for amplified gains.",
+        "Sell SMCI and SNOW due to poor performance and stops.",
+        "Trim QQQI to manage concentration.",
+        "Buy XLF as a new, high-potential sector addition.",
+        "This plan aggressively pursues growth through concentration and leverage.",
+        "Expect higher potential returns but also significantly increased drawdown risk and leverage decay."
       ],
-      "read": "This aggressive growth plan aims for stretched growth, targeting approximately ~4%/month. It significantly increases exposure to leveraged ETFs and concentrates in high-scoring setups. Be aware this raises both upside and drawdown potential; leveraged ETFs decay daily, and losses can be substantial if stops are not strictly adhered to."
+      "read": "This aggressive plan targets around 4% per month by increasing leveraged ETF exposure and concentrating on high-potential new additions. It accepts significantly higher drawdown risk and the effects of leveraged ETF decay in pursuit of maximum growth. Strict stop discipline is crucial."
     },
     "income": {
       "moves": [
@@ -184,53 +175,54 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
-        },
-        {
-          "sym": "METU",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
-        },
-        {
-          "sym": "MUU",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
-        },
-        {
-          "sym": "MSFU",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
-        },
-        {
-          "sym": "PLTU",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF exposure"
+        },
+        {
+          "sym": "MUU",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Cut leveraged ETF exposure"
+        },
+        {
+          "sym": "SMCI",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Cut underperforming tech"
+        },
+        {
+          "sym": "SNOW",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Cut underperforming tech"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 30,
-          "note": "Increase income exposure"
+          "note": "Increase income focus"
+        },
+        {
+          "sym": "SPY",
+          "action": "Add",
+          "targetPct": 20,
+          "note": "Add broad index for stability"
         }
       ],
       "plan": [
-        "To prioritize income, we will sell all leveraged ETFs (SOXL, METU, MUU, MSFU, PLTU, SPAL) to zero.",
-        "This significantly reduces high-beta exposure and overall portfolio risk.",
-        "We will add to QQQI, increasing its allocation to 30% for enhanced monthly distributions.",
-        "The focus is on steady income and low drawdown, with a cash-like approach.",
-        "Distributions are variable, and NAV can still fall in market selloffs."
+        "Sell all leveraged ETFs (SOXL, SPAL, MUU) to eliminate volatility.",
+        "Sell SMCI and SNOW due to poor performance and stops.",
+        "Increase QQQI allocation to maximize income generation.",
+        "Add SPY for stability and broad market exposure.",
+        "This plan prioritizes steady monthly income over growth.",
+        "Expect low returns but very low drawdowns, with variable distributions."
       ],
-      "read": "This income plan aims to park cash for yield, targeting approximately ~1%/month. It prioritizes steady monthly distributions by rotating into income ETFs and cutting high-beta names. Expect lower growth potential and reduced volatility, but remember distributions are not guaranteed and NAV can still decline."
+      "read": "This income-focused plan targets around 1% per month by shifting to income-generating assets like QQQI and broad index ETFs, while cutting all leveraged and high-beta single names. It prioritizes low drawdowns and reliable monthly distributions, though NAV can still fluctuate."
     }
   }
 }
