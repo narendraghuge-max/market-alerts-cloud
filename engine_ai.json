@@ -1,6 +1,6 @@
 {
-  "aiTs": "10/22/2026, 10:31:05 AM (Gemini)",
-  "aiEpoch": 1792679465397,
+  "aiTs": "10/22/2026, 11:01:13 AM (Gemini)",
+  "aiEpoch": 1792681273394,
   "v": 11,
   "src": "Gemini",
   "modes": {
@@ -10,61 +10,57 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF exposure"
         },
         {
-          "sym": "METU",
+          "sym": "SMH",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut semiconductor exposure"
         },
         {
-          "sym": "PLTU",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
-        },
-        {
-          "sym": "MSFU",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "sym": "CRWD",
+          "action": "Trim",
+          "targetPct": 5,
+          "note": "Reduce concentrated tech"
         },
         {
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Reduce concentration, cure breach"
+          "note": "Reduce income concentration"
+        },
+        {
+          "sym": "SPY",
+          "action": "Add",
+          "targetPct": 15,
+          "note": "Increase broad index exposure"
         }
       ],
       "plan": [
-        "To prioritize capital preservation, we will exit all leveraged ETFs (SOXL, SPAL, MUU, METU, PLTU, MSFU) to reduce risk.",
-        "QQQI will be trimmed to 20% to cure the concentration breach and align with the conservative single-name limit.",
-        "This approach aims for a stable portfolio with minimal drawdown.",
-        "A significant cash buffer will be maintained for stability."
+        "Sell all leveraged ETFs (SOXL, SPAL, MUU) to eliminate that risk.",
+        "Sell SMH to reduce semiconductor concentration.",
+        "Trim CRWD to lower tech concentration.",
+        "Trim QQQI to meet single-name limit.",
+        "Add to SPY to increase broad index exposure and cash buffer.",
+        "This plan prioritizes capital preservation with reduced leverage."
       ],
-      "read": "This conservative plan targets a modest ~1.5%/month return, focusing on capital preservation. It significantly reduces portfolio volatility by eliminating leveraged positions. Expect lower drawdowns, but also more limited upside potential."
+      "read": "This plan aims for low, steady returns around 1.5% per month. The focus is on minimizing drawdowns by cutting high-risk assets and holding more cash."
     },
     "balanced": {
       "moves": [
-        {
-          "sym": "QQQI",
-          "action": "Trim",
-          "targetPct": 25,
-          "note": "Cure concentration breach"
-        },
         {
           "sym": "SOXL",
           "action": "Trim",
@@ -84,31 +80,39 @@
           "note": "Reduce leveraged ETF exposure"
         },
         {
-          "sym": "METU",
+          "sym": "QQQI",
           "action": "Trim",
-          "targetPct": 3,
-          "note": "Reduce leveraged ETF exposure"
+          "targetPct": 25,
+          "note": "Reduce income concentration"
         },
         {
-          "sym": "PLTU",
+          "sym": "SMH",
           "action": "Trim",
-          "targetPct": 2,
-          "note": "Reduce leveraged ETF exposure"
+          "targetPct": 5,
+          "note": "Reduce semiconductor exposure"
         },
         {
-          "sym": "MSFU",
-          "action": "Trim",
-          "targetPct": 2,
-          "note": "Reduce leveraged ETF exposure"
+          "sym": "ZS",
+          "action": "Buy",
+          "targetPct": 5,
+          "note": "Add quality tech setup"
+        },
+        {
+          "sym": "XLV",
+          "action": "Buy",
+          "targetPct": 5,
+          "note": "Add defensive sector exposure"
         }
       ],
       "plan": [
-        "QQQI will be trimmed to 25% to address the concentration breach and maintain balance.",
-        "Leveraged ETFs (SOXL, SPAL, MUU, METU, PLTU, MSFU) will be trimmed to small allocations to reduce overall leverage.",
-        "This strategy blends broad index exposure with quality tech, aiming for risk-first growth.",
-        "A cash buffer of approximately 10% will be maintained."
+        "Trim leveraged ETFs (SOXL, SPAL, MUU) to a small allocation.",
+        "Trim QQQI to meet single-name concentration limit.",
+        "Trim SMH to reduce semiconductor exposure.",
+        "Buy ZS, a strong risk/reward tech setup.",
+        "Buy XLV, a defensive sector with good scanner read.",
+        "This plan balances growth with risk reduction."
       ],
-      "read": "The balanced plan aims for ~2.5%/month growth by managing risk and reducing leverage. It seeks a middle ground between capital preservation and aggressive growth. Expect moderate volatility and potential drawdowns."
+      "read": "This plan targets around 2.5% monthly returns by blending broad market exposure with quality tech and limited leverage. It aims for risk-first growth with moderate drawdowns."
     },
     "aggressive": {
       "moves": [
@@ -116,52 +120,54 @@
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Cure concentration breach"
+          "note": "Reduce income concentration"
+        },
+        {
+          "sym": "SMH",
+          "action": "Trim",
+          "targetPct": 5,
+          "note": "Reduce semiconductor exposure"
         },
         {
           "sym": "SOXL",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase leveraged exposure"
+          "note": "Increase leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase leveraged exposure"
+          "note": "Increase leveraged ETF exposure"
         },
         {
           "sym": "MUU",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase leveraged exposure"
+          "note": "Increase leveraged ETF exposure"
         },
         {
-          "sym": "METU",
-          "action": "Add",
-          "targetPct": 6,
-          "note": "Increase leveraged exposure"
+          "sym": "ZS",
+          "action": "Buy",
+          "targetPct": 10,
+          "note": "Add strong tech setup"
         },
         {
-          "sym": "PLTU",
-          "action": "Add",
-          "targetPct": 6,
-          "note": "Increase leveraged exposure"
-        },
-        {
-          "sym": "MSFU",
-          "action": "Add",
-          "targetPct": 6,
-          "note": "Increase leveraged exposure"
+          "sym": "CRM",
+          "action": "Buy",
+          "targetPct": 10,
+          "note": "Add strong tech setup"
         }
       ],
       "plan": [
-        "QQQI will be trimmed to 20% to cure the concentration breach, freeing capital for higher-growth opportunities.",
-        "Leveraged ETFs (SOXL, SPAL, MUU, METU, PLTU, MSFU) will be increased to lean into growth.",
-        "This strategy concentrates in higher-scoring setups, using leverage to amplify returns.",
-        "A smaller cash buffer will be maintained, accepting higher risk for potential growth."
+        "Trim QQQI to reduce concentration.",
+        "Trim SMH to reduce semiconductor exposure.",
+        "Add to leveraged ETFs (SOXL, SPAL, MUU) to increase risk.",
+        "Buy ZS, a high-scoring tech setup.",
+        "Buy CRM, another strong tech setup.",
+        "This plan aggressively pursues growth through leverage and concentration."
       ],
-      "read": "This aggressive plan targets ~4%/month growth by leveraging high-beta assets. It significantly increases both upside potential and drawdown risk. Be aware of daily decay in leveraged ETFs and the potential for rapid losses if stops are not strictly adhered to."
+      "read": "This plan targets aggressive growth around 4% monthly, accepting higher potential drawdowns. It leans into leveraged ETFs and concentrated high-conviction tech names, with a small cash buffer. Be aware of leveraged ETF decay and potential for rapid losses."
     },
     "income": {
       "moves": [
@@ -169,52 +175,54 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Eliminate leveraged ETFs"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Eliminate leveraged ETFs"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Eliminate leveraged ETFs"
         },
         {
-          "sym": "METU",
+          "sym": "SMH",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Eliminate volatile sector"
         },
         {
-          "sym": "PLTU",
+          "sym": "CRWD",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
-        },
-        {
-          "sym": "MSFU",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Eliminate high-beta tech"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 30,
-          "note": "Increase income exposure"
+          "note": "Increase income focus"
+        },
+        {
+          "sym": "SPY",
+          "action": "Add",
+          "targetPct": 30,
+          "note": "Increase broad index exposure"
         }
       ],
       "plan": [
-        "All leveraged ETFs (SOXL, SPAL, MUU, METU, PLTU, MSFU) will be sold to reduce volatility and focus on income.",
-        "QQQI will be increased to 30% to enhance monthly distributions and align with income goals.",
-        "This plan prioritizes steady income and low drawdown over growth.",
-        "A cash buffer will be maintained for stability."
+        "Sell all leveraged ETFs (SOXL, SPAL, MUU) to remove risk.",
+        "Sell volatile tech (SMH, CRWD) to focus on income.",
+        "Increase QQQI allocation for income generation.",
+        "Add to SPY for broad market exposure and stability.",
+        "This plan prioritizes steady monthly income and capital preservation.",
+        "Focus is on reliable distributions, not aggressive growth."
       ],
-      "read": "The income plan targets ~1%/month, prioritizing steady distributions and capital preservation. It significantly reduces exposure to high-beta assets. While aiming for reliable income, remember distributions are variable and NAV can still decline in market downturns."
+      "read": "This plan aims for approximately 1% monthly returns through income-generating assets and broad market exposure. The focus is on minimizing drawdowns and generating consistent distributions, though NAV can still decline in market downturns."
     }
   }
 }
