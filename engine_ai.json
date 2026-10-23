@@ -1,6 +1,6 @@
 {
-  "aiTs": "10/23/2026, 5:01:24 AM (Gemini)",
-  "aiEpoch": 1792746084766,
+  "aiTs": "10/23/2026, 5:31:10 AM (Gemini)",
+  "aiEpoch": 1792747870025,
   "v": 11,
   "src": "Gemini",
   "modes": {
@@ -16,46 +16,47 @@
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF, downtrend"
+          "note": "Sell downtrend, leveraged, negative…"
         },
         {
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF, below stop"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF, below stop"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "PLTU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce high-beta, small position"
+          "note": "Reduce single name exposure"
         },
         {
           "sym": "MSFU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce high-beta, small position"
+          "note": "Reduce single name exposure"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF, below stop"
+          "note": "Cut all leveraged ETFs"
         }
       ],
       "plan": [
         "Trim QQQI to 20% to reduce concentration and meet the mandate.",
-        "Sell all leveraged ETFs (METU, SOXL, MUU, SPAL) to zero for capital preservation.",
-        "Exit PLTU and MSFU to reduce high-beta exposure.",
-        "This plan prioritizes capital preservation and reduces overall portfolio risk."
+        "Sell all leveraged ETFs (SOXL, MUU, SPAL) to zero for capital preservation.",
+        "Sell METU, PLTU, and MSFU to reduce exposure to leveraged single names and downtrends.",
+        "This plan prioritizes capital preservation and reduces overall portfolio risk.",
+        "Maintain a significant cash buffer by selling these positions."
       ],
-      "read": "This conservative plan targets around 1.5% per month, focusing on capital preservation. It significantly reduces leverage and concentration, aiming for lower drawdown. Expect reduced upside potential compared to other modes."
+      "read": "This conservative plan targets around 1.5% per month, focusing on capital preservation and low drawdown. It significantly reduces leverage and concentration, but also limits upside potential."
     },
     "balanced": {
       "moves": [
@@ -69,25 +70,25 @@
           "sym": "METU",
           "action": "Trim",
           "targetPct": 3,
-          "note": "Reduce leveraged exposure, downtrend"
+          "note": "Reduce leveraged exposure"
         },
         {
           "sym": "SOXL",
           "action": "Trim",
           "targetPct": 3,
-          "note": "Reduce leveraged exposure, below stop"
+          "note": "Reduce leveraged ETF exposure"
         },
         {
           "sym": "MUU",
           "action": "Trim",
           "targetPct": 2,
-          "note": "Reduce leveraged exposure, below stop"
+          "note": "Reduce leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Trim",
           "targetPct": 1,
-          "note": "Reduce leveraged exposure, below stop"
+          "note": "Reduce leveraged ETF exposure"
         },
         {
           "sym": "NOW",
@@ -98,11 +99,12 @@
       ],
       "plan": [
         "Trim QQQI to 25% to meet the mandate and reduce concentration.",
-        "Reduce leveraged ETFs (METU, SOXL, MUU, SPAL) to smaller positions.",
-        "Initiate a new position in NOW, a strong scanner setup.",
-        "This plan balances risk and growth, maintaining a moderate cash buffer."
+        "Reduce exposure to leveraged ETFs (SOXL, MUU, SPAL) and METU to manage risk.",
+        "Buy NOW at 4% as a strong scanner setup to add quality growth.",
+        "This plan balances risk and growth, maintaining a moderate cash buffer.",
+        "It aims for a blend of broad index, quality tech, and limited leverage."
       ],
-      "read": "This balanced plan targets around 2.5% per month, aiming for risk-first growth. It reduces overall leverage and concentration while adding a high-quality scanner setup. Expect moderate drawdowns with balanced upside potential."
+      "read": "This balanced plan targets around 2.5% per month, aiming for risk-first growth. It reduces overall leverage and concentration while adding a high-quality scanner setup. Expect moderate drawdowns."
     },
     "aggressive": {
       "moves": [
@@ -110,43 +112,43 @@
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Meet mandate, reduce concentration"
+          "note": "Meet mandate, maintain exposure"
         },
         {
           "sym": "METU",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase leveraged exposure, high…"
+          "note": "Increase leveraged AI exposure"
         },
         {
           "sym": "SOXL",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase leveraged exposure, high…"
+          "note": "Increase leveraged semis exposure"
         },
         {
           "sym": "MUU",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase leveraged exposure, high…"
+          "note": "Increase leveraged semis exposure"
         },
         {
           "sym": "PLTU",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase high-beta, uptrend"
+          "note": "Increase leveraged AI exposure"
         },
         {
           "sym": "MSFU",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase high-beta, uptrend"
+          "note": "Increase leveraged AI exposure"
         },
         {
           "sym": "SPAL",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase leveraged exposure, high…"
+          "note": "Increase leveraged space exposure"
         },
         {
           "sym": "NOW",
@@ -156,12 +158,13 @@
         }
       ],
       "plan": [
-        "Trim QQQI to 25% to meet the mandate and reduce concentration.",
-        "Increase exposure to leveraged ETFs (METU, SOXL, MUU, SPAL) and high-beta names (PLTU, MSFU).",
-        "Initiate a new position in NOW, a strong scanner setup, with a larger allocation.",
-        "This plan leans into leverage and concentration for aggressive growth, with strict stop discipline."
+        "Trim QQQI to 25% to meet the mandate while maintaining significant exposure.",
+        "Add to METU, SOXL, MUU, PLTU, MSFU, and SPAL to increase leveraged exposure in tech and semis.",
+        "Buy NOW at 6% as a high-conviction scanner setup.",
+        "This plan leans into leverage and concentration for aggressive growth.",
+        "Maintain a smaller cash buffer and use wider but strict stops."
       ],
-      "read": "This aggressive plan targets around 4% per month, aiming for stretched growth. It significantly increases leverage and concentration, which amplifies both upside and drawdown. Be aware of leveraged ETF decay and the potential for rapid losses if stops are not strictly adhered to."
+      "read": "This aggressive plan targets around 4% per month, aiming for stretched growth. It significantly increases leverage and concentration, which amplifies both upside and potential drawdown. Leveraged ETFs decay daily, and this approach can lose a lot fast without strict stop discipline."
     },
     "income": {
       "moves": [
@@ -175,46 +178,47 @@
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF, downtrend"
+          "note": "Reduce high-beta, leveraged names"
         },
         {
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF, below stop"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF, below stop"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "PLTU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce high-beta, small position"
+          "note": "Reduce high-beta, leveraged names"
         },
         {
           "sym": "MSFU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce high-beta, small position"
+          "note": "Reduce high-beta, leveraged names"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF, below stop"
+          "note": "Cut all leveraged ETFs"
         }
       ],
       "plan": [
-        "Add to QQQI, increasing income exposure to 30%.",
-        "Sell all leveraged ETFs (METU, SOXL, MUU, SPAL) to zero.",
-        "Exit PLTU and MSFU to reduce high-beta exposure.",
-        "This plan prioritizes steady monthly distributions and low drawdown."
+        "Add to QQQI, increasing its allocation to 30% for enhanced income.",
+        "Sell all leveraged ETFs (SOXL, MUU, SPAL) to near zero.",
+        "Sell METU, PLTU, and MSFU to reduce high-beta single name exposure.",
+        "This plan prioritizes steady monthly distributions and low drawdown.",
+        "Maintain a cash buffer and focus on income-generating assets."
       ],
-      "read": "This income plan targets around 1% per month, focusing on yield and capital preservation. It significantly reduces leverage and high-beta names, favoring income-generating ETFs. While aiming for steady distributions, NAV can still fall in a selloff, and distributions are variable."
+      "read": "This income plan targets around 1% per month, focusing on parking cash for yield. It prioritizes low drawdown and reliable income over growth, but distributions are variable and NAV can still fall in a selloff."
     }
   }
 }
