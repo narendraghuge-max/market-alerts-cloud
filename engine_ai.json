@@ -1,6 +1,6 @@
 {
-  "aiTs": "10/26/2026, 1:01:18 PM (Gemini)",
-  "aiEpoch": 1793034078154,
+  "aiTs": "10/26/2026, 1:31:01 PM (Gemini)",
+  "aiEpoch": 1793035861279,
   "v": 11,
   "src": "Gemini",
   "modes": {
@@ -10,7 +10,7 @@
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Reduce concentration, favor income"
+          "note": "Reduce concentration, income focus"
         },
         {
           "sym": "SOXL",
@@ -28,36 +28,29 @@
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit weak semiconductor ETF"
+          "note": "Exit weak semiconductor position"
         },
         {
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit weak AI/Software ETF"
+          "note": "Exit weak AI/Software position"
         },
         {
           "sym": "SNOW",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit weak AI/Software name"
-        },
-        {
-          "sym": "PLTU",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Exit weak AI/Software ETF"
+          "note": "Exit weak AI/Software position"
         }
       ],
       "plan": [
         "Cut all leveraged ETFs to zero to preserve capital.",
         "Reduce QQQI to 20% to lower concentration.",
-        "Exit all other weak holdings like MUU, METU, SNOW, PLTU.",
-        "This plan prioritizes capital preservation and low drawdown.",
-        "A significant cash buffer will be maintained.",
-        "Focus is on stability over aggressive growth."
+        "Exit all flagged weak positions like MUU, METU, SNOW.",
+        "Focus on capital preservation with tight stops.",
+        "Hold a larger cash buffer for safety."
       ],
-      "read": "This mode aims for capital preservation with a target of ~1.5% monthly return. Expect low drawdowns but also limited upside potential. Risk is managed by cutting leverage and weak positions."
+      "read": "This mode prioritizes capital preservation, aiming for lower monthly gains with reduced volatility. Expect slower growth and a significant cash buffer."
     },
     "balanced": {
       "moves": [
@@ -65,7 +58,7 @@
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Reduce concentration, maintain income"
+          "note": "Reduce concentration, income focus"
         },
         {
           "sym": "SOXL",
@@ -83,36 +76,35 @@
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit weak semiconductor ETF"
+          "note": "Exit weak semiconductor position"
         },
         {
           "sym": "METU",
           "action": "Trim",
           "targetPct": 3,
-          "note": "Reduce AI/Software leveraged ETF"
+          "note": "Reduce leveraged AI/Software exposure"
         },
         {
           "sym": "PLTU",
           "action": "Trim",
           "targetPct": 2,
-          "note": "Reduce AI/Software leveraged ETF"
+          "note": "Reduce leveraged AI/Software exposure"
         },
         {
           "sym": "ZS",
           "action": "Buy",
           "targetPct": 4,
-          "note": "Add strong AI/Software setup"
+          "note": "Add strong AI/Software name"
         }
       ],
       "plan": [
         "Trim QQQI to 25% to manage concentration.",
-        "Reduce leveraged ETFs like SOXL and SPAL to minimal levels.",
-        "Sell MUU entirely.",
-        "Trim METU and PLTU to reduce risk.",
+        "Reduce leveraged ETFs (SOXL, SPAL) to minimal levels.",
+        "Exit MUU, trim METU and PLTU to reduce leverage.",
         "Add ZS as a new, strong AI/Software position.",
-        "This plan balances growth with risk management."
+        "Maintain a moderate cash buffer for opportunities."
       ],
-      "read": "This mode targets ~2.5% monthly return with a risk-first approach. It blends broad index exposure with quality tech and limited leverage. Drawdowns are expected to be moderate."
+      "read": "This mode balances risk and growth, aiming for steady gains with controlled drawdowns. Leverage is kept low, and concentration is reduced."
     },
     "aggressive": {
       "moves": [
@@ -120,7 +112,7 @@
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Reduce concentration, maintain income"
+          "note": "Reduce concentration, income focus"
         },
         {
           "sym": "SOXL",
@@ -161,13 +153,12 @@
       ],
       "plan": [
         "Trim QQQI to 25% to manage concentration.",
-        "Increase exposure to leveraged ETFs like SOXL, SPAL, MUU, METU, PLTU, and MSFU.",
-        "Concentrate capital in high-conviction, leveraged plays.",
-        "This plan aims for aggressive growth through leverage and concentration.",
-        "Expect higher potential upside but also significantly larger drawdowns.",
-        "Strict stop discipline is crucial due to amplified risk."
+        "Increase leveraged ETFs (SOXL, SPAL, MUU, METU, PLTU, MSFU) to 6% each.",
+        "Concentrate exposure in high-conviction leveraged plays.",
+        "Maintain a small cash buffer for quick re-entry.",
+        "Utilize strict stop discipline to manage amplified risk."
       ],
-      "read": "This mode targets ~4% monthly return by leaning into leverage and concentration, including leveraged ETFs. Expect amplified gains and losses, with potential for substantial drawdowns. Daily rebalancing of leveraged ETFs can impact performance."
+      "read": "This mode seeks maximum growth by leaning into leverage and concentration, accepting higher potential drawdowns. Leveraged ETFs decay daily, and losses can be amplified significantly."
     },
     "income": {
       "moves": [
@@ -193,36 +184,35 @@
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit weak semiconductor ETF"
+          "note": "Exit weak semiconductor position"
         },
         {
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit weak AI/Software ETF"
+          "note": "Exit weak AI/Software position"
         },
         {
           "sym": "PLTU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit weak AI/Software ETF"
+          "note": "Exit leveraged AI/Software position"
         },
         {
           "sym": "SNOW",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit weak AI/Software name"
+          "note": "Exit weak AI/Software position"
         }
       ],
       "plan": [
-        "Increase QQQI to 30% to maximize income potential.",
-        "Eliminate all leveraged ETFs (SOXL, SPAL) and high-beta single names.",
-        "Exit weak holdings like MUU, METU, PLTU, and SNOW.",
-        "This plan prioritizes steady monthly distributions over growth.",
-        "A cash buffer will be maintained for stability.",
-        "Focus is on capital preservation and reliable income generation."
+        "Increase QQQI to 30% for enhanced income focus.",
+        "Eliminate all leveraged ETFs (SOXL, SPAL, MUU, METU, PLTU) to reduce volatility.",
+        "Exit all high-beta and weak positions.",
+        "Prioritize steady monthly distributions over growth.",
+        "Maintain a cash buffer for stability."
       ],
-      "read": "This mode aims for ~1% monthly return by focusing on income-generating assets like QQQI. It prioritizes low drawdowns and consistent distributions, not capital appreciation. NAV can still decline in market downturns."
+      "read": "This mode focuses on generating consistent monthly income with minimal capital fluctuation. While distributions are prioritized, NAV can still decline in market downturns."
     }
   }
 }
