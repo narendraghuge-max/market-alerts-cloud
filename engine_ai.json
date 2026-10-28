@@ -1,6 +1,6 @@
 {
-  "aiTs": "10/28/2026, 10:31:06 AM (Gemini)",
-  "aiEpoch": 1793197866416,
+  "aiTs": "10/28/2026, 11:01:16 AM (Gemini)",
+  "aiEpoch": 1793199676956,
   "v": 11,
   "src": "Gemini",
   "modes": {
@@ -22,13 +22,13 @@
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF exposure"
+          "note": "Exit flagged weak name"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF exposure"
+          "note": "Exit flagged weak name"
         },
         {
           "sym": "QQQI",
@@ -44,13 +44,13 @@
         }
       ],
       "plan": [
-        "Sell all leveraged ETFs (SOXL, SPAL, METU, MUU) to zero.",
-        "Trim QQQI to 20% to reduce concentration.",
-        "Add SPY to 25% for broad index stability.",
-        "This plan prioritizes capital preservation.",
-        "It aims for lower, steadier returns with reduced risk."
+        "Sell all leveraged ETFs (SOXL, SPAL) to eliminate risk.",
+        "Exit positions flagged for selling (METU, MUU).",
+        "Reduce QQQI to 20% to ease concentration.",
+        "Increase SPY to 25% for broad market exposure.",
+        "This plan prioritizes capital preservation with reduced leverage."
       ],
-      "read": "This plan focuses on capital preservation with a target of around 1.5% monthly return. It significantly reduces leverage and concentration risk, aiming for lower drawdowns."
+      "read": "This conservative approach aims for lower, steadier returns around 1.5% per month. The focus is on minimizing drawdowns by cutting high-risk assets and increasing cash-like exposure."
     },
     "balanced": {
       "moves": [
@@ -58,48 +58,47 @@
           "sym": "SOXL",
           "action": "Trim",
           "targetPct": 3,
-          "note": "Reduce leveraged ETF exposure"
+          "note": "Reduce leveraged ETF risk"
         },
         {
           "sym": "SPAL",
           "action": "Trim",
           "targetPct": 1,
-          "note": "Reduce leveraged ETF exposure"
+          "note": "Reduce leveraged ETF risk"
         },
         {
           "sym": "METU",
           "action": "Trim",
           "targetPct": 3,
-          "note": "Reduce concentration, AI/Software"
+          "note": "Reduce exposure to flagged name"
         },
         {
           "sym": "MUU",
           "action": "Trim",
           "targetPct": 2,
-          "note": "Reduce concentration, Semiconductors"
-        },
-        {
-          "sym": "LMT",
-          "action": "Buy",
-          "targetPct": 4,
-          "note": "Add strong risk/reward setup"
+          "note": "Reduce exposure to flagged name"
         },
         {
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 20,
           "note": "Reduce concentration"
+        },
+        {
+          "sym": "LMT",
+          "action": "Buy",
+          "targetPct": 4,
+          "note": "Add strong risk/reward setup"
         }
       ],
       "plan": [
-        "Trim leveraged ETFs (SOXL, SPAL) to minimal levels.",
-        "Reduce concentration in METU and MUU.",
-        "Buy LMT as a new, high-scoring position.",
-        "Trim QQQI to 20% to manage concentration.",
-        "This balances growth with risk management.",
-        "It aims for approximately 2.5% monthly return."
+        "Trim leveraged ETFs (SOXL, SPAL) to reduce overall risk.",
+        "Reduce positions in flagged names (METU, MUU).",
+        "Trim QQQI to 20% to lower concentration.",
+        "Add LMT, a high-scoring scanner setup, for balanced growth.",
+        "This plan balances risk reduction with selective growth opportunities."
       ],
-      "read": "This balanced approach targets about 2.5% monthly return by managing risk first. It trims leverage and concentration while adding a strong new setup, aiming for steady growth."
+      "read": "This balanced plan targets around 2.5% monthly returns with a risk-first approach. It aims to reduce leverage and concentration while adding quality names, maintaining a moderate cash buffer."
     },
     "aggressive": {
       "moves": [
@@ -119,36 +118,35 @@
           "sym": "METU",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase AI/Software leverage"
+          "note": "Increase exposure to AI/Software"
         },
         {
           "sym": "MUU",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase Semiconductor leverage"
+          "note": "Increase exposure to Semiconductors"
+        },
+        {
+          "sym": "QQQI",
+          "action": "Trim",
+          "targetPct": 15,
+          "note": "Reduce concentration, free capital"
         },
         {
           "sym": "LMT",
           "action": "Buy",
           "targetPct": 6,
           "note": "Add strong risk/reward setup"
-        },
-        {
-          "sym": "QQQI",
-          "action": "Trim",
-          "targetPct": 15,
-          "note": "Reduce concentration, allow focus"
         }
       ],
       "plan": [
-        "Increase exposure to leveraged ETFs (SOXL, SPAL) and sector plays (METU, MUU).",
-        "Buy LMT as a new, high-scoring position.",
-        "Trim QQQI to 15% to concentrate capital.",
-        "This plan aggressively pursues growth.",
-        "It aims for approximately 4% monthly return.",
-        "Expect higher volatility and potential for larger drawdowns."
+        "Increase leveraged ETFs (SOXL, SPAL) to 6% each for aggressive growth.",
+        "Add to AI/Software (METU) and Semiconductors (MUU) for sector concentration.",
+        "Trim QQQI to 15% to free up capital for higher conviction plays.",
+        "Buy LMT, a top scanner setup, to enhance potential returns.",
+        "This plan aggressively pursues growth through leverage and concentration."
       ],
-      "read": "This aggressive plan targets around 4% monthly return by leaning into leverage and concentration. It accepts higher volatility and the risk of larger drawdowns, with strict stop discipline being crucial."
+      "read": "This aggressive plan targets higher returns of around 4% per month but comes with significantly increased risk. Expect larger drawdowns, especially with leveraged ETFs that decay daily. Strict stop discipline is crucial."
     },
     "income": {
       "moves": [
@@ -156,25 +154,25 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate leveraged ETFs"
+          "note": "Eliminate leveraged ETF risk"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate leveraged ETFs"
+          "note": "Eliminate leveraged ETF risk"
         },
         {
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate high-beta single names"
+          "note": "Exit high-beta name"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Eliminate high-beta single names"
+          "note": "Exit high-beta name"
         },
         {
           "sym": "QQQI",
@@ -190,14 +188,13 @@
         }
       ],
       "plan": [
-        "Sell all leveraged ETFs and high-beta single names.",
-        "Increase QQQI to 30% for income generation.",
-        "Add SPY to 25% for broad market exposure.",
-        "This plan prioritizes steady monthly distributions.",
-        "It aims for approximately 1% monthly return.",
-        "Focus is on capital preservation and yield over growth."
+        "Sell all leveraged ETFs (SOXL, SPAL) to remove volatility.",
+        "Exit high-beta single names (METU, MUU) to prioritize stability.",
+        "Increase QQQI to 30% for enhanced income generation.",
+        "Add SPY to 25% for broad market exposure and stability.",
+        "This plan focuses on generating steady monthly income with low drawdown."
       ],
-      "read": "This income-focused plan targets about 1% monthly return through distributions, prioritizing capital preservation. It cuts leverage and high-beta names, increasing exposure to income-generating assets like QQQI."
+      "read": "This income-focused plan aims for approximately 1% monthly returns through distributions. It prioritizes capital preservation and reliable income over growth, with minimal exposure to volatile assets."
     }
   }
 }
