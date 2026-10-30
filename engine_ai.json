@@ -1,8 +1,8 @@
 {
-  "aiTs": "10/30/2026, 5:31:23 AM (Gemini)",
-  "aiEpoch": 1793352683897,
+  "aiTs": "10/30/2026, 6:01:11 AM (auto)",
+  "aiEpoch": 1793354471915,
   "v": 11,
-  "src": "Gemini",
+  "src": "auto",
   "modes": {
     "conservative": {
       "moves": [
@@ -10,53 +10,52 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
-        },
-        {
-          "sym": "SPAL",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "no leverage"
         },
         {
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit flagged sell"
+          "note": "no leverage"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit flagged sell"
+          "note": "no leverage"
         },
         {
-          "sym": "SMCI",
+          "sym": "PLTU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit flagged sell"
+          "note": "no leverage"
+        },
+        {
+          "sym": "MSFU",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "no leverage"
+        },
+        {
+          "sym": "SPAL",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "no leverage"
         },
         {
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Reduce concentration, mandate"
-        },
-        {
-          "sym": "SPY",
-          "action": "Add",
-          "targetPct": 25,
-          "note": "Increase broad index"
+          "note": "cap single name"
         }
       ],
       "plan": [
-        "To preserve capital, sell all leveraged ETFs (SOXL, SPAL) to zero.",
-        "Exit all holdings flagged for sale by the scanner (METU, MUU, SMCI).",
-        "Trim QQQI to 20% to meet the single-name concentration mandate.",
-        "Increase exposure to SPY to 25% for broad market stability and quality.",
-        "This plan aims for capital preservation and reduced overall portfolio risk."
+        "Exit leveraged ETFs (SOXL, METU, MUU, PLTU, MSFU, SPAL) - they decay and can gap against you.",
+        "Trim QQQI (25%) to ~20% to cap single-name risk.",
+        "Lean on income (QQQI) + broad index; hold a 15-20% cash buffer.",
+        "Use tight stops - the goal is small, steady gains and shallow drawdowns."
       ],
-      "read": "This conservative plan targets a modest ~1.5%/month return potential, prioritizing capital preservation. It significantly reduces drawdown risk by eliminating leveraged ETFs and high-beta single names. Expect lower volatility and more stable, albeit slower, growth."
+      "read": "A ~1.5%/mo steady target is realistic for a de-risked book; expect calmer swings but you give up some upside in strong tapes. Preservation first."
     },
     "balanced": {
       "moves": [
@@ -64,59 +63,52 @@
           "sym": "SOXL",
           "action": "Trim",
           "targetPct": 3,
-          "note": "Reduce leveraged ETF exposure"
-        },
-        {
-          "sym": "SPAL",
-          "action": "Trim",
-          "targetPct": 1,
-          "note": "Reduce leveraged ETF exposure"
+          "note": "cut leverage/decay"
         },
         {
           "sym": "METU",
           "action": "Trim",
           "targetPct": 3,
-          "note": "Reduce flagged sell"
+          "note": "cut leverage/decay"
         },
         {
           "sym": "MUU",
           "action": "Trim",
           "targetPct": 2,
-          "note": "Reduce flagged sell"
+          "note": "cut leverage/decay"
         },
         {
-          "sym": "SMCI",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Exit flagged sell"
-        },
-        {
-          "sym": "QQQI",
+          "sym": "PLTU",
           "action": "Trim",
-          "targetPct": 20,
-          "note": "Reduce concentration, mandate"
+          "targetPct": 2,
+          "note": "cut leverage/decay"
         },
         {
-          "sym": "TXN",
-          "action": "Buy",
-          "targetPct": 4,
-          "note": "Add strong scanner setup"
+          "sym": "MSFU",
+          "action": "Trim",
+          "targetPct": 2,
+          "note": "cut leverage/decay"
+        },
+        {
+          "sym": "SPAL",
+          "action": "Trim",
+          "targetPct": 1,
+          "note": "cut leverage/decay"
         },
         {
           "sym": "AAPU",
           "action": "Buy",
           "targetPct": 4,
-          "note": "Add strong scanner setup"
+          "note": "scanner top setup"
         }
       ],
       "plan": [
-        "Trim leveraged ETFs (SOXL, SPAL) to small, manageable positions.",
-        "Reduce exposure to METU and MUU, and sell SMCI, all flagged by the scanner.",
-        "Trim QQQI to 20% to comply with the single-name concentration mandate.",
-        "Introduce new positions in TXN and AAPU, both strong scanner setups, for growth.",
-        "This plan balances risk and growth, maintaining a small cash buffer."
+        "Keep leveraged ETFs small (<=3%) and on tight stops - they decay and amplify drawdowns.",
+        "Hold single names near ~25% max.",
+        "Best fresh setup: AAPU: ACCUMULATE 8/12, entry 48.04-47.99, stop 47.88, targets 48.54/48.79/49.03, R 3.07. A starter (~4%) only if it triggers.",
+        "Hold a ~10% cash buffer and respect every stop."
       ],
-      "read": "This balanced plan aims for ~2.5%/month growth, focusing on risk-first growth. It reduces overall leverage and concentration while adding quality tech names. Expect moderate volatility and a blend of broad market stability with targeted growth opportunities."
+      "read": "A ~2.5%/mo target is aggressive but not impossible in a strong tape; hinges on cutting concentration/leverage + consistency. Expect losing months - size so a bad one (~-30.39%) doesn't force your hand."
     },
     "aggressive": {
       "moves": [
@@ -124,59 +116,52 @@
           "sym": "SOXL",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase leveraged ETF exposure"
-        },
-        {
-          "sym": "SPAL",
-          "action": "Add",
-          "targetPct": 6,
-          "note": "Increase leveraged ETF exposure"
+          "note": "lean into momentum"
         },
         {
           "sym": "METU",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase AI/Software exposure"
+          "note": "lean into momentum"
         },
         {
           "sym": "MUU",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase Semiconductors exposure"
+          "note": "lean into momentum"
         },
         {
-          "sym": "SMCI",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Exit flagged sell"
-        },
-        {
-          "sym": "QQQI",
-          "action": "Trim",
-          "targetPct": 15,
-          "note": "Reduce income, increase growth"
-        },
-        {
-          "sym": "TXN",
-          "action": "Buy",
+          "sym": "PLTU",
+          "action": "Add",
           "targetPct": 6,
-          "note": "Add strong scanner setup"
+          "note": "lean into momentum"
+        },
+        {
+          "sym": "MSFU",
+          "action": "Add",
+          "targetPct": 6,
+          "note": "lean into momentum"
+        },
+        {
+          "sym": "SPAL",
+          "action": "Add",
+          "targetPct": 6,
+          "note": "lean into momentum"
         },
         {
           "sym": "AAPU",
           "action": "Buy",
           "targetPct": 6,
-          "note": "Add strong scanner setup"
+          "note": "high-conviction setup"
         }
       ],
       "plan": [
-        "Increase exposure to leveraged ETFs (SOXL, SPAL) to lean into market momentum.",
-        "Add to METU and MUU, despite scanner flags, for aggressive sector concentration.",
-        "Sell SMCI as it is a flagged sell and below its stop.",
-        "Trim QQQI to 15% to free up capital for higher-growth opportunities.",
-        "Buy TXN and AAPU at 6% each, leveraging strong scanner setups for aggressive growth."
+        "Lean into leveraged ETFs (SOXL, METU, MUU, PLTU, MSFU, SPAL) toward ~6% each - but hold a STRICT stop; they decay and can drop hard fast.",
+        "Press the strongest scanner setup: AAPU: ACCUMULATE 8/12, entry 48.04-47.99, stop 47.88, targets 48.54/48.79/49.03, R 3.07 (~6%).",
+        "Run a small (~5%) cash buffer - stay invested for the upside.",
+        "Wider but STRICT stops. This mode can lose a lot fast - discipline is everything."
       ],
-      "read": "This aggressive plan targets ~4%/month growth, stretching for higher returns. It significantly increases leverage and concentration, leading to higher potential upside but also substantially greater drawdown risk. Daily decay and rebalancing of leveraged ETFs can erode capital quickly; strict stop discipline is crucial."
+      "read": "A ~4%/mo stretch target needs leverage + a strong tape + tight discipline; the same leverage means a bad month can run past -52%. Higher upside AND higher risk of a deep drawdown - not a promise."
     },
     "income": {
       "moves": [
@@ -184,59 +169,52 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
-        },
-        {
-          "sym": "SPAL",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "too volatile to park"
         },
         {
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit high-beta single name"
+          "note": "too volatile to park"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit high-beta single name"
+          "note": "too volatile to park"
         },
         {
-          "sym": "SMCI",
+          "sym": "PLTU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit high-beta single name"
+          "note": "too volatile to park"
+        },
+        {
+          "sym": "MSFU",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "too volatile to park"
+        },
+        {
+          "sym": "SPAL",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "too volatile to park"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 30,
-          "note": "Increase income exposure"
-        },
-        {
-          "sym": "SPY",
-          "action": "Add",
-          "targetPct": 30,
-          "note": "Increase broad index for stability"
-        },
-        {
-          "sym": "CRWD",
-          "action": "Trim",
-          "targetPct": 5,
-          "note": "Reduce high-beta single name"
+          "note": "income anchor"
         }
       ],
       "plan": [
-        "Sell all leveraged ETFs (SOXL, SPAL) to zero for capital preservation.",
-        "Exit high-beta single names (METU, MUU, SMCI) to reduce volatility.",
-        "Increase QQQI to 30% for enhanced monthly distributions.",
-        "Add to SPY, bringing it to 30%, for broad market stability and lower drawdown.",
-        "Trim CRWD to 5% to reduce concentration in a high-growth name."
+        "Exit leveraged ETFs (SOXL, METU, MUU, PLTU, MSFU, SPAL) - too volatile for parked cash.",
+        "Build QQQI toward ~30% as your monthly-distribution anchor.",
+        "Keep the rest in broad index + a cash buffer; the distributions pay you monthly.",
+        "Low-drawdown income park - but NAV can still dip and distributions vary (not a savings account)."
       ],
-      "read": "This income plan targets ~1%/month, prioritizing steady monthly distributions and low drawdown. It significantly reduces exposure to high-beta and leveraged assets. While aiming for consistent income, remember distributions are variable, and NAV can still decline in market downturns."
+      "read": "Covered-call ETFs (QQQI/JEPQ/JEPI/SPYI) can distribute ~1%/mo (~13%/yr) as steady income, but they cap upside and NAV can fall in a selloff. Good for parking cash for yield, not for growth; distributions are variable, not guaranteed."
     }
   }
 }
