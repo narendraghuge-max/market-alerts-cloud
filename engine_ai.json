@@ -1,58 +1,64 @@
 {
-  "aiTs": "10/30/2026, 10:01:18 AM (Gemini)",
-  "aiEpoch": 1793368878342,
+  "aiTs": "10/30/2026, 10:31:12 AM (Gemini)",
+  "aiEpoch": 1793370672636,
   "v": 11,
   "src": "Gemini",
   "modes": {
     "conservative": {
       "moves": [
         {
+          "sym": "QQQI",
+          "action": "Trim",
+          "targetPct": 20,
+          "note": "Cure concentration breach, favor…"
+        },
+        {
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut all leveraged ETFs to zero"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut all leveraged ETFs to zero"
         },
         {
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut all leveraged ETFs to zero"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
-        },
-        {
-          "sym": "QQQI",
-          "action": "Trim",
-          "targetPct": 20,
-          "note": "Reduce concentration, cure breach"
+          "note": "Cut all leveraged ETFs to zero"
         },
         {
           "sym": "SPY",
           "action": "Add",
           "targetPct": 25,
-          "note": "Favor broad index, quality"
+          "note": "Favor broad index for stability"
         }
       ],
       "plan": [
-        "To prioritize capital preservation, sell all leveraged ETFs (SOXL, SPAL, METU, MUU) to zero.",
-        "Trim QQQI to 20% to cure the concentration breach and reduce single-name risk.",
-        "Increase SPY to 25% to favor broad index exposure and quality.",
-        "This approach aims for steady, low-drawdown performance."
+        "Trim QQQI to 20% to cure the concentration breach and align with conservative limits.",
+        "Sell all leveraged ETFs (SOXL, SPAL, METU, MUU) to zero for capital preservation.",
+        "Add to SPY, increasing broad index exposure for stability and quality.",
+        "This plan prioritizes capital preservation and reduces overall portfolio risk."
       ],
-      "read": "This conservative plan targets approximately 1.5% per month, focusing on capital preservation. It significantly reduces leverage and concentration, aiming for lower volatility. Expect smaller swings, but also limited upside potential."
+      "read": "This conservative plan targets a modest ~1.5%/month return, focusing on capital preservation. It significantly reduces drawdown risk by eliminating leveraged ETFs and concentrating on stable assets. Expect lower volatility but also limited upside potential."
     },
     "balanced": {
       "moves": [
+        {
+          "sym": "QQQI",
+          "action": "Trim",
+          "targetPct": 20,
+          "note": "Cure concentration breach, reduce size"
+        },
         {
           "sym": "SOXL",
           "action": "Trim",
@@ -78,34 +84,35 @@
           "note": "Reduce leveraged ETF exposure"
         },
         {
-          "sym": "QQQI",
-          "action": "Trim",
-          "targetPct": 20,
-          "note": "Reduce concentration, cure breach"
-        },
-        {
           "sym": "QQQ",
           "action": "Add",
           "targetPct": 15,
-          "note": "Blend broad index and tech"
+          "note": "Increase broad tech exposure"
         },
         {
           "sym": "VRT",
           "action": "Buy",
           "targetPct": 4,
-          "note": "Add top-scoring scanner setup"
+          "note": "Add high-scoring scanner setup"
         }
       ],
       "plan": [
-        "Trim leveraged ETFs (SOXL, SPAL, METU, MUU) to small allocations, reducing overall leverage.",
-        "Reduce QQQI to 20% to address the concentration breach.",
-        "Increase QQQ to 15% to blend broad index with quality tech exposure.",
-        "Initiate a new position in VRT (10/12 score) at 4% for risk-first growth."
+        "Trim QQQI to 20% to cure the concentration breach and align with balanced limits.",
+        "Reduce exposure to leveraged ETFs (SOXL, SPAL, METU, MUU) to small positions.",
+        "Increase QQQ exposure for balanced broad tech growth.",
+        "Buy VRT, a high-scoring scanner setup, to add quality growth.",
+        "This plan balances risk and growth, maintaining a small leveraged component."
       ],
-      "read": "This balanced plan aims for approximately 2.5% per month, prioritizing risk-first growth. It reduces overall leverage and concentration while adding a high-quality scanner setup. Expect moderate volatility and growth potential."
+      "read": "This balanced plan aims for ~2.5%/month, prioritizing risk-first growth. It reduces overall leverage and concentration while adding a high-quality scanner setup. Expect moderate volatility and growth potential, with a reduced margin call risk."
     },
     "aggressive": {
       "moves": [
+        {
+          "sym": "QQQI",
+          "action": "Trim",
+          "targetPct": 20,
+          "note": "Cure concentration breach, reallocate"
+        },
         {
           "sym": "SOXL",
           "action": "Add",
@@ -129,59 +136,60 @@
           "action": "Add",
           "targetPct": 6,
           "note": "Increase leveraged ETF exposure"
-        },
-        {
-          "sym": "QQQI",
-          "action": "Trim",
-          "targetPct": 20,
-          "note": "Reduce concentration, cure breach"
         },
         {
           "sym": "QQQ",
           "action": "Add",
           "targetPct": 15,
-          "note": "Concentrate in tech/growth"
+          "note": "Increase broad tech exposure"
         },
         {
           "sym": "VRT",
           "action": "Buy",
           "targetPct": 6,
-          "note": "Add top-scoring scanner setup"
+          "note": "Add high-scoring scanner setup"
         }
       ],
       "plan": [
-        "Increase exposure to leveraged ETFs (SOXL, SPAL, METU, MUU) to lean into growth.",
-        "Trim QQQI to 20% to cure the concentration breach.",
-        "Increase QQQ to 15% to concentrate in broad tech/growth.",
-        "Initiate a new position in VRT (10/12 score) at 6% for aggressive growth."
+        "Trim QQQI to 20% to cure the concentration breach and reallocate capital.",
+        "Increase exposure to leveraged ETFs (SOXL, SPAL, METU, MUU) for aggressive growth.",
+        "Add to QQQ for increased broad tech exposure.",
+        "Buy VRT, a high-scoring scanner setup, with a larger allocation.",
+        "This plan stretches for growth, using leverage and concentration in strong setups."
       ],
-      "read": "This aggressive plan targets approximately 4% per month, aiming for stretched growth. It significantly increases leverage and concentration, which amplifies both upside and drawdown potential. Be aware of higher volatility and the daily decay/rebalancing of leveraged ETFs; strict stop discipline is crucial."
+      "read": "This aggressive plan targets ~4%/month, aiming for stretch growth. It significantly increases leverage and concentration in high-scoring setups. Be aware of higher drawdown risk, potential for rapid losses, and daily decay/rebalancing of leveraged ETFs. Strict stop discipline is crucial."
     },
     "income": {
       "moves": [
         {
+          "sym": "QQQI",
+          "action": "Add",
+          "targetPct": 30,
+          "note": "Prioritize income, increase allocation"
+        },
+        {
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut all leveraged ETFs to zero"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut all leveraged ETFs to zero"
         },
         {
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut all leveraged ETFs to zero"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut all leveraged ETFs to zero"
         },
         {
           "sym": "CRWD",
@@ -196,12 +204,6 @@
           "note": "Reduce high-beta single names"
         },
         {
-          "sym": "QQQI",
-          "action": "Add",
-          "targetPct": 30,
-          "note": "Rotate into income ETF"
-        },
-        {
           "sym": "SPY",
           "action": "Add",
           "targetPct": 20,
@@ -209,12 +211,13 @@
         }
       ],
       "plan": [
-        "Sell all leveraged ETFs (SOXL, SPAL, METU, MUU) to zero.",
-        "Sell high-beta single names (CRWD, SNOW) to near zero.",
-        "Increase QQQI to 30% to prioritize monthly distributions.",
-        "Increase SPY to 20% for broad index stability and lower drawdown."
+        "Add to QQQI, increasing allocation to 30% for enhanced income generation.",
+        "Sell all leveraged ETFs (SOXL, SPAL, METU, MUU) to zero to reduce risk.",
+        "Sell high-beta single names like CRWD and SNOW to prioritize stability.",
+        "Add to SPY for broad market exposure and steady distributions.",
+        "This plan focuses on generating reliable monthly distributions with low drawdown."
       ],
-      "read": "This income plan targets approximately 1% per month, focusing on parking cash for yield. It significantly reduces growth-oriented and leveraged holdings, rotating into income-generating ETFs. While aiming for steady distributions, remember these are variable, and NAV can still decline in market downturns."
+      "read": "This income plan targets ~1%/month, prioritizing steady monthly distributions. It significantly reduces exposure to high-beta and leveraged assets, focusing on income-generating ETFs and broad indices. While aiming for low drawdown, distributions are variable, and NAV can still decline in market downturns."
     }
   }
 }
