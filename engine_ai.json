@@ -1,6 +1,6 @@
 {
-  "aiTs": "10/29/2026, 8:31:19 PM (Gemini)",
-  "aiEpoch": 1793320279164,
+  "aiTs": "10/30/2026, 4:01:02 AM (Gemini)",
+  "aiEpoch": 1793347262259,
   "v": 11,
   "src": "Gemini",
   "modes": {
@@ -10,31 +10,31 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit below stop, downtrend"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit below stop, downtrend"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Reduce concentration, mandate"
+          "note": "Reduce concentration, favor income"
         },
         {
           "sym": "SPY",
@@ -44,13 +44,14 @@
         }
       ],
       "plan": [
-        "Sell all leveraged ETFs (SOXL, SPAL) to zero for capital preservation.",
-        "Exit METU and MUU due to being below stop and in downtrends.",
-        "Trim QQQI to 20% to cure the concentration breach.",
-        "Increase SPY to 25% for broad index exposure and stability.",
-        "This plan aims for a large cash buffer and tight stops."
+        "Sell all leveraged ETFs (SOXL, SPAL, METU, MUU) to zero.",
+        "Trim QQQI to 20% to reduce concentration.",
+        "Add SPY to 25% for broad market exposure.",
+        "This plan prioritizes capital preservation.",
+        "It aims for lower, steadier returns with reduced risk.",
+        "Expect a cash buffer of around 15-20%."
       ],
-      "read": "This conservative plan targets approximately 1.5% per month, prioritizing capital preservation. It significantly reduces leverage and concentration, aiming for lower drawdown. Expect steady, but modest, potential returns."
+      "read": "This mode targets approximately 1.5% monthly return. It focuses on capital preservation by cutting leveraged positions and reducing concentration, aiming for low drawdowns."
     },
     "balanced": {
       "moves": [
@@ -70,19 +71,19 @@
           "sym": "METU",
           "action": "Trim",
           "targetPct": 3,
-          "note": "Reduce exposure, below stop"
+          "note": "Reduce concentration"
         },
         {
           "sym": "MUU",
           "action": "Trim",
           "targetPct": 2,
-          "note": "Reduce exposure, below stop"
+          "note": "Reduce concentration"
         },
         {
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Reduce concentration, mandate"
+          "note": "Reduce concentration"
         },
         {
           "sym": "TXN",
@@ -98,13 +99,14 @@
         }
       ],
       "plan": [
-        "Trim SOXL to 3% and SPAL to 1% to reduce leveraged ETF exposure.",
-        "Reduce METU to 3% and MUU to 2% given their below-stop status.",
-        "Trim QQQI to 20% to address the concentration breach.",
-        "Buy TXN at 4% and AAPU at 4% as strong scanner setups.",
-        "This plan balances broad index with quality tech and small leverage."
+        "Trim leveraged ETFs (SOXL, SPAL) to low single digits.",
+        "Reduce concentration in METU and MUU.",
+        "Trim QQQI to 20% to manage risk.",
+        "Add new positions in TXN and AAPU from strong scanner setups.",
+        "This plan balances growth with risk management.",
+        "It aims for steady growth with moderate drawdowns."
       ],
-      "read": "This balanced plan targets approximately 2.5% per month, focusing on risk-first growth. It reduces overall leverage and concentration while adding high-quality scanner setups. Expect moderate potential returns with controlled drawdown."
+      "read": "This mode targets approximately 2.5% monthly return. It seeks risk-first growth by blending broad index exposure with quality tech and limited leverage, maintaining a cash buffer of about 10%."
     },
     "aggressive": {
       "moves": [
@@ -124,19 +126,19 @@
           "sym": "METU",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase exposure, high conviction"
+          "note": "Increase concentration"
         },
         {
           "sym": "MUU",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase exposure, high conviction"
+          "note": "Increase concentration"
         },
         {
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 15,
-          "note": "Reduce concentration for growth"
+          "note": "Reduce concentration"
         },
         {
           "sym": "TXN",
@@ -152,13 +154,14 @@
         }
       ],
       "plan": [
-        "Increase SOXL to 6% and SPAL to 6% to lean into leveraged ETFs.",
-        "Add to METU to 6% and MUU to 6% for increased exposure.",
-        "Trim QQQI to 15% to free up capital for higher growth potential.",
-        "Buy TXN at 6% and AAPU at 6% from the strongest scanner setups.",
-        "This plan uses leverage and concentration for stretch growth."
+        "Increase exposure to leveraged ETFs (SOXL, SPAL) and concentrated names (METU, MUU).",
+        "Trim QQQI to 15% to allow for higher concentration.",
+        "Add new positions in TXN and AAPU, leveraging strong scanner signals.",
+        "This plan aims for aggressive growth by leaning into leverage and concentration.",
+        "Expect higher potential upside but also significantly larger drawdowns.",
+        "Maintain strict stop discipline to manage risk."
       ],
-      "read": "This aggressive plan targets approximately 4% per month, aiming for stretch growth. It significantly increases exposure to leveraged ETFs and concentrates in high-scoring setups. Be aware this raises both upside and drawdown potential, and leveraged ETFs decay daily; strict stop discipline is crucial."
+      "read": "This mode targets approximately 4% monthly return. It seeks stretched growth by increasing leverage and concentration in high-scoring setups, accepting higher potential drawdowns and the risks of leveraged ETF decay. A cash buffer of around 5% is maintained."
     },
     "income": {
       "moves": [
@@ -166,53 +169,54 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Eliminate leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Eliminate leveraged ETF exposure"
         },
         {
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit high-beta, below stop"
+          "note": "Eliminate high-beta exposure"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit high-beta, below stop"
+          "note": "Eliminate high-beta exposure"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 30,
-          "note": "Increase income ETF exposure"
+          "note": "Increase income focus"
         },
         {
           "sym": "SPY",
           "action": "Add",
           "targetPct": 30,
-          "note": "Increase broad index for stability"
+          "note": "Increase broad index exposure"
         },
         {
           "sym": "CRWD",
           "action": "Trim",
           "targetPct": 5,
-          "note": "Reduce high-beta single name"
+          "note": "Reduce single-name concentration"
         }
       ],
       "plan": [
-        "Sell all leveraged ETFs (SOXL, SPAL) to zero for income focus.",
-        "Exit METU and MUU due to high-beta and being below stop.",
-        "Add QQQI to 30% and SPY to 30% for steady monthly distributions.",
-        "Trim CRWD to 5% to reduce high-beta single name exposure.",
-        "This plan prioritizes low drawdown and reliable income."
+        "Sell all leveraged ETFs (SOXL, SPAL) and high-beta names (METU, MUU).",
+        "Increase QQQI to 30% for enhanced income potential.",
+        "Add SPY to 30% for broad market exposure and stability.",
+        "Trim CRWD to 5% to reduce single-name concentration.",
+        "This plan prioritizes steady monthly income over growth.",
+        "It aims for low drawdowns and reliable distributions."
       ],
-      "read": "This income plan targets approximately 1% per month, aiming to park cash for yield. It rotates into income/covered-call ETFs and broad index, cutting high-beta names. While prioritizing low drawdown and income, distributions are variable and NAV can still fall."
+      "read": "This mode targets approximately 1% monthly return. It focuses on generating steady monthly distributions by rotating into income-oriented ETFs and broad index funds, while cutting leverage and high-beta single names to minimize volatility."
     }
   }
 }
