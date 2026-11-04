@@ -1,6 +1,6 @@
 {
-  "aiTs": "11/4/2026, 4:01:13 AM (Gemini)",
-  "aiEpoch": 1793782873006,
+  "aiTs": "11/4/2026, 4:31:13 AM (Gemini)",
+  "aiEpoch": 1793784673442,
   "v": 11,
   "src": "Gemini",
   "modes": {
@@ -16,13 +16,13 @@
           "sym": "SPY",
           "action": "Watch",
           "targetPct": 25,
-          "note": "Broad index, core holding"
+          "note": "Broad index core holding"
         },
         {
           "sym": "QQQ",
           "action": "Watch",
           "targetPct": 14,
-          "note": "Broad index, core holding"
+          "note": "Broad index core holding"
         },
         {
           "sym": "SMH",
@@ -40,7 +40,7 @@
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Below stop, leveraged"
+          "note": "Below stop, high beta"
         },
         {
           "sym": "SOXL",
@@ -56,13 +56,13 @@
         }
       ],
       "plan": [
-        "Trim QQQI to 20% to meet concentration limits and reduce risk.",
-        "Sell all leveraged ETFs (SOXL, SPAL, METU) to zero for capital preservation.",
-        "Sell SMH and CRWD to reduce high-beta tech exposure.",
+        "Trim QQQI to 20% to reduce concentration and meet the mandate.",
+        "Sell all leveraged ETFs (SOXL, SPAL) to zero for capital preservation.",
+        "Sell SMH, CRWD, and METU due to being below stops or high beta.",
         "Maintain SPY and QQQ as core broad index holdings.",
-        "This plan aims for capital preservation and a large cash buffer."
+        "Initiate a small position in VRT, a top-quality scanner setup, to diversify."
       ],
-      "read": "This conservative plan targets approximately 1.5% per month, prioritizing capital preservation. It significantly reduces leverage and high-beta exposure, aiming for lower drawdowns. Expect reduced upside potential compared to other modes."
+      "read": "This conservative plan targets around 1.5% per month, prioritizing capital preservation. It significantly reduces leverage and high-beta exposure. Expect lower drawdowns but also limited upside potential."
     },
     "balanced": {
       "moves": [
@@ -76,53 +76,54 @@
           "sym": "SPY",
           "action": "Watch",
           "targetPct": 25,
-          "note": "Broad index, core holding"
+          "note": "Broad index core holding"
         },
         {
           "sym": "QQQ",
           "action": "Watch",
           "targetPct": 14,
-          "note": "Broad index, core holding"
+          "note": "Broad index core holding"
         },
         {
           "sym": "SMH",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Below stop, high beta"
+          "note": "Below stop, reduce tech concentration"
         },
         {
           "sym": "CRWD",
           "action": "Trim",
           "targetPct": 5,
-          "note": "Reduce tech concentration"
+          "note": "Reduce concentration, manage risk"
         },
         {
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Below stop, leveraged"
+          "note": "Below stop, high beta"
         },
         {
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce leveraged ETFs"
+          "note": "Reduce leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce leveraged ETFs"
+          "note": "Reduce leveraged ETF exposure"
         }
       ],
       "plan": [
-        "Trim QQQI to 25% to meet concentration limits.",
-        "Sell SMH, METU, SOXL, and SPAL due to being below stop or leveraged.",
-        "Trim CRWD to 5% to reduce high-beta tech concentration.",
+        "Trim QQQI to 25% to meet the mandate and reduce concentration.",
+        "Sell SMH and METU due to being below stops and high beta.",
+        "Trim CRWD to 5% to reduce single-name concentration.",
+        "Sell all leveraged ETFs (SOXL, SPAL) to zero to reduce overall leverage.",
         "Maintain SPY and QQQ as core broad index holdings.",
-        "This plan balances risk and growth, aiming for a smaller cash buffer."
+        "Initiate a small position in VRT, a strong scanner setup, for diversification."
       ],
-      "read": "This balanced plan targets approximately 2.5% per month, focusing on risk-first growth. It reduces overall leverage and concentration while maintaining exposure to quality tech and broad indices. Expect moderate drawdowns and growth potential."
+      "read": "This balanced plan aims for around 2.5% per month, focusing on risk-first growth. It reduces overall leverage and concentration while maintaining exposure to quality tech and broad indices. Expect moderate drawdowns with reasonable growth potential."
     },
     "aggressive": {
       "moves": [
@@ -130,25 +131,25 @@
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Meet concentration mandate"
+          "note": "Meet mandate, free capital"
         },
         {
           "sym": "SPY",
           "action": "Watch",
           "targetPct": 25,
-          "note": "Broad index, core holding"
+          "note": "Broad index core holding"
         },
         {
           "sym": "QQQ",
           "action": "Watch",
           "targetPct": 14,
-          "note": "Broad index, core holding"
+          "note": "Broad index core holding"
         },
         {
           "sym": "SMH",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Below stop, high beta"
+          "note": "Below stop, reallocate"
         },
         {
           "sym": "CRWD",
@@ -160,29 +161,30 @@
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Below stop, leveraged"
+          "note": "Below stop, reallocate"
         },
         {
           "sym": "SOXL",
           "action": "Add",
           "targetPct": 6,
-          "note": "Add leveraged exposure"
+          "note": "Increase leveraged exposure"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Below stop, leveraged"
+          "note": "Below stop, reallocate"
         }
       ],
       "plan": [
-        "Trim QQQI to 25% to meet concentration limits.",
-        "Sell SMH, METU, and SPAL due to being below stop or leveraged.",
-        "Add to CRWD, pressing a working position.",
-        "Add to SOXL, increasing leveraged exposure within limits.",
-        "Maintain SPY and QQQ as core broad index holdings."
+        "Trim QQQI to 25% to meet the mandate and free up capital.",
+        "Sell SMH, METU, and SPAL due to being below stops.",
+        "Add to CRWD, pressing a position that is working well.",
+        "Add to SOXL, increasing leveraged exposure in semiconductors.",
+        "Maintain SPY and QQQ as core broad index holdings.",
+        "Initiate a position in VRT, a top-scoring scanner setup, for growth."
       ],
-      "read": "This aggressive plan targets approximately 4% per month, aiming for stretched growth. It utilizes leverage and concentrates in high-scoring setups. Be aware that this mode significantly increases both upside potential and drawdown risk, and leveraged ETFs experience daily decay."
+      "read": "This aggressive plan targets around 4% per month, aiming for stretch growth. It leans into leveraged ETFs and concentrates in high-scoring setups. Be aware of significantly higher drawdown potential and the daily decay/rebalancing of leveraged ETFs."
     },
     "income": {
       "moves": [
@@ -196,31 +198,31 @@
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 10,
-          "note": "Reduce broad index, shift to income"
+          "note": "Reduce growth, increase income"
         },
         {
           "sym": "QQQ",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce broad index, shift to income"
+          "note": "Reduce growth, increase income"
         },
         {
           "sym": "SMH",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut high-beta, non-income"
+          "note": "High beta, no income"
         },
         {
           "sym": "CRWD",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut high-beta, non-income"
+          "note": "High beta, no income"
         },
         {
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged, non-income"
+          "note": "High beta, no income"
         },
         {
           "sym": "SOXL",
@@ -237,12 +239,12 @@
       ],
       "plan": [
         "Add to QQQI, increasing exposure to income-generating ETFs.",
-        "Trim SPY to 10% and sell QQQ to reduce broad index exposure.",
-        "Sell all high-beta tech (SMH, CRWD) and leveraged ETFs (METU, SOXL, SPAL).",
-        "This plan prioritizes steady monthly distributions and low drawdown.",
-        "Maintain a cash buffer for stability."
+        "Trim SPY and sell QQQ to reduce broad index growth exposure.",
+        "Sell all high-beta single names (CRWD, METU) and semiconductors (SMH).",
+        "Sell all leveraged ETFs (SOXL, SPAL) to near zero.",
+        "Prioritize low drawdown and reliable income over growth."
       ],
-      "read": "This income plan targets approximately 1% per month, focusing on yield and capital preservation. It rotates into income-generating ETFs and significantly reduces high-beta and leveraged exposure. Distributions are variable, and NAV can still fall in market downturns."
+      "read": "This income plan targets around 1% per month, focusing on parking cash for yield. It rotates heavily into income-generating ETFs and cuts high-beta exposure. Distributions are variable, and NAV can still fall in a selloff; this is not a savings account."
     }
   }
 }
