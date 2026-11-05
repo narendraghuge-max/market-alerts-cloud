@@ -1,6 +1,6 @@
 {
-  "aiTs": "11/4/2026, 8:31:11 PM (Gemini)",
-  "aiEpoch": 1793842271051,
+  "aiTs": "11/5/2026, 4:02:33 AM (Gemini)",
+  "aiEpoch": 1793869353649,
   "v": 11,
   "src": "Gemini",
   "modes": {
@@ -16,40 +16,41 @@
           "sym": "QQQ",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Downtrend, sell signal"
+          "note": "Downtrend, scanner sell signal"
         },
         {
           "sym": "SMH",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Downtrend, below stop, sell signal"
+          "note": "Downtrend, scanner sell signal"
         },
         {
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Downtrend, sell signal"
+          "note": "Downtrend, scanner sell signal"
         },
         {
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Leveraged ETF, sell signal"
+          "note": "Cut all leveraged ETFs to zero"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Leveraged ETF, below stop"
+          "note": "Cut all leveraged ETFs to zero"
         }
       ],
       "plan": [
         "Trim QQQI to 20% to reduce concentration and meet the mandate.",
-        "Sell QQQ, SMH, METU, SOXL, and SPAL due to downtrends, sell signals, or being leveraged ETFs.",
-        "This significantly reduces overall leverage and exposure to flagged holdings.",
-        "The plan prioritizes capital preservation and a large cash buffer."
+        "Sell QQQ, SMH, and METU due to downtrends and scanner sell signals.",
+        "Sell all leveraged ETFs (SOXL, SPAL) to zero for capital preservation.",
+        "This plan prioritizes de-risking and reducing exposure to weak holdings.",
+        "It aims for a large cash buffer by exiting underperforming assets."
       ],
-      "read": "This conservative plan aims for approximately 1.5% per month, focusing on capital preservation. It significantly reduces leverage and exposure to high-risk or underperforming assets. Expect lower volatility and drawdowns, but also more modest returns."
+      "read": "This conservative plan targets a modest ~1.5%/month return with a focus on capital preservation. It significantly reduces drawdown risk by cutting leveraged ETFs and weak positions. Expect lower volatility but also limited upside potential."
     },
     "balanced": {
       "moves": [
@@ -57,25 +58,25 @@
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Meet mandate, reduce concentration"
+          "note": "Reduce concentration, meet mandate"
         },
         {
           "sym": "QQQ",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Downtrend, sell signal"
+          "note": "Downtrend, scanner sell signal"
         },
         {
           "sym": "SMH",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Downtrend, below stop, sell signal"
+          "note": "Downtrend, scanner sell signal"
         },
         {
           "sym": "METU",
           "action": "Trim",
           "targetPct": 2,
-          "note": "Reduce exposure to flagged holding"
+          "note": "Reduce exposure to weak holding"
         },
         {
           "sym": "SOXL",
@@ -91,12 +92,13 @@
         }
       ],
       "plan": [
-        "Trim QQQI to 25% to meet the mandate and reduce concentration.",
-        "Sell QQQ and SMH due to downtrends and sell signals.",
-        "Trim METU, SOXL, and SPAL to reduce exposure to flagged or leveraged holdings.",
-        "This plan balances risk reduction with maintaining some growth potential."
+        "Trim QQQI to 25% to meet the concentration mandate.",
+        "Sell QQQ and SMH due to downtrends and scanner sell signals.",
+        "Trim METU, SOXL, and SPAL to reduce exposure to weaker and leveraged positions.",
+        "This plan balances risk reduction with maintaining some growth potential.",
+        "It aims for a moderate cash buffer while reducing overall portfolio concentration."
       ],
-      "read": "This balanced plan targets around 2.5% per month, prioritizing risk-first growth. It reduces overall leverage and concentration while maintaining exposure to quality tech. Expect moderate volatility and drawdowns, with a focus on sustainable growth."
+      "read": "This balanced plan targets ~2.5%/month growth by reducing risk while maintaining some exposure. It aims for a lower drawdown than aggressive modes but with more upside than conservative. Expect moderate volatility and a focus on risk-first growth."
     },
     "aggressive": {
       "moves": [
@@ -104,53 +106,54 @@
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Meet mandate, reduce concentration"
+          "note": "Meet concentration mandate"
         },
         {
           "sym": "QQQ",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Downtrend, sell signal"
+          "note": "Downtrend, scanner sell signal"
         },
         {
           "sym": "SMH",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Downtrend, below stop, sell signal"
+          "note": "Downtrend, scanner sell signal"
         },
         {
           "sym": "CRWD",
           "action": "Add",
           "targetPct": 12,
-          "note": "Strong performer, uptrend"
+          "note": "Pressing what is working well"
         },
         {
           "sym": "MSFU",
           "action": "Add",
           "targetPct": 4,
-          "note": "Strong performer, uptrend"
+          "note": "Pressing what is working well"
         },
         {
           "sym": "SLB",
           "action": "Buy",
           "targetPct": 6,
-          "note": "Top scanner long setup"
+          "note": "Strong scanner long setup"
         },
         {
           "sym": "SPXS",
           "action": "Buy",
           "targetPct": 4,
-          "note": "Top scanner long setup"
+          "note": "Strong scanner long setup"
         }
       ],
       "plan": [
-        "Trim QQQI to 25% to meet the mandate and reduce concentration.",
-        "Sell QQQ and SMH due to downtrends and sell signals.",
-        "Add to CRWD and MSFU, which are strong performers in uptrends.",
-        "Buy SLB and SPXS, identified as top scanner long setups.",
-        "This plan leans into high-conviction setups and uses leverage for growth."
+        "Trim QQQI to 25% to meet the concentration mandate.",
+        "Sell QQQ and SMH due to downtrends and scanner sell signals.",
+        "Add to CRWD and MSFU, pressing positions that are performing well.",
+        "Buy SLB and SPXS, leveraging strong scanner long setups.",
+        "This plan uses leverage and concentration to target higher growth.",
+        "It maintains a smaller cash buffer, focusing on active position management."
       ],
-      "read": "This aggressive plan aims for approximately 4% per month, focusing on stretch growth. It concentrates in high-scoring scanner setups and existing strong performers, utilizing leverage. Be aware this approach significantly increases both potential upside and drawdown, and leveraged ETFs decay daily. Strict stop discipline is critical to manage risk."
+      "read": "This aggressive plan targets ~4%/month growth by leaning into leverage and concentration. It carries significantly higher drawdown risk, amplified by leveraged ETFs and potential daily decay. Strict stop discipline is crucial to manage potential rapid losses."
     },
     "income": {
       "moves": [
@@ -158,46 +161,47 @@
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 30,
-          "note": "Increase income exposure"
+          "note": "Increase income-generating exposure"
         },
         {
           "sym": "QQQ",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Downtrend, sell signal"
+          "note": "Downtrend, scanner sell signal"
         },
         {
           "sym": "SMH",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Downtrend, below stop, sell signal"
+          "note": "Downtrend, scanner sell signal"
         },
         {
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Downtrend, sell signal"
+          "note": "Reduce high-beta single names"
         },
         {
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Leveraged ETF, high beta"
+          "note": "Cut all leveraged ETFs to zero"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Leveraged ETF, high beta"
+          "note": "Cut all leveraged ETFs to zero"
         }
       ],
       "plan": [
-        "Add to QQQI to increase income exposure and meet the mandate.",
-        "Sell QQQ, SMH, METU, SOXL, and SPAL due to downtrends, sell signals, or high beta.",
-        "This plan prioritizes steady monthly distributions and low drawdown.",
-        "It significantly reduces exposure to growth-oriented and leveraged holdings."
+        "Add to QQQI to increase income-generating exposure.",
+        "Sell QQQ, SMH, and METU due to downtrends and to reduce high-beta exposure.",
+        "Sell all leveraged ETFs (SOXL, SPAL) to zero for low drawdown.",
+        "This plan prioritizes steady monthly distributions over growth.",
+        "It aims for a cash-like income stream with reduced market volatility."
       ],
-      "read": "This income plan targets approximately 1% per month, focusing on parking cash for yield. It prioritizes low drawdown and reliable income from covered-call ETFs. Distributions are variable and NAV can still fall in a selloff; this is not a savings account."
+      "read": "This income plan targets ~1%/month yield by rotating into income-focused ETFs. It prioritizes low drawdown and reliable distributions, cutting high-beta and leveraged positions. Remember, distributions are variable, and NAV can still fall in market downturns."
     }
   }
 }
