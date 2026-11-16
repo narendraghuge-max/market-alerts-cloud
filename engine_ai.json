@@ -1,6 +1,6 @@
 {
-  "aiTs": "11/16/2026, 4:02:32 AM (Gemini)",
-  "aiEpoch": 1794819752992,
+  "aiTs": "11/16/2026, 4:31:18 AM (Gemini)",
+  "aiEpoch": 1794821478335,
   "v": 11,
   "src": "Gemini",
   "modes": {
@@ -22,13 +22,13 @@
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Leveraged ETF, high risk"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Below stop, leveraged ETF"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "PLTU",
@@ -40,7 +40,7 @@
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Below stop, leveraged ETF"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "SMCI",
@@ -50,12 +50,12 @@
         }
       ],
       "plan": [
-        "Trim QQQI to 20% to reduce concentration and meet mandate limits.",
+        "Trim QQQI to 20% to meet concentration limits and reduce overall exposure.",
+        "Sell SMH, PLTU, and SMCI due to being below their stops and high risk.",
         "Sell all leveraged ETFs (SOXL, MUU, SPAL) to zero for capital preservation.",
-        "Exit SMH, PLTU, and SMCI completely as they are below their stops.",
-        "This plan prioritizes capital preservation and reduces overall portfolio risk."
+        "This plan prioritizes de-risking and maintaining a large cash buffer."
       ],
-      "read": "This conservative plan aims for capital preservation, targeting around 1.5% per month. It significantly reduces risk by eliminating leveraged ETFs and positions below stops, but may limit upside potential."
+      "read": "This conservative plan aims for capital preservation, targeting around 1.5% per month. It significantly reduces risk by cutting all leveraged ETFs and high-risk positions, leading to lower potential drawdowns."
     },
     "balanced": {
       "moves": [
@@ -75,13 +75,13 @@
           "sym": "SOXL",
           "action": "Trim",
           "targetPct": 3,
-          "note": "Reduce leverage, meet mandate"
+          "note": "Reduce leverage, stay within limits"
         },
         {
           "sym": "MUU",
           "action": "Trim",
           "targetPct": 2,
-          "note": "Reduce leverage, below stop"
+          "note": "Reduce leverage, stay within limits"
         },
         {
           "sym": "PLTU",
@@ -93,7 +93,7 @@
           "sym": "SPAL",
           "action": "Trim",
           "targetPct": 1,
-          "note": "Reduce leverage, below stop"
+          "note": "Reduce leverage, stay within limits"
         },
         {
           "sym": "ERY",
@@ -103,12 +103,13 @@
         }
       ],
       "plan": [
-        "Trim QQQI to 20% to address concentration and meet mandate.",
-        "Sell SMH completely as it is below its stop.",
-        "Trim SOXL, MUU, PLTU, and SPAL to reduce leveraged exposure and manage risk.",
-        "Buy ERY at 4% as a strong new long setup from the scanner."
+        "Trim QQQI to 20% to address concentration and align with mandate.",
+        "Sell SMH due to being below its stop and high risk.",
+        "Trim SOXL, MUU, PLTU, and SPAL to reduce overall leverage and exposure.",
+        "Buy ERY at 4% as a new, high-quality long setup from the scanner.",
+        "This plan balances risk and growth, maintaining a moderate cash buffer."
       ],
-      "read": "This balanced plan targets around 2.5% per month, focusing on risk-first growth. It reduces overall leverage and concentration while adding a high-quality scanner setup, aiming for a more stable growth trajectory."
+      "read": "This balanced plan targets around 2.5% per month, focusing on risk-first growth. It reduces overall leverage and concentration while adding a strong new long setup, aiming for controlled growth with moderate drawdowns."
     },
     "aggressive": {
       "moves": [
@@ -128,25 +129,25 @@
           "sym": "SOXL",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase exposure to working leverage"
+          "note": "Increase exposure to leveraged semis"
         },
         {
           "sym": "MUU",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase exposure to working leverage"
+          "note": "Increase exposure to leveraged semis"
         },
         {
           "sym": "PLTU",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase exposure to working leverage"
+          "note": "Increase exposure to leveraged AI"
         },
         {
           "sym": "SPAL",
           "action": "Add",
           "targetPct": 6,
-          "note": "Increase exposure to working leverage"
+          "note": "Increase exposure to leveraged space"
         },
         {
           "sym": "ERY",
@@ -157,11 +158,12 @@
       ],
       "plan": [
         "Trim QQQI to 20% to meet concentration limits.",
-        "Sell SMH completely as it is below its stop.",
-        "Add to SOXL, MUU, PLTU, and SPAL, leveraging into these positions.",
-        "Buy ERY at 6% as a high-conviction scanner long setup."
+        "Sell SMH due to being below its stop and high risk.",
+        "Add to SOXL, MUU, PLTU, and SPAL to increase leveraged exposure in high-conviction areas.",
+        "Buy ERY at 6% as a new, high-scoring long setup from the scanner.",
+        "This plan leans into leverage and concentration for aggressive growth."
       ],
-      "read": "This aggressive plan targets around 4% per month, aiming for stretched growth. It significantly increases exposure to leveraged ETFs and high-scoring setups, which can lead to larger drawdowns and daily decay, requiring strict stop discipline."
+      "read": "This aggressive plan targets around 4% per month, aiming for stretched growth. It significantly increases exposure to leveraged ETFs and high-scoring setups, which raises both potential upside and drawdown. Be aware of daily decay and rebalancing effects of leveraged ETFs, and maintain strict stop discipline as losses can accumulate rapidly."
     },
     "income": {
       "moves": [
@@ -175,31 +177,31 @@
           "sym": "SMH",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Below stop, high beta"
+          "note": "Below stop, high risk"
         },
         {
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Leveraged ETF, high beta"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Leveraged ETF, high beta"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "PLTU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "High beta, below stop"
+          "note": "Below stop, high risk"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Leveraged ETF, high beta"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "CRWD",
@@ -209,12 +211,12 @@
         }
       ],
       "plan": [
-        "Add to QQQI, increasing income exposure to 30%.",
-        "Sell SMH, SOXL, MUU, PLTU, and SPAL to eliminate high-beta and leveraged positions.",
+        "Add to QQQI, increasing income exposure to 30% for steady distributions.",
+        "Sell SMH, PLTU, SOXL, MUU, and SPAL to eliminate high-risk and leveraged positions.",
         "Trim CRWD to 4% to reduce exposure to high-beta single names.",
-        "This plan prioritizes steady monthly distributions and low drawdown."
+        "This plan prioritizes low drawdown and reliable income over growth."
       ],
-      "read": "This income plan targets around 1% per month, focusing on parking cash for yield. It prioritizes low drawdown and reliable income from ETFs, but distributions are variable and NAV can still fall in a selloff."
+      "read": "This income plan targets around 1% per month, focusing on parking cash for yield. It prioritizes low drawdown and reliable monthly distributions from income ETFs. Note that distributions are variable and NAV can still fall in a selloff; this is not a savings account."
     }
   }
 }
