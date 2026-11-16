@@ -1,6 +1,6 @@
 {
-  "aiTs": "11/16/2026, 1:46:16 PM (Gemini)",
-  "aiEpoch": 1794854776722,
+  "aiTs": "11/16/2026, 2:16:17 PM (Gemini)",
+  "aiEpoch": 1794856577122,
   "v": 11,
   "src": "Gemini",
   "modes": {
@@ -10,54 +10,52 @@
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Reduce concentration, below stop"
+          "note": "Reduce concentration, below mandate"
         },
         {
           "sym": "SMH",
           "action": "Sell",
           "targetPct": 0,
-          "note": "High loss, below stop"
+          "note": "Cut leveraged ETF, below stop"
         },
         {
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF, below stop"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF, below stop"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF, below stop"
         },
         {
           "sym": "PLTU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF, below stop"
         },
         {
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce high-beta exposure"
+          "note": "Cut leveraged ETF, below stop"
         }
       ],
       "plan": [
-        "Trim QQQI to 20% to reduce concentration and address its below-stop status.",
-        "Sell SMH completely due to significant loss and being below its stop.",
-        "Exit all leveraged ETFs: SOXL, SPAL, MUU, and PLTU to align with capital preservation.",
-        "Sell METU to reduce exposure to high-beta software names.",
-        "These actions aim to de-risk the portfolio significantly.",
-        "Maintain a cash buffer for stability and future opportunities."
+        "Trim QQQI to 20% to meet concentration limits and reduce risk.",
+        "Sell all leveraged ETFs (SMH, SOXL, SPAL, MUU, PLTU, METU) to zero for capital preservation.",
+        "This plan prioritizes safety by removing high-risk, below-stop positions.",
+        "It aims for a stable, low-drawdown portfolio."
       ],
-      "read": "This conservative plan targets capital preservation with a potential ~1.5%/month outlook. It significantly reduces leverage and high-beta exposure, aiming for lower drawdown. Expect reduced volatility but also limited upside potential."
+      "read": "This conservative plan targets around 1.5% per month, focusing on capital preservation. It significantly reduces risk by eliminating all leveraged ETFs and trimming concentrated positions. Expect lower volatility and smaller drawdowns, but also more modest growth potential."
     },
     "balanced": {
       "moves": [
@@ -65,54 +63,52 @@
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Reduce concentration, below stop"
+          "note": "Reduce concentration to mandate"
         },
         {
           "sym": "SMH",
           "action": "Sell",
           "targetPct": 0,
-          "note": "High loss, below stop"
+          "note": "Below stop, reduce sector risk"
         },
         {
           "sym": "SOXL",
           "action": "Trim",
           "targetPct": 3,
-          "note": "Reduce leveraged ETF exposure"
+          "note": "Reduce leverage, below stop"
         },
         {
           "sym": "METU",
           "action": "Trim",
           "targetPct": 3,
-          "note": "Reduce high-beta exposure"
+          "note": "Reduce leverage, below stop"
         },
         {
           "sym": "MUU",
           "action": "Trim",
           "targetPct": 2,
-          "note": "Reduce leveraged ETF exposure"
+          "note": "Reduce leverage, below stop"
         },
         {
           "sym": "PLTU",
           "action": "Trim",
           "targetPct": 1,
-          "note": "Reduce leveraged ETF exposure"
+          "note": "Reduce leverage, below stop"
         },
         {
           "sym": "SPAL",
           "action": "Trim",
           "targetPct": 1,
-          "note": "Reduce leveraged ETF exposure"
+          "note": "Reduce leverage, below stop"
         }
       ],
       "plan": [
-        "Trim QQQI to 25% to address concentration and its below-stop status.",
-        "Sell SMH completely due to its significant loss and being below its stop.",
-        "Reduce exposure to leveraged ETFs: SOXL to 3%, MUU to 2%, PLTU to 1%, and SPAL to 1%.",
-        "Trim METU to 3% to reduce high-beta software exposure.",
-        "These adjustments aim for a balanced risk-first growth approach.",
-        "Maintain a cash buffer of approximately 10%."
+        "Trim QQQI to 25% to align with concentration limits.",
+        "Sell SMH entirely due to being below its stop and to reduce sector risk.",
+        "Trim other leveraged ETFs (SOXL, METU, MUU, PLTU, SPAL) to smaller, more manageable positions.",
+        "This approach balances growth potential with a focus on risk management."
       ],
-      "read": "This balanced plan targets risk-first growth with a potential ~2.5%/month outlook. It reduces overall leverage and concentration while maintaining some exposure to growth. Expect moderate volatility and drawdown, balancing risk and reward."
+      "read": "This balanced plan aims for approximately 2.5% per month, prioritizing risk-first growth. It reduces overall leverage and concentration while maintaining some exposure to growth assets. Expect moderate volatility and drawdowns, with a reasonable growth outlook."
     },
     "aggressive": {
       "moves": [
@@ -120,48 +116,46 @@
           "sym": "QQQI",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Reduce concentration, below stop"
+          "note": "Reduce concentration to mandate"
         },
         {
           "sym": "SMH",
           "action": "Sell",
           "targetPct": 0,
-          "note": "High loss, below stop"
+          "note": "Below stop, reallocate capital"
         },
         {
           "sym": "TECS",
           "action": "Buy",
           "targetPct": 6,
-          "note": "Strong inverse tech setup"
+          "note": "Add strong scanner setup"
         },
         {
           "sym": "TZA",
           "action": "Buy",
           "targetPct": 6,
-          "note": "Strong inverse small-cap setup"
+          "note": "Add strong scanner setup"
         },
         {
           "sym": "SPXS",
           "action": "Buy",
           "targetPct": 6,
-          "note": "Strong inverse S&P setup"
+          "note": "Add strong scanner setup"
         },
         {
           "sym": "DRIP",
           "action": "Buy",
           "targetPct": 6,
-          "note": "Strong inverse energy setup"
+          "note": "Add strong scanner setup"
         }
       ],
       "plan": [
-        "Trim QQQI to 25% to address concentration and its below-stop status.",
-        "Sell SMH completely due to its significant loss and being below its stop.",
-        "Buy TECS at 6% to add exposure to a strong inverse tech setup.",
-        "Buy TZA at 6% to add exposure to a strong inverse small-cap setup.",
-        "Buy SPXS at 6% to add exposure to a strong inverse S&P setup.",
-        "Buy DRIP at 6% to add exposure to a strong inverse energy setup."
+        "Trim QQQI to 25% to meet concentration limits.",
+        "Sell SMH entirely as it is below its stop and to free up capital.",
+        "Buy TECS, TZA, SPXS, and DRIP, which are strong scanner setups, to increase aggressive exposure.",
+        "This plan leans into leverage and high-scoring setups for stretched growth potential."
       ],
-      "read": "This aggressive growth plan targets a potential ~4%/month outlook, leveraging high-scoring inverse setups. It significantly increases exposure to leveraged ETFs, which can lead to substantial drawdowns and daily decay. Strict stop discipline is crucial to manage the amplified risk."
+      "read": "This aggressive plan targets around 4% per month, aiming for stretched growth. It utilizes leveraged ETFs and concentrates in high-scoring scanner setups. Be aware that this approach significantly increases both upside potential and drawdown risk, and leveraged ETFs are subject to daily decay and rebalancing."
     },
     "income": {
       "moves": [
@@ -175,48 +169,46 @@
           "sym": "SMH",
           "action": "Sell",
           "targetPct": 0,
-          "note": "High loss, below stop"
+          "note": "Cut high-beta, below stop"
         },
         {
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF, below stop"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF, below stop"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF, below stop"
         },
         {
           "sym": "PLTU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Cut leveraged ETF, below stop"
         },
         {
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Reduce high-beta exposure"
+          "note": "Cut leveraged ETF, below stop"
         }
       ],
       "plan": [
         "Add to QQQI, increasing its allocation to 30% for enhanced income generation.",
-        "Sell SMH completely due to its significant loss and being below its stop.",
-        "Exit all leveraged ETFs: SOXL, SPAL, MUU, and PLTU to minimize volatility.",
-        "Sell METU to reduce exposure to high-beta software names.",
-        "This plan prioritizes steady monthly distributions and low drawdown.",
-        "Maintain a cash buffer to absorb market fluctuations."
+        "Sell all high-beta and leveraged ETFs (SMH, SOXL, SPAL, MUU, PLTU, METU) to near zero.",
+        "This strategy prioritizes steady monthly distributions and low drawdown.",
+        "It aims to park cash for yield rather than aggressive growth."
       ],
-      "read": "This income plan targets a potential ~1%/month outlook, focusing on steady distributions. It significantly reduces high-beta and leveraged exposure, aiming for low drawdown. Distributions are variable, and NAV can still decline in market downturns; this is not a savings account."
+      "read": "This income plan targets around 1% per month, focusing on parking cash for yield. It prioritizes steady monthly distributions and low drawdown by rotating into income-focused ETFs and cutting high-beta, leveraged positions. While aiming for stability, distributions are variable, and NAV can still decline in market downturns."
     }
   }
 }
