@@ -1,6 +1,6 @@
 {
-  "aiTs": "11/20/2026, 12:01:22 PM (Gemini)",
-  "aiEpoch": 1795194082622,
+  "aiTs": "11/20/2026, 12:31:00 PM (Gemini)",
+  "aiEpoch": 1795195860849,
   "v": 11,
   "src": "Gemini",
   "modes": {
@@ -10,52 +10,60 @@
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Reduce concentration, meet mandate"
+          "note": "Reduce broad index concentration"
+        },
+        {
+          "sym": "QQQI",
+          "action": "Add",
+          "targetPct": 20,
+          "note": "Increase income focus"
         },
         {
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Eliminate leveraged ETF"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Eliminate leveraged ETF"
         },
         {
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Sell weak leveraged AI"
+          "note": "Exit software leverage"
         },
         {
           "sym": "MSFU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Sell weak leveraged AI"
+          "note": "Exit software leverage"
         },
         {
           "sym": "PLTU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Sell weak leveraged AI"
+          "note": "Exit software leverage"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Sell weak leveraged Semiconductors"
+          "note": "Exit semiconductor leverage"
         }
       ],
       "plan": [
-        "Trim SPY to 20% to reduce concentration and meet the single-name mandate.",
-        "Sell all leveraged ETFs (SOXL, SPAL, METU, MSFU, PLTU, MUU) to zero.",
-        "This aligns with capital preservation and reduces overall portfolio risk.",
-        "Focus on broad index and income for stability."
+        "Reduce broad index exposure to 20% to lower concentration.",
+        "Increase income ETF to 20% for stability.",
+        "Eliminate all leveraged ETFs to cut risk.",
+        "Exit all software and semiconductor leveraged positions.",
+        "Sell remaining weak semiconductor and software names.",
+        "Trim the strong tech position to reduce concentration."
       ],
-      "read": "This conservative plan aims for capital preservation with a target of ~1.5% per month. It significantly reduces leverage and concentration, leading to lower expected drawdowns. However, potential upside is also limited."
+      "read": "This plan prioritizes capital preservation with a target of ~1.5% monthly growth. It significantly reduces leverage and focuses on income and broad market exposure, aiming for lower drawdowns. Expect slower growth compared to other modes."
     },
     "balanced": {
       "moves": [
@@ -63,58 +71,60 @@
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Meet single-name mandate"
+          "note": "Maintain broad index exposure"
         },
         {
           "sym": "QQQI",
           "action": "Trim",
-          "targetPct": 25,
-          "note": "Reduce income concentration"
+          "targetPct": 20,
+          "note": "Reduce income ETF slightly"
+        },
+        {
+          "sym": "CRWD",
+          "action": "Add",
+          "targetPct": 15,
+          "note": "Increase strong tech position"
         },
         {
           "sym": "SOXL",
           "action": "Trim",
           "targetPct": 2,
-          "note": "Reduce leveraged ETF exposure"
+          "note": "Maintain minimal leveraged ETF"
         },
         {
           "sym": "SPAL",
           "action": "Trim",
           "targetPct": 1,
-          "note": "Reduce leveraged ETF exposure"
+          "note": "Maintain minimal leveraged ETF"
         },
         {
           "sym": "METU",
-          "action": "Trim",
-          "targetPct": 3,
-          "note": "Reduce leveraged AI exposure"
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Exit software leverage"
         },
         {
           "sym": "MSFU",
           "action": "Trim",
-          "targetPct": 2,
-          "note": "Reduce leveraged AI exposure"
+          "targetPct": 1,
+          "note": "Reduce software leverage"
         },
         {
           "sym": "PLTU",
-          "action": "Trim",
-          "targetPct": 1,
-          "note": "Reduce leveraged AI exposure"
-        },
-        {
-          "sym": "MUU",
-          "action": "Trim",
-          "targetPct": 1,
-          "note": "Reduce leveraged Semiconductors…"
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Exit software leverage"
         }
       ],
       "plan": [
-        "Trim SPY to 25% to meet the single-name mandate.",
-        "Trim QQQI to 25% to reduce income concentration.",
-        "Reduce all leveraged ETF positions (SOXL, SPAL, METU, MSFU, PLTU, MUU) to smaller allocations.",
-        "This plan balances risk and growth, maintaining some exposure to leveraged assets while reducing overall concentration."
+        "Maintain broad index exposure at 25%.",
+        "Slightly reduce income ETF to 20%.",
+        "Increase position in strong tech name CRWD to 15%.",
+        "Maintain minimal exposure to leveraged ETFs (SOXL, SPAL).",
+        "Exit leveraged software and semiconductor positions.",
+        "Sell remaining weak semiconductor and software names."
       ],
-      "read": "This balanced plan targets ~2.5% per month by blending broad index, quality tech, and a small amount of leverage. It aims for risk-first growth, with moderate drawdowns and a balanced risk profile."
+      "read": "This balanced approach targets ~2.5% monthly growth by blending broad market exposure with quality tech and limited leverage. It aims for risk-first growth, reducing concentration and exiting the weakest positions. Drawdowns are expected to be moderate."
     },
     "aggressive": {
       "moves": [
@@ -122,111 +132,121 @@
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Meet single-name mandate"
+          "note": "Maintain broad index exposure"
         },
         {
           "sym": "QQQI",
           "action": "Trim",
-          "targetPct": 25,
-          "note": "Reduce income concentration"
+          "targetPct": 10,
+          "note": "Reduce income ETF for growth"
         },
         {
           "sym": "CRWD",
           "action": "Add",
           "targetPct": 15,
-          "note": "Press what is working"
+          "note": "Increase strong tech position"
+        },
+        {
+          "sym": "SOXL",
+          "action": "Add",
+          "targetPct": 5,
+          "note": "Increase leveraged semiconductor…"
+        },
+        {
+          "sym": "SPAL",
+          "action": "Add",
+          "targetPct": 3,
+          "note": "Increase leveraged space exposure"
         },
         {
           "sym": "TECS",
           "action": "Buy",
-          "targetPct": 6,
-          "note": "Strong inverse tech setup"
+          "targetPct": 5,
+          "note": "Add inverse tech ETF"
         },
         {
           "sym": "SQQQ",
           "action": "Buy",
-          "targetPct": 6,
-          "note": "Strong inverse QQQ setup"
+          "targetPct": 5,
+          "note": "Add inverse tech ETF"
         },
         {
           "sym": "TZA",
           "action": "Buy",
-          "targetPct": 6,
-          "note": "Strong inverse small-cap setup"
-        },
-        {
-          "sym": "SOXS",
-          "action": "Buy",
-          "targetPct": 6,
-          "note": "Strong inverse semis setup"
+          "targetPct": 5,
+          "note": "Add inverse broad index ETF"
         }
       ],
       "plan": [
-        "Trim SPY to 25% and QQQI to 25% to meet mandates and rebalance.",
-        "Add to CRWD, pressing into a strong uptrending position.",
-        "Buy new positions in TECS, SQQQ, TZA, and SOXS, leveraging strong inverse setups.",
-        "This plan uses leverage and concentration to target higher growth, with strict stops."
+        "Maintain broad index exposure at 25%.",
+        "Reduce income ETF to 10% to fund growth.",
+        "Increase position in strong tech name CRWD to 15%.",
+        "Increase leveraged semiconductor and space ETFs.",
+        "Add inverse ETFs (TECS, SQQQ, TZA) for downside protection/opportunism.",
+        "Exit all leveraged software and semiconductor positions, and weak names."
       ],
-      "read": "This aggressive plan targets ~4% per month by leaning into leverage and high-scoring scanner setups. It carries significantly higher risk, including larger potential drawdowns and the daily decay/rebalancing of leveraged ETFs. Strict stop discipline is critical."
+      "read": "This aggressive plan targets ~4% monthly growth by increasing leverage and concentration in high-conviction names and inverse ETFs. Expect significantly higher potential upside but also substantially larger drawdowns and the risk of rapid losses due to leverage and ETF decay. Strict stop discipline is critical."
     },
     "income": {
       "moves": [
         {
           "sym": "SPY",
           "action": "Trim",
-          "targetPct": 25,
-          "note": "Meet single-name mandate"
+          "targetPct": 20,
+          "note": "Reduce broad index for income"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 30,
-          "note": "Increase income exposure"
+          "note": "Maximize income ETF"
         },
         {
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Eliminate leveraged ETF"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut all leveraged ETFs"
+          "note": "Eliminate leveraged ETF"
         },
         {
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Sell high-beta leveraged AI"
+          "note": "Exit software leverage"
         },
         {
           "sym": "MSFU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Sell high-beta leveraged AI"
+          "note": "Exit software leverage"
         },
         {
           "sym": "PLTU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Sell high-beta leveraged AI"
+          "note": "Exit software leverage"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Sell high-beta leveraged…"
+          "note": "Exit semiconductor leverage"
         }
       ],
       "plan": [
-        "Trim SPY to 25% to meet the single-name mandate.",
-        "Add to QQQI, increasing exposure to income-generating ETFs.",
-        "Sell all leveraged and high-beta single names (SOXL, SPAL, METU, MSFU, PLTU, MUU) to zero.",
-        "This plan prioritizes steady monthly distributions and low drawdown over growth."
+        "Reduce broad index exposure to 20% to prioritize income.",
+        "Increase income ETF to 30% for steady distributions.",
+        "Eliminate all leveraged ETFs and high-beta growth names.",
+        "Exit all software and semiconductor leveraged positions.",
+        "Sell remaining weak semiconductor and software names.",
+        "Focus on generating consistent monthly income."
       ],
-      "read": "This income plan targets ~1% per month by rotating into income/covered-call ETFs and broad index. It prioritizes low drawdown and reliable income, but distributions are variable and NAV can still fall in a selloff. This is not a savings account."
+      "read": "This income-focused plan targets ~1% monthly distributions by prioritizing income-generating ETFs and reducing volatile growth assets. It aims for low drawdowns and reliable cash flow, not aggressive growth. NAV can still decline in market selloffs."
     }
   }
 }
