@@ -1,6 +1,6 @@
 {
-  "aiTs": "11/23/2026, 9:01:19 AM (Gemini)",
-  "aiEpoch": 1795442479682,
+  "aiTs": "11/23/2026, 9:31:40 AM (Gemini)",
+  "aiEpoch": 1795444300842,
   "v": 11,
   "src": "Gemini",
   "modes": {
@@ -22,48 +22,46 @@
           "sym": "PLTU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged AI/Software"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged semis"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged AI/Software"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "MSFU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged AI/Software"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "SNOW",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit weak AI/Software"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "SMCI",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit weak Semiconductors"
+          "note": "Cut all leveraged ETFs"
         }
       ],
       "plan": [
-        "Sell all leveraged ETFs to zero.",
-        "Exit all individual tech/semiconductor names flagged SELL.",
-        "Reduce broad index (SPY) to 20% to meet mandate.",
-        "Increase allocation to income ETF (QQQI) for stability.",
-        "Hold a significant cash buffer for safety.",
-        "Focus on capital preservation with tight stops."
+        "Sell all leveraged ETFs (SOXL, SPAL, PLTU, MUU, METU, MSFU) to zero for capital preservation.",
+        "Sell SNOW and SMCI to reduce exposure to weaker names.",
+        "Trim QQQI to 20% to meet the single name concentration limit.",
+        "This plan aims to significantly de-risk the portfolio by removing high-beta and leveraged positions."
       ],
-      "read": "This plan prioritizes capital preservation. Expect lower potential returns but also significantly reduced drawdown risk. The focus is on stability and building a cash buffer."
+      "read": "This conservative plan targets a modest ~1.5%/month return, prioritizing capital preservation. Expect lower volatility and drawdowns, but also limited upside potential."
     },
     "balanced": {
       "moves": [
@@ -77,48 +75,46 @@
           "sym": "CRWD",
           "action": "Trim",
           "targetPct": 8,
-          "note": "Reduce strong performer slightly"
+          "note": "Reduce concentration to 8%"
         },
         {
           "sym": "SOXL",
           "action": "Sell",
-          "targetPct": 1,
-          "note": "Minimize leveraged ETF exposure"
+          "targetPct": 0,
+          "note": "Reduce leveraged ETFs to zero"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit leveraged Space ETF"
-        },
-        {
-          "sym": "TECS",
-          "action": "Buy",
-          "targetPct": 4,
-          "note": "Add inverse ETF for hedging"
-        },
-        {
-          "sym": "SQQQ",
-          "action": "Buy",
-          "targetPct": 3,
-          "note": "Add inverse ETF for hedging"
+          "note": "Reduce leveraged ETFs to zero"
         },
         {
           "sym": "QQQI",
-          "action": "Add",
-          "targetPct": 10,
-          "note": "Increase income allocation"
+          "action": "Trim",
+          "targetPct": 25,
+          "note": "Reduce concentration to 25%"
+        },
+        {
+          "sym": "PANW",
+          "action": "Buy",
+          "targetPct": 5,
+          "note": "Add strong scanner setup"
+        },
+        {
+          "sym": "ZS",
+          "action": "Buy",
+          "targetPct": 5,
+          "note": "Add strong scanner setup"
         }
       ],
       "plan": [
-        "Trim SPY to 25% to meet concentration mandate.",
-        "Slightly trim the profitable CRWD holding.",
-        "Reduce leveraged ETFs (SOXL, SPAL) to minimal or zero.",
-        "Add inverse ETFs (TECS, SQQQ) for market hedging.",
-        "Increase allocation to income ETF (QQQI).",
-        "Maintain a moderate cash buffer."
+        "Trim SPY, CRWD, and QQQI to 25% or 8% to reduce concentration and meet mandate limits.",
+        "Sell SOXL and SPAL to reduce leveraged ETF exposure to zero.",
+        "Buy PANW and ZS, strong scanner setups, to add quality tech exposure.",
+        "This plan balances broad index exposure with quality tech and reduced leverage."
       ],
-      "read": "This balanced approach aims for risk-first growth. It reduces concentration and leverage while adding some hedging. Expect moderate returns with controlled downside risk."
+      "read": "This balanced plan aims for ~2.5%/month growth with a risk-first approach. It seeks a blend of growth and stability, with moderate drawdowns expected."
     },
     "aggressive": {
       "moves": [
@@ -132,48 +128,40 @@
           "sym": "CRWD",
           "action": "Trim",
           "targetPct": 8,
-          "note": "Reduce strong performer slightly"
+          "note": "Reduce concentration to 8%"
+        },
+        {
+          "sym": "QQQI",
+          "action": "Trim",
+          "targetPct": 25,
+          "note": "Reduce concentration to 25%"
+        },
+        {
+          "sym": "PANW",
+          "action": "Buy",
+          "targetPct": 10,
+          "note": "Add high-scoring scanner setup"
+        },
+        {
+          "sym": "ZS",
+          "action": "Buy",
+          "targetPct": 10,
+          "note": "Add high-scoring scanner setup"
         },
         {
           "sym": "SOXL",
           "action": "Add",
           "targetPct": 5,
-          "note": "Increase leveraged ETF exposure"
-        },
-        {
-          "sym": "TECS",
-          "action": "Buy",
-          "targetPct": 6,
-          "note": "Add inverse ETF for hedging"
-        },
-        {
-          "sym": "SQQQ",
-          "action": "Buy",
-          "targetPct": 6,
-          "note": "Add inverse ETF for hedging"
-        },
-        {
-          "sym": "SOXS",
-          "action": "Buy",
-          "targetPct": 6,
-          "note": "Add inverse ETF for hedging"
-        },
-        {
-          "sym": "SPXS",
-          "action": "Buy",
-          "targetPct": 4,
-          "note": "Add inverse ETF for hedging"
+          "note": "Add to leveraged ETF"
         }
       ],
       "plan": [
-        "Trim SPY to 25% to meet concentration mandate.",
-        "Slightly trim the profitable CRWD holding.",
-        "Increase allocation to leveraged ETF (SOXL).",
-        "Add multiple inverse ETFs (TECS, SQQQ, SOXS, SPXS) for aggressive hedging.",
-        "Maintain a smaller cash buffer to maximize invested capital.",
-        "Utilize wider stops but maintain strict discipline."
+        "Trim SPY, CRWD, and QQQI to 25% or 8% to meet concentration limits.",
+        "Add to SOXL, a leveraged ETF, to increase aggressive exposure.",
+        "Buy PANW and ZS, high-scoring scanner setups, to concentrate in strong long opportunities.",
+        "This plan leans into leverage and concentration for aggressive growth."
       ],
-      "read": "This aggressive plan seeks maximum growth by leaning into leverage and concentration, while also adding significant hedging. Expect higher potential returns but also substantially larger drawdowns and the risk of rapid losses due to leverage and ETF decay."
+      "read": "This aggressive plan targets ~4%/month growth, accepting higher risk and potential drawdowns. Leveraged ETFs can decay daily, amplifying both gains and losses. Strict stop discipline is crucial."
     },
     "income": {
       "moves": [
@@ -193,48 +181,46 @@
           "sym": "PLTU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged AI/Software"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged semis"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged AI/Software"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "MSFU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged AI/Software"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "SNOW",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit weak AI/Software"
+          "note": "Cut all leveraged ETFs"
         },
         {
           "sym": "SMCI",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Exit weak Semiconductors"
+          "note": "Cut all leveraged ETFs"
         }
       ],
       "plan": [
-        "Sell all leveraged ETFs and high-beta single names.",
-        "Significantly increase allocation to income ETF (QQQI).",
-        "Add broad index ETF (SPY) for stability and income potential.",
-        "Hold a substantial cash buffer for safety.",
-        "Prioritize steady monthly distributions over growth.",
-        "Focus on minimizing drawdowns."
+        "Sell all leveraged ETFs (SOXL, SPAL, PLTU, MUU, METU, MSFU) to zero.",
+        "Sell SNOW and SMCI to reduce exposure to high-beta single names.",
+        "Trim QQQI to 25% to meet the single name concentration limit.",
+        "This plan prioritizes income and low drawdown by rotating into income-focused assets."
       ],
-      "read": "This income-focused plan prioritizes steady monthly distributions and capital preservation. Expect low but consistent income, with limited growth potential and reduced downside risk compared to other modes."
+      "read": "This income plan targets ~1%/month, focusing on steady distributions and capital preservation. While aiming for reliable income, NAV can still fluctuate, and distributions are not guaranteed."
     }
   }
 }
