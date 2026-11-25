@@ -1,61 +1,63 @@
 {
-  "aiTs": "11/25/2026, 6:31:15 AM (Gemini)",
-  "aiEpoch": 1795606275539,
+  "aiTs": "11/25/2026, 7:01:41 AM (Gemini)",
+  "aiEpoch": 1795608101865,
   "v": 11,
   "src": "Gemini",
   "modes": {
     "conservative": {
       "moves": [
         {
-          "sym": "METU",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Cut leveraged ETF, downtrend"
-        },
-        {
-          "sym": "MSFU",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Cut leveraged ETF, downtrend"
-        },
-        {
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF, downtrend"
-        },
-        {
-          "sym": "PLTU",
-          "action": "Sell",
-          "targetPct": 0,
-          "note": "Cut leveraged ETF, downtrend"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF, downtrend"
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF, downtrend"
+          "note": "Cut leveraged ETF exposure"
+        },
+        {
+          "sym": "METU",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Cut leveraged ETF exposure"
+        },
+        {
+          "sym": "MSFU",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Cut leveraged ETF exposure"
+        },
+        {
+          "sym": "PLTU",
+          "action": "Sell",
+          "targetPct": 0,
+          "note": "Cut leveraged ETF exposure"
         },
         {
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Reduce concentration, above limit"
+          "note": "Reduce broad index concentration"
         }
       ],
       "plan": [
-        "To prioritize capital preservation, sell all leveraged ETFs (METU, MSFU, SOXL, PLTU, SPAL, MUU) to zero.",
-        "These holdings are in downtrends and carry amplified risk.",
-        "Trim SPY to 20% to reduce concentration and meet the single-name limit.",
-        "This strategy aims for a lower-drawdown portfolio with a significant cash buffer."
+        "Sell all leveraged ETFs to zero.",
+        "Exit remaining high-beta software names.",
+        "Reduce broad index exposure to 20%.",
+        "Hold a significant cash buffer.",
+        "Focus on capital preservation.",
+        "Maintain tight stops on remaining positions."
       ],
-      "read": "This conservative plan targets a modest ~1.5%/month return, focusing on capital preservation. It significantly reduces portfolio risk by eliminating leveraged ETFs and lowering concentration. Expect lower volatility but also limited upside potential."
+      "read": "This plan prioritizes capital preservation with a target of ~1.5% monthly return. It significantly reduces risk by cutting all leveraged ETFs and holding a large cash buffer. Drawdowns should be minimal."
     },
     "balanced": {
       "moves": [
@@ -63,59 +65,60 @@
           "sym": "METU",
           "action": "Trim",
           "targetPct": 0,
-          "note": "Reduce leveraged exposure, downtrend"
+          "note": "Reduce leveraged ETF exposure"
         },
         {
           "sym": "MSFU",
           "action": "Trim",
           "targetPct": 0,
-          "note": "Reduce leveraged exposure, downtrend"
+          "note": "Reduce leveraged ETF exposure"
         },
         {
           "sym": "SOXL",
           "action": "Trim",
           "targetPct": 0,
-          "note": "Reduce leveraged exposure, downtrend"
+          "note": "Reduce leveraged ETF exposure"
         },
         {
           "sym": "PLTU",
           "action": "Trim",
           "targetPct": 0,
-          "note": "Reduce leveraged exposure, downtrend"
+          "note": "Reduce leveraged ETF exposure"
         },
         {
           "sym": "SPAL",
           "action": "Trim",
           "targetPct": 0,
-          "note": "Reduce leveraged exposure, downtrend"
+          "note": "Reduce leveraged ETF exposure"
         },
         {
           "sym": "MUU",
           "action": "Trim",
           "targetPct": 0,
-          "note": "Reduce leveraged exposure, downtrend"
+          "note": "Reduce leveraged ETF exposure"
         },
         {
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Reduce concentration, above limit"
+          "note": "Reduce broad index concentration"
         },
         {
           "sym": "SPXS",
           "action": "Buy",
           "targetPct": 4,
-          "note": "Add strong scanner long setup"
+          "note": "Add strong inverse ETF"
         }
       ],
       "plan": [
-        "To balance risk and growth, trim all leveraged ETFs (METU, MSFU, SOXL, PLTU, SPAL, MUU) to zero.",
-        "These holdings are in downtrends and carry amplified risk.",
-        "Trim SPY to 25% to reduce concentration and meet the single-name limit.",
-        "Buy SPXS at 4% as a strong scanner long setup to add targeted exposure.",
-        "This plan aims for risk-first growth with a moderate cash buffer."
+        "Exit all leveraged ETFs to minimize risk.",
+        "Reduce broad index concentration to 25%.",
+        "Add a small position in a strong inverse ETF.",
+        "Maintain a moderate cash buffer.",
+        "Balance growth with risk reduction.",
+        "Keep total new adds within limits."
       ],
-      "read": "This balanced plan targets ~2.5%/month, aiming for risk-first growth. It reduces overall leverage and concentration while adding a high-quality scanner setup. Expect moderate volatility and growth potential, with a focus on managing downside risk."
+      "read": "This balanced approach aims for risk-first growth with a target of ~2.5% monthly return. It reduces leverage and concentration while adding a defensive position. Drawdowns are managed, but some volatility is expected."
     },
     "aggressive": {
       "moves": [
@@ -123,34 +126,36 @@
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 25,
-          "note": "Reduce concentration, above limit"
+          "note": "Reduce broad index concentration"
         },
         {
           "sym": "SPXS",
           "action": "Buy",
           "targetPct": 6,
-          "note": "Add strong scanner long setup"
+          "note": "Add strong inverse ETF"
         },
         {
           "sym": "NVDD",
           "action": "Buy",
           "targetPct": 6,
-          "note": "Add strong scanner long setup"
+          "note": "Add strong inverse ETF"
         },
         {
           "sym": "AAPU",
           "action": "Buy",
           "targetPct": 6,
-          "note": "Add strong scanner long setup"
+          "note": "Add strong inverse ETF"
         }
       ],
       "plan": [
-        "To pursue aggressive growth, trim SPY to 25% to meet the single-name limit.",
-        "Add SPXS at 6%, NVDD at 6%, and AAPU at 6% as high-scoring scanner long setups.",
-        "These additions leverage strong setups for potential upside.",
-        "This strategy leans into concentration and uses leverage for amplified returns."
+        "Reduce broad index concentration to 25%.",
+        "Add positions in strong inverse ETFs.",
+        "Concentrate new capital in top scanner setups.",
+        "Maintain a smaller cash buffer.",
+        "Embrace higher leverage and concentration.",
+        "Utilize strict stop discipline."
       ],
-      "read": "This aggressive plan targets ~4%/month, aiming for stretched growth. It concentrates in high-scoring scanner setups and utilizes leverage, which amplifies both upside and drawdown. Be aware of significant potential for rapid losses due to leverage decay and market swings; strict stop discipline is critical."
+      "read": "This aggressive plan targets ~4% monthly return by leaning into leverage and concentration on strong setups. It accepts significantly higher potential drawdowns and the risk of rapid losses. Leveraged ETF decay is a factor."
     },
     "income": {
       "moves": [
@@ -158,59 +163,60 @@
           "sym": "METU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF, not income"
+          "note": "Exit leveraged ETF"
         },
         {
           "sym": "MSFU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF, not income"
+          "note": "Exit leveraged ETF"
         },
         {
           "sym": "SOXL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF, not income"
+          "note": "Exit leveraged ETF"
         },
         {
           "sym": "PLTU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF, not income"
+          "note": "Exit leveraged ETF"
         },
         {
           "sym": "SPAL",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF, not income"
+          "note": "Exit leveraged ETF"
         },
         {
           "sym": "MUU",
           "action": "Sell",
           "targetPct": 0,
-          "note": "Cut leveraged ETF, not income"
+          "note": "Exit leveraged ETF"
         },
         {
           "sym": "SPY",
           "action": "Trim",
           "targetPct": 20,
-          "note": "Reduce concentration, above limit"
+          "note": "Reduce broad index concentration"
         },
         {
           "sym": "QQQI",
           "action": "Add",
           "targetPct": 30,
-          "note": "Increase income exposure"
+          "note": "Increase income ETF allocation"
         }
       ],
       "plan": [
-        "To prioritize income, sell all leveraged ETFs (METU, MSFU, SOXL, PLTU, SPAL, MUU) to zero.",
-        "These holdings are not aligned with an income strategy.",
-        "Trim SPY to 20% to reduce concentration and meet the single-name limit.",
-        "Add QQQI to 30% to increase exposure to income-generating assets.",
-        "This plan focuses on steady distributions and low drawdown."
+        "Sell all leveraged ETFs to zero.",
+        "Reduce broad index exposure to 20%.",
+        "Increase allocation to income ETF QQQI.",
+        "Prioritize steady monthly distributions.",
+        "Maintain a cash buffer for stability.",
+        "Focus on low drawdown and reliable income."
       ],
-      "read": "This income plan targets ~1%/month, aiming to park cash for yield. It prioritizes steady monthly distributions and low drawdown by rotating into income ETFs and cutting high-beta names. Distributions are variable, and NAV can still fall in selloffs; this is not a savings account."
+      "read": "This income-focused plan targets ~1% monthly return through distributions, not growth. It minimizes risk by cutting leverage and high-beta names, favoring income-generating ETFs. NAV can still fall in selloffs."
     }
   }
 }
